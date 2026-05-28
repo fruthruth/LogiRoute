@@ -1,4 +1,4 @@
-package modelo;
+package model;
 
 public class Administrador {
     // Atributos exactos según el Diagrama MER

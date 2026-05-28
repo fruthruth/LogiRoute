@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package modelo;
 
 import java.time.LocalDateTime;
@@ -63,3 +64,5 @@ public class Pedido {
     public int getIdRepartidor() { return idRepartidor; }
     public void setIdRepartidor(int idRepartidor) { this.idRepartidor = idRepartidor; }
 }
+=======
+>>>>>>> 85de38383a9325c538f8264a6fa554cbc3827d7b
