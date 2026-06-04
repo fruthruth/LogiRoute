@@ -1,7 +1,9 @@
 package model;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 public class Administrador {
     // Atributos exactos según el Diagrama MER
+    private static final Logger logger = LoggerFactory.getLogger(Administrador.class);
     private int idAdministrador;
     private String nombres;
     private String apellidos;
@@ -10,6 +12,7 @@ public class Administrador {
 
     // Constructor vacío
     public Administrador() {
+        logger.info("Se ha creado una instancia de Administrador vacío");
     }
 
     // Constructor con parámetros
