@@ -1,6 +1,10 @@
 package model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Cliente {
+    private static final Logger logger = LoggerFactory.getLogger(Cliente.class);
 
     private int id;
     private String nombre;
@@ -8,9 +12,23 @@ public class Cliente {
     private String telefono;
     private String direccion;
 
-    public Cliente() {}
+    // Constructor vacío (Ya lo tenías excelente)
+    public Cliente() {
+        logger.info("Se ha creado una instancia de Cliente vacío");
+    }
 
-    // Getters y Setters
+    // ====================================================================
+    // CONSTRUCTOR CON PARÁMETROS 
+    // ====================================================================
+    public Cliente(int id, String nombre, String email, String telefono, String direccion) {
+        this.id = id;
+        this.nombre = nombre;
+        this.email = email;
+        this.telefono = telefono;
+        this.direccion = direccion;
+    }
+
+    // Getters y Setters (Se quedan igual)
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -26,4 +44,3 @@ public class Cliente {
     public String getDireccion() { return direccion; }
     public void setDireccion(String direccion) { this.direccion = direccion; }
 }
-
