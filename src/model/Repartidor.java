@@ -1,7 +1,11 @@
 package model;
 
-public class Repartidor {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+public class Repartidor {
+    private static final Logger logger = LoggerFactory.getLogger(Repartidor.class);
+    
     private int id;
     private String nombre;
     private String email;
@@ -10,11 +14,24 @@ public class Repartidor {
     private String vehiculo;
     private String estado;
 
+    // 1. CONSTRUCTOR VACÍO (Actualizado para registrar el Log)
     public Repartidor() {
         this.estado = "DISPONIBLE";
+        logger.info("Se ha creado una instancia de Repartidor vacío");
     }
 
-    // Getters y Setters
+    // 2. CONSTRUCTOR CON PARÁMETROS (Faltaba para cuando uses la Base de Datos)
+    public Repartidor(int id, String nombre, String email, String password, String telefono, String vehiculo, String estado) {
+        this.id = id;
+        this.nombre = nombre;
+        this.email = email;
+        this.password = password;
+        this.telefono = telefono;
+        this.vehiculo = vehiculo;
+        this.estado = estado;
+    }
+
+    // Getters y Setters (Se quedan exactamente como los tenías)
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 

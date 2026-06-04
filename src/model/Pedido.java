@@ -1,10 +1,11 @@
 package model;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 
 public class Pedido {
-
+private static final Logger logger = LoggerFactory.getLogger(Pedido.class);
     private int id;
     private String codigoSeguimiento;
     private String nombreCliente;
@@ -17,6 +18,7 @@ public class Pedido {
     public Pedido() {
         this.estado = "PENDIENTE";
         this.fechaCreacion = LocalDateTime.now();
+        logger.info("Se ha creado una instancia de Pedido vacío");
     }
 
     // Getters y Setters

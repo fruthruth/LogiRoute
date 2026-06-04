@@ -1,6 +1,13 @@
 package model;
 
+//IMPORTAMOS LAS LIBRERÍAS 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Vehiculo {
+    
+    private static final Logger logger = LoggerFactory.getLogger(Vehiculo.class);
+
     private int idVehiculo;
     private String tipo;
     private String placa;
@@ -8,11 +15,12 @@ public class Vehiculo {
     private String estado;
     private int idRepartidor; // Clave foránea del repartidor asignado
 
-    // Constructor vacío
+    
     public Vehiculo() {
+        logger.info("Se ha creado una instancia de Vehiculo vacío");
     }
 
-    // Constructor con parámetros
+    // Constructor con parámetros (Se queda exactamente igual)
     public Vehiculo(int idVehiculo, String tipo, String placa, double capacidad, String estado, int idRepartidor) {
         this.idVehiculo = idVehiculo;
         this.tipo = tipo;
@@ -22,7 +30,7 @@ public class Vehiculo {
         this.idRepartidor = idRepartidor;
     }
 
-    // Métodos Getter y Setter
+    // Métodos Getter y Setter (Se quedan exactamente igual)
     public int getIdVehiculo() { return idVehiculo; }
     public void setIdVehiculo(int idVehiculo) { this.idVehiculo = idVehiculo; }
 
