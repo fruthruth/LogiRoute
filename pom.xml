@@ -72,12 +72,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-<<<<<<< HEAD
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-test</artifactId>
-    <scope>test</scope>
-</dependency>
-=======
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa-test</artifactId>
 			<scope>test</scope>
@@ -102,7 +96,6 @@
 			<artifactId>spring-boot-starter-webmvc-test</artifactId>
 			<scope>test</scope>
 		</dependency>
->>>>>>> 615cb0ea015e1d656eec9db5bda702deaa121a89
 
 		<!-- Google Guava -->
 		<dependency>
