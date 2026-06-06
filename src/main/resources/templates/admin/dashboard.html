@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiRoute - Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">LogiRoute</div>
+        <div class="nav-links">
+            <a th:href="@{/admin}" class="active">Dashboard</a>
+            <a th:href="@{/admin/pedidos}">Pedidos</a>
+            <a th:href="@{/admin/repartidores}">Repartidores</a>
+            <a th:href="@{/logout}" class="btn-logout">Salir</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Dashboard Administrador</h1>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" th:text="${totalPedidos}">0</div>
+                <div class="stat-label">Pedidos Totales</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" th:text="${totalRepartidores}">0</div>
+                <div class="stat-label">Repartidores</div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <h2>Acciones Rápidas</h2>
+            <div class="action-buttons">
+                <a th:href="@{/admin/pedidos}" class="btn btn-primary">Gestionar Pedidos</a>
+                <a th:href="@{/admin/repartidores}" class="btn btn-secondary">Ver Repartidores</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
