@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiRoute - Sistema de Gestión Logística</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .hero {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 600px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .hero .btn {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+
+        .hero .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-hero-primary {
+            background-color: white;
+            color: #667eea;
+        }
+
+        .btn-hero-primary:hover {
+            background-color: #f0f0f0;
+        }
+
+        .btn-hero-secondary {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-hero-secondary:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .features {
+            display: flex;
+            gap: 2rem;
+            margin-top: 4rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            border-radius: 8px;
+            width: 200px;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .feature-card p {
+            font-size: 0.875rem;
+            opacity: 0.8;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>LogiRoute</h1>
+        <p>Sistema de gestión logística para el control de pedidos, repartidores y entregas en tiempo real.</p>
+
+        <div class="hero-buttons">
+            <a th:href="@{/login}" class="btn btn-hero-primary">Iniciar Sesión</a>
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <h3>Gestión de Pedidos</h3>
+                <p>Administra y da seguimiento a todos tus pedidos</p>
+            </div>
+            <div class="feature-card">
+                <h3>Repartidores</h3>
+                <p>Controla la disponibilidad de tu flota</p>
+            </div>
+            <div class="feature-card">
+                <h3>Seguimiento</h3>
+                <p>Rastrea entregas en tiempo real</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
