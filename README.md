@@ -1,51 +1,24 @@
-# LogiRoute - Sistema de Logística, Rutas y Seguimiento de Pedidos
+# LogiRoute — Sistema de Logística, Rutas y Seguimiento de Pedidos
 
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
 ![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white)
-![Markdown](https://img.shields.io/badge/Markdown-000000?style=for-the-badge&logo=markdown&logoColor=white)
+![JSON Web Tokens](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)
+![Thymeleaf](https://img.shields.io/badge/Thymeleaf-%23005C00.svg?style=for-the-badge&logo=Thymeleaf&logoColor=white)
 
-LogiRoute es un sistema académico diseñado para la gestión logística integral de pedidos, optimización de asignación de repartidores y el seguimiento de entregas en tiempo real. Combina una arquitectura robusta en Java (Modelo-Controlador-DAO) acoplada a MySQL mediante JDBC, junto con un prototipo web interactivo para la exposición del flujo del negocio.
-
----
-
-## Integrantes y Responsabilidades
-* **Chambi Mamani, Sebastián** — Capa DAO (Acceso a Datos)
-* **Coasaca Cconislla, Saul Teodoro** — Capa Web (Interfaz de Usuario)
-* **Huamaní Fernández, Ruth Nayaly** — Capa Controller (Lógica de Control)
-* **Palomino Valeriano, Anthony Olivery** — Capa Model (Entidades de Negocio)
+**LogiRoute** es una plataforma web académica de nivel empresarial diseñada para la gestión logística integral, la optimización en la asignación de repartidores y el seguimiento de pedidos en tiempo real. El sistema ha evolucionado de una arquitectura manual a un ecosistema robusto basado en **Spring Boot**, utilizando persistencia avanzada con **Spring Data JPA**, seguridad por tokens (**JWT**) y vistas dinámicas renderizadas mediante **Thymeleaf**.
 
 ---
 
-##  Tecnologías y Librerías Utilizadas
+## 🚀 Características Clave
 
-| Tecnología / Librería | Uso dentro del Proyecto |
-| :--- | :--- |
-| **Java** | Implementación del núcleo, modelos, controladores y lógica de negocio. |
-| **JDBC** | Conexión e intercambio de datos entre Java y el motor MySQL. |
-| **MySQL** | Base de datos relacional local para persistencia de datos. |
-| **HTML5 / CSS3 / JS** | Prototipo web interactivo con persistencia local (*LocalStorage*). |
-| **SLF4J & Logback** | Framework de rastreo y auditoría técnica (*Logging*). |
+- **Gestión Integral de Pedidos e Incidentes:** Control total del ciclo de vida de los envíos y registro automatizado de contratiempos en ruta.
+- **Seguridad y Control de Accesos:** Autenticación robusta basada en **Spring Security** y **JWT (JSON Web Tokens)** con separación de roles (Administrador, Cliente, Repartidor).
+- **Asignación Inteligente:** Capa de servicios optimizada para el emparejamiento eficiente de vehículos, rutas y transportistas.
+- **Auditoría Técnica Nativa:** Integración completa de trazas operativas utilizando la infraestructura de logging interna de **Logback** configurada para el entorno Spring.
 
 ---
 
-##  Implementación de Logback (Auditoría Técnica)
-Para mitigar riesgos de fallas técnicas y mantener un control estricto del flujo de ejecución, el sistema incorpora **Logback** bajo la fachada **SLF4J**. Debido a que el proyecto se gestiona de manera local sin un gestor de dependencias automatizado, se ha configurado la arquitectura manual mediante la carpeta `lib/`:
+## 📐 Estructura y Arquitectura del Proyecto
 
-###  Componentes de la Arquitectura de Logs:
-1. **`slf4j-api-2.0.18.jar` (Fachada):** Capa de abstracción. Permite declarar e invocar los eventos de log (`logger.info()`) en las clases sin amarrar el código a un motor específico.
-2. **`logback-core-1.5.34.jar` (Núcleo):** Contiene la lógica pesada encargada del procesamiento de textos, gestión de memoria interna y escrituras físicas.
-3. **`logback-classic-1.5.34.jar` (Puente/Formateador):** Acopla el motor con la fachada y procesa activamente las directivas del archivo `logback.xml` para estructurar las salidas por consola.
-
-###  Archivos de Configuración Estructurales:
-* **`.classpath`:** Configurado para instruir al entorno de desarrollo (IDE) a reconocer las librerías `.jar` dentro del entorno de ejecución.
-* **`logback.xml`:** Contiene las reglas de negocio de los logs (formato de texto, marcas de tiempo, niveles de alerta `INFO/ERROR` y salida por consola).
-
-###  Inyección en la Capa Modelo (Ejemplo base):
-```java
-import org.slf4j.Logger; 
-import org.slf4j.LoggerFactory; 
-
-public class Administrador { 
-    private static final Logger logger = LoggerFactory.getLogger(Administrador.class);
-    // Lógica de la entidad...
-}
+El sistema adopta la arquitectura oficial de capas de **Spring Boot**, promoviendo el desacoplamiento mediante inyección de dependencias y la separación limpia entre persistencia, lógica de negocio y presentación.
