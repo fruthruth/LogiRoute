@@ -1,7 +1,7 @@
 package com.logiroute.logiroute.security;
 
-// import com.logiroute.logiroute.model.Usuario;
-// import com.logiroute.logiroute.repository.UsuarioRepository;
+import com.logiroute.logiroute.model.Usuario;
+import com.logiroute.logiroute.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -20,13 +20,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        // Usuario usuario = usuarioRepository.findByEmail(email)
-        //         .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
 
         return new User(
-                // usuario.getEmail(),
-                // usuario.getPassword(),
-                // usuario.getActivo(),
+                usuario.getEmail(),
+                usuario.getPassword(),
+                usuario.getActivo(),
                 true, true, true,
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + usuario.getRol().name()))
         );
