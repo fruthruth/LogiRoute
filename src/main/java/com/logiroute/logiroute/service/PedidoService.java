@@ -18,6 +18,7 @@ public class PedidoService {
 
     private final PedidoRepository pedidoRepository;
     private final ClienteRepository clienteRepository;
+    private final RepartidorRepository repartidorRepository;
 
     public List<Pedido> listarTodos() {
         return pedidoRepository.findAll();
@@ -45,6 +46,23 @@ public class PedidoService {
                 .tipoPaquete(dto.getTipoPaquete())
                 .estado(EstadoPedido.PENDIENTE)
                 .build();
+
+        return pedidoRepository.save(pedido);
+    }
+
+    @Transactional
+    public Pedido actualizar(Long id, PedidoDTO dto) {
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+
+        Cliente cliente = clienteRepository.findById(dto.getClienteId())
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+
+        pedido.setDireccionOrigen(dto.getDireccionOrigen());
+        pedido.setDireccionDestino(dto.getDireccionDestino());
+        pedido.setPeso(dto.getPeso());
+        pedido.setTipoPaquete(dto.getTipoPaquete());
+        pedido.setCliente(cliente);
 
         return pedidoRepository.save(pedido);
     }
