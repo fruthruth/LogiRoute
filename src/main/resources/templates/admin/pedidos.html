@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiRoute - Gestión de Pedidos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../css/style.css">
+</head>
+<body class="admin-page">
+
+    <!-- HEADER -->
+    <header class="admin-header">
+        <div class="admin-header-inner">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <circle cx="16" cy="16" r="16" fill="#fff"/>
+                        <path d="M8 20l4-8 4 4 4-6 4 10" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">Empresa de logística</span>
+                    <span class="brand-sub">Distribución última milla</span>
+                </div>
+            </div>
+            <div class="admin-user">
+                <span class="admin-username">Administrador</span>
+                <a th:href="@{/logout}" href="/logout" class="btn-salir">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M3 12V7a2 2 0 012-2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M3 12v5a2 2 0 002 2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Salir
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- NAVBAR -->
+    <nav class="admin-nav">
+        <div class="admin-nav-inner">
+            <a href="#" th:href="@{/admin}" class="nav-item">Vista general</a>
+            <a href="#" th:href="@{/admin/pedidos}" class="nav-item active">Pedidos</a>
+            <a href="#" th:href="@{/admin/repartidores}" class="nav-item">Repartidores</a>
+            <a href="#" th:href="@{/admin/promociones}" class="nav-item">Promociones</a>
+            <a href="#" th:href="@{/admin/mapa}" class="nav-item">Mapa en vivo</a>
+            <a href="#" th:href="@{/admin/reportes}" class="nav-item">Informes</a>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO -->
+    <main class="admin-main">
+        <section class="dashboard-section">
+            <h2 class="section-title">Gestión de pedidos</h2>
+
+            <!-- Barra de búsqueda y botón -->
+            <div class="table-toolbar">
+                <div class="search-bar-table">
+                    <input type="text" id="searchInput" placeholder="" class="table-search-input" onkeyup="filtrarTabla()">
+                </div>
+                <button class="btn-filtrar">
+                    <span>▼</span> Filtrar
+                </button>
+                <button class="btn-agregar" onclick="abrirModal()">+ Agregar pedido</button>
+            </div>
+
+            <!-- Tabla de pedidos -->
+            <div class="table-wrapper">
+                <table class="admin-table" id="tablaPedidos">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Cliente</th>
+                            <th>Dirección</th>
+                            <th>Estado</th>
+                            <th>Repartidor</th>
+                            <th>Monto</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="pedido : ${pedidos}">
+                            <td th:text="${pedido.codigoSeguimiento}">TRK-2026-00-1234</td>
+                            <td th:text="${pedido.nombreCliente}">Juan Pérez</td>
+                            <td th:text="${pedido.direccionEntrega}">Av. Larco 1234, Miraflores</td>
+                            <td>
+                                <span class="estado-badge"
+                                      th:classappend="${pedido.estado == 'EN_TRANSITO'} ? 'estado-transito' :
+                                                      (${pedido.estado == 'PENDIENTE'} ? 'estado-pendiente' :
+                                                      (${pedido.estado == 'ENTREGADO'} ? 'estado-entregado' : 'estado-pendiente'))"
+                                      th:text="${pedido.estado == 'EN_TRANSITO'} ? 'En camino' :
+                                               (${pedido.estado == 'PENDIENTE'} ? 'Pendiente' :
+                                               (${pedido.estado == 'ENTREGADO'} ? 'Entregado' : ${pedido.estado}))">
+                                    Pendiente
+                                </span>
+                            </td>
+                            <td th:text="${pedido.repartidorNombre != null ? pedido.repartidorNombre : '-'}">Carlos Ruiz</td>
+                            <td th:text="'S/' + ${pedido.monto}">S/50</td>
+                            <td class="acciones-cell">
+                                <a th:href="@{/admin/pedidos/{id}/editar(id=${pedido.id})}" href="#" class="btn-accion btn-editar" title="Editar">✏️</a>
+                                <button class="btn-accion btn-reasignar"
+                                        th:onclick="'abrirModalAsignar(' + ${pedido.id} + ')'"
+                                        th:text="${pedido.repartidorNombre != null ? 'Re-asignar' : 'Asignar'}">
+                                    Asignar
+                                </button>
+                                <button class="btn-accion btn-autoasignar"
+                                        th:onclick="'autoAsignar(' + ${pedido.id} + ')'">
+                                    Auto-asignar
+                                </button>
+                            </td>
+                        </tr>
+                        <!-- Fila vacía si no hay pedidos -->
+                        <tr th:if="${#lists.isEmpty(pedidos)}">
+                            <td colspan="7" class="table-empty">No hay pedidos registrados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL: Registrar Pedido -->
+    <div class="modal-overlay" id="modalPedido">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">Registrar Pedido</h3>
+                <button class="modal-close" onclick="cerrarModal()">✕</button>
+            </div>
+
+            <form th:action="@{/admin/pedidos/crear}" action="/admin/pedidos/crear" method="post" class="modal-form">
+
+                <div class="modal-grid">
+                    <div class="modal-field">
+                        <label>Nombre del cliente</label>
+                        <input type="text" name="nombreCliente" required>
+                    </div>
+                    <div class="modal-field">
+                        <label>Teléfono</label>
+                        <input type="text" name="telefonoCliente">
+                    </div>
+                    <div class="modal-field modal-field-full">
+                        <label>Email</label>
+                        <input type="email" name="emailCliente">
+                    </div>
+                    <div class="modal-field">
+                        <label>Nombre de receptor</label>
+                        <input type="text" name="nombreReceptor">
+                    </div>
+                    <div class="modal-field">
+                        <label>Teléfono</label>
+                        <input type="text" name="telefonoReceptor">
+                    </div>
+                    <div class="modal-field modal-field-full">
+                        <label>Dirección de entrega</label>
+                        <input type="text" name="direccionEntrega" required>
+                    </div>
+                    <div class="modal-field modal-field-full">
+                        <label>Peso (máximo 20kg)</label>
+                        <input type="number" name="peso" min="0.1" max="20" step="0.1">
+                    </div>
+                </div>
+
+                <div class="modal-pago">
+                    <p class="pago-title">Pago</p>
+                    <div class="modal-grid">
+                        <div class="modal-field">
+                            <label>Monto a Cobrar</label>
+                            <input type="number" name="monto" min="0" step="0.01" required>
+                        </div>
+                        <div class="modal-field">
+                            <label>Método de pago</label>
+                            <select name="metodoPago">
+                                <option value="">Selecciona...</option>
+                                <option value="EFECTIVO">Efectivo</option>
+                                <option value="TARJETA">Tarjeta</option>
+                                <option value="TRANSFERENCIA">Transferencia</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn-registrar">Registrar pedido</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Asignar Repartidor -->
+    <div class="modal-overlay" id="modalAsignar">
+        <div class="modal-box modal-box-sm">
+            <div class="modal-header">
+                <h3 class="modal-title">Asignar Repartidor</h3>
+                <button class="modal-close" onclick="cerrarModalAsignar()">✕</button>
+            </div>
+            <form th:action="@{/admin/pedidos/asignar}" action="/admin/pedidos/asignar" method="post" class="modal-form">
+                <input type="hidden" name="pedidoId" id="pedidoIdAsignar">
+                <div class="modal-field">
+                    <label>Seleccionar repartidor</label>
+                    <select name="repartidorId" required>
+                        <option value="">Selecciona...</option>
+                        <option th:each="r : ${repartidores}" th:value="${r.id}" th:text="${r.nombre}">Repartidor</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancelar" onclick="cerrarModalAsignar()">Cancelar</button>
+                    <button type="submit" class="btn-registrar">Asignar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function abrirModal() {
+            document.getElementById('modalPedido').classList.add('active');
+        }
+        function cerrarModal() {
+            document.getElementById('modalPedido').classList.remove('active');
+        }
+        function abrirModalAsignar(pedidoId) {
+            document.getElementById('pedidoIdAsignar').value = pedidoId;
+            document.getElementById('modalAsignar').classList.add('active');
+        }
+        function cerrarModalAsignar() {
+            document.getElementById('modalAsignar').classList.remove('active');
+        }
+        function autoAsignar(pedidoId) {
+            if (confirm('¿Asignar automáticamente el repartidor más cercano?')) {
+                window.location.href = '/admin/pedidos/' + pedidoId + '/autoasignar';
+            }
+        }
+        function filtrarTabla() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const filas = document.querySelectorAll('#tablaPedidos tbody tr');
+            filas.forEach(fila => {
+                fila.style.display = fila.textContent.toLowerCase().includes(input) ? '' : 'none';
+            });
+        }
+        // Cerrar modal al hacer clic fuera
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) this.classList.remove('active');
+            });
+        });
+    </script>
+
+</body>
+</html>
