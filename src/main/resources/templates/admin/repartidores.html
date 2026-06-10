@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiRoute - Gestión de Repartidores</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../css/style.css">
+</head>
+<body class="admin-page">
+
+    <!-- HEADER -->
+    <header class="admin-header">
+        <div class="admin-header-inner">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <circle cx="16" cy="16" r="16" fill="#fff"/>
+                        <path d="M8 20l4-8 4 4 4-6 4 10" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">Empresa de logística</span>
+                    <span class="brand-sub">Distribución última milla</span>
+                </div>
+            </div>
+            <div class="admin-user">
+                <span class="admin-username">Administrador</span>
+                <a th:href="@{/logout}" href="/logout" class="btn-salir">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M3 12V7a2 2 0 012-2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M3 12v5a2 2 0 002 2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Salir
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- NAVBAR -->
+    <nav class="admin-nav">
+        <div class="admin-nav-inner">
+            <a href="#" th:href="@{/admin}" class="nav-item">Vista general</a>
+            <a href="#" th:href="@{/admin/pedidos}" class="nav-item">Pedidos</a>
+            <a href="#" th:href="@{/admin/repartidores}" class="nav-item active">Repartidores</a>
+            <a href="#" th:href="@{/admin/promociones}" class="nav-item">Promociones</a>
+            <a href="#" th:href="@{/admin/mapa}" class="nav-item">Mapa en vivo</a>
+            <a href="#" th:href="@{/admin/reportes}" class="nav-item">Informes</a>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO -->
+    <main class="admin-main">
+        <section class="dashboard-section">
+            <h2 class="section-title">Gestión de repartidores</h2>
+
+            <!-- Toolbar -->
+            <div class="table-toolbar">
+                <div class="search-bar-table">
+                    <input type="text" id="searchInput" placeholder="" class="table-search-input" onkeyup="filtrarTarjetas()">
+                </div>
+                <button class="btn-filtrar">
+                    <span>▼</span> Filtrar
+                </button>
+                <button class="btn-agregar" onclick="abrirModal()">+ Agregar repartidor</button>
+            </div>
+
+            <!-- Tarjetas de repartidores -->
+            <div class="repartidores-list" id="listaRepartidores">
+                <div th:each="r : ${repartidores}" class="repartidor-card" th:attr="data-nombre=${r.usuario.nombre}">
+                    <div class="repartidor-card-left">
+                        <div class="repartidor-avatar">🚴</div>
+                        <div class="repartidor-info">
+                            <p class="repartidor-nombre" th:text="${r.usuario.nombre}">Carlos Ramírez</p>
+                            <p class="repartidor-telefono" th:text="${r.telefono}">+51 985159785</p>
+                            <p class="repartidor-detalle">
+                                <span>Licencia : </span>
+                                <span th:text="${r.licencia}">LIC-001</span>
+                            </p>
+                            <p class="repartidor-detalle">
+                                <span>Estado &nbsp;: </span>
+                                <span th:text="${r.estado}">Disponible</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="repartidor-card-mid">
+                        <p class="repartidor-entregas">
+                            <span class="entregas-num" th:text="0">25</span>
+                            <span class="entregas-label">Entregas</span>
+                        </p>
+                        <p class="repartidor-rating">
+                            <span th:text="'N/A'">4.5</span>
+                            <span class="star">⭐</span>
+                            <span class="rating-label">calificación</span>
+                        </p>
+                    </div>
+                    <div class="repartidor-card-right">
+                        <a th:href="@{/admin/repartidores/{id}/editar(id=${r.id})}" href="#" class="btn-icon" title="Editar">✏️</a>
+                        <form th:action="@{/admin/repartidores/{id}/eliminar(id=${r.id})}" action="#" method="post" style="display:inline;"
+                              onsubmit="return confirm('¿Eliminar este repartidor?')">
+                            <button type="submit" class="btn-icon btn-icon-delete" title="Eliminar">🗑️</button>
+                        </form>
+                        <a th:href="@{/admin/mapa?repartidorId={id}(id=${r.id})}" href="#" class="btn-icon" title="Ver ubicación">📍</a>
+                    </div>
+                </div>
+
+                <!-- Si no hay repartidores -->
+                <div th:if="${#lists.isEmpty(repartidores)}" class="empty-state">
+                    No hay repartidores registrados.
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- MODAL: Nuevo Repartidor -->
+    <div class="modal-overlay" id="modalRepartidor">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">Nuevo repartidor</h3>
+                <button class="modal-close" onclick="cerrarModal()">✕</button>
+            </div>
+
+            <form th:action="@{/admin/repartidores/crear}" action="/admin/repartidores/crear" method="post" class="modal-form">
+
+                <div class="modal-grid">
+                    <div class="modal-field">
+                        <label>Nombre completo</label>
+                        <input type="text" name="nombre" required>
+                    </div>
+                    <div class="modal-field">
+                        <label>Teléfono</label>
+                        <input type="text" name="telefono">
+                    </div>
+                    <div class="modal-field modal-field-full">
+                        <label>Correo electrónico</label>
+                        <input type="email" name="email">
+                    </div>
+                    <div class="modal-field">
+                        <label>Tipo de vehículo</label>
+                        <select name="tipoVehiculo">
+                            <option value="">Seleccionar...</option>
+                            <option value="AUTO">Auto</option>
+                            <option value="MOTO">Moto</option>
+                            <option value="BICICLETA">Bicicleta</option>
+                            <option value="CAMIONETA">Camioneta</option>
+                        </select>
+                    </div>
+                    <div class="modal-field">
+                        <label>Placa</label>
+                        <input type="text" name="placa" placeholder="ABC-123">
+                    </div>
+                    <div class="modal-field">
+                        <label>Estado</label>
+                        <select name="estado">
+                            <option value="DISPONIBLE">Disponible</option>
+                            <option value="EN_RUTA">En ruta</option>
+                            <option value="INACTIVO">Inactivo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn-registrar">Agregar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function abrirModal() {
+            document.getElementById('modalRepartidor').classList.add('active');
+        }
+        function cerrarModal() {
+            document.getElementById('modalRepartidor').classList.remove('active');
+        }
+        function filtrarTarjetas() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const tarjetas = document.querySelectorAll('.repartidor-card');
+            tarjetas.forEach(card => {
+                card.style.display = card.textContent.toLowerCase().includes(input) ? '' : 'none';
+            });
+        }
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('modalRepartidor').addEventListener('click', function(e) {
+            if (e.target === this) cerrarModal();
+        });
+    </script>
+
+</body>
+</html>
