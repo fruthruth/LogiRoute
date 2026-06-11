@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiRoute - Página no encontrada</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --purple-dark: #5b0fa8; --purple-main: #7c22c8; --purple-mid: #9333ea;
+            --purple-light: #c084fc; --purple-bg: #f3f0f8; --green-accent: #22c55e;
+            --teal-main: #2dd4bf; --gray-light: #f3f0f8; --gray-text: #6b7280;
+            --text-dark: #1e1b2e; --white: #ffffff;
+            --shadow: 0 4px 24px rgba(92, 15, 168, 0.10);
+            --radius: 16px; --radius-sm: 10px;
+            --font-main: 'Sora', sans-serif; --font-body: 'DM Sans', sans-serif;
+        }
+        html, body {
+            font-family: var(--font-body); background: var(--gray-light); color: var(--text-dark);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+        }
+        .error-card {
+            background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow);
+            padding: 60px 48px; text-align: center; max-width: 480px; width: 90%;
+        }
+        .error-code { font-family: var(--font-main); font-size: 96px; font-weight: 800; color: var(--purple-main); line-height: 1; }
+        .error-title { font-family: var(--font-main); font-size: 22px; font-weight: 700; color: var(--text-dark); margin: 16px 0 8px; }
+        .error-desc { font-size: 15px; color: var(--gray-text); line-height: 1.6; margin-bottom: 32px; }
+        .error-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border-radius: var(--radius-sm);
+            font-family: var(--font-main); font-size: 14px; font-weight: 600; text-decoration: none;
+            cursor: pointer; transition: background .2s, transform .15s;
+        }
+        .btn-primary {
+            background: var(--purple-main); color: var(--white);
+        }
+        .btn-primary:hover { background: var(--purple-dark); }
+        .btn-outline {
+            background: transparent; color: var(--purple-main); border: 2px solid var(--purple-main);
+        }
+        .btn-outline:hover { background: var(--purple-bg); }
+        .brand-icon { margin-bottom: 16px; }
+    </style>
+</head>
+<body>
+    <div class="error-card">
+        <div class="brand-icon">
+            <svg width="48" height="48" viewBox="0 0 32 32" fill="none">
+                <circle cx="16" cy="16" r="16" fill="#7c22c8"/>
+                <path d="M8 20l4-8 4 4 4-6 4 10" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <div class="error-code">404</div>
+        <h1 class="error-title">Página no encontrada</h1>
+        <p class="error-desc">La página que buscas no existe o ha sido movida. Verifica la dirección o vuelve al inicio.</p>
+        <div class="error-actions">
+            <a href="#" onclick="history.back(); return false;" class="btn btn-outline">
+                ← Volver atrás
+            </a>
+            <a th:href="@{/}" href="/" class="btn btn-primary">
+                Ir al inicio →
+            </a>
+        </div>
+    </div>
+</body>
+</html>
