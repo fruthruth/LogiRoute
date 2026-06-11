@@ -285,10 +285,10 @@ LogiRoute/
 
 |       Integrantes                 |     GitHub              |
 |-----------------------------------|-------------------------|
-| Chambi Mamani, Sebastián          | [@Walffetx] |
-| Coasaca Cconislla, Saul Teodoro   | [@asulcc]   |
+| Chambi Mamani, Sebastián          | [@Walffetx] (https://github.com/Walffetx)|
+| Coasaca Cconislla, Saul Teodoro   | [@asulcc] (https://github.com/asulcc) | 
 | Huamaní Fernández Ruth Nayaly     | [@fruthruth](https://github.com/fruthruth) |
-| Palomino Valeriano, Anthony Oliver| [@anthonypalomino24]|
+| Palomino Valeriano, Anthony Oliver| [@anthonypalomino24] (https://github.com/anthonypalomino24) |
 ---
 
 > Proyecto académico desarrollado con fines educativos — Universidad, 2026.
