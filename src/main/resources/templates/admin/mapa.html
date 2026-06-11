@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiRoute - Mapa en vivo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../css/style.css">
+</head>
+<body class="admin-page">
+
+    <!-- HEADER -->
+    <header class="admin-header">
+        <div class="admin-header-inner">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <circle cx="16" cy="16" r="16" fill="#fff"/>
+                        <path d="M8 20l4-8 4 4 4-6 4 10" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">Empresa de logística</span>
+                    <span class="brand-sub">Distribución última milla</span>
+                </div>
+            </div>
+            <div class="admin-user">
+                <span class="admin-username">Administrador</span>
+                <a th:href="@{/logout}" href="/logout" class="btn-salir">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M3 12V7a2 2 0 012-2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M3 12v5a2 2 0 002 2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Salir
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- NAVBAR -->
+    <nav class="admin-nav">
+        <div class="admin-nav-inner">
+            <a th:href="@{/admin}" href="#" class="nav-item">Vista general</a>
+            <a th:href="@{/admin/pedidos}" href="#" class="nav-item">Pedidos</a>
+            <a th:href="@{/admin/repartidores}" href="#" class="nav-item">Repartidores</a>
+            <a th:href="@{/admin/promociones}" href="#" class="nav-item">Promociones</a>
+            <a th:href="@{/admin/mapa}" href="#" class="nav-item active">Mapa en vivo</a>
+            <a th:href="@{/admin/reportes}" href="#" class="nav-item">Informes</a>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO -->
+    <main class="admin-main">
+        <section class="dashboard-section">
+            <h2 class="section-title">Mapa en tiempo real</h2>
+
+            <div class="mapa-layout">
+
+                <!-- Mapa -->
+                <div class="mapa-container">
+                    <div id="map" class="mapa-placeholder">
+                        <div class="mapa-placeholder-inner">
+                            <span class="mapa-placeholder-icon">🗺️</span>
+                            <p>Mapa en tiempo real</p>
+                            <p class="mapa-placeholder-sub">Próximamente disponible</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel de repartidores activos -->
+                <div class="mapa-panel">
+                    <div class="mapa-leyenda">
+                        <div class="leyenda-item">
+                            <span class="leyenda-dot dot-disponible"></span>
+                            <span>Disponible</span>
+                        </div>
+                        <div class="leyenda-item">
+                            <span class="leyenda-dot dot-ocupado"></span>
+                            <span>Ocupado</span>
+                        </div>
+                    </div>
+
+                    <p class="mapa-panel-title">Repartidores activos</p>
+
+                    <div class="mapa-repartidores-list">
+
+                        <!-- CORRECCIÓN: th:class en lugar de th:classappend -->
+                        <div th:each="r : ${repartidores}" class="mapa-repartidor-item">
+                            <span th:class="${r.estado.name() == 'DISPONIBLE'} ? 'leyenda-dot dot-disponible' : 'leyenda-dot dot-ocupado'"></span>
+                            <div class="mapa-repartidor-info">
+                                <p class="mapa-repartidor-nombre" th:text="${r.usuario.nombre}">Carlos Ramírez</p>
+                                <p class="mapa-repartidor-vehiculo" th:text="${r.licencia}">Moto</p>
+                            </div>
+                        </div>
+
+                        <div th:if="${#lists.isEmpty(repartidores)}" class="empty-state">
+                            No hay repartidores activos.
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>
