@@ -83,27 +83,27 @@
                     </thead>
                     <tbody>
                         <tr th:each="pedido : ${pedidos}">
-                            <td th:text="${pedido.codigoSeguimiento}">TRK-2026-00-1234</td>
-                            <td th:text="${pedido.nombreCliente}">Juan Pérez</td>
-                            <td th:text="${pedido.direccionEntrega}">Av. Larco 1234, Miraflores</td>
+                            <td th:text="${pedido.codigo}">TRK-2026-00-1234</td>
+                            <td th:text="${pedido.cliente.usuario.nombre}">Juan Pérez</td>
+                            <td th:text="${pedido.direccionDestino}">Av. Larco 1234, Miraflores</td>
                             <td>
                                 <span class="estado-badge"
-                                      th:classappend="${pedido.estado == 'EN_TRANSITO'} ? 'estado-transito' :
-                                                      (${pedido.estado == 'PENDIENTE'} ? 'estado-pendiente' :
-                                                      (${pedido.estado == 'ENTREGADO'} ? 'estado-entregado' : 'estado-pendiente'))"
-                                      th:text="${pedido.estado == 'EN_TRANSITO'} ? 'En camino' :
-                                               (${pedido.estado == 'PENDIENTE'} ? 'Pendiente' :
-                                               (${pedido.estado == 'ENTREGADO'} ? 'Entregado' : ${pedido.estado}))">
+                                      th:classappend="${pedido.estado.name() == 'EN_TRANSITO'} ? 'estado-transito' :
+                                                      (${pedido.estado.name() == 'PENDIENTE'} ? 'estado-pendiente' :
+                                                      (${pedido.estado.name() == 'ENTREGADO'} ? 'estado-entregado' : 'estado-pendiente'))"
+                                      th:text="${pedido.estado.name() == 'EN_TRANSITO'} ? 'En camino' :
+                                               (${pedido.estado.name() == 'PENDIENTE'} ? 'Pendiente' :
+                                               (${pedido.estado.name() == 'ENTREGADO'} ? 'Entregado' : ${pedido.estado.name()}))">
                                     Pendiente
                                 </span>
                             </td>
-                            <td th:text="${pedido.repartidorNombre != null ? pedido.repartidorNombre : '-'}">Carlos Ruiz</td>
-                            <td th:text="'S/' + ${pedido.monto}">S/50</td>
+                            <td th:text="${pedido.repartidor?.usuario?.nombre ?: '-'}">Carlos Ruiz</td>
+                            <td th:text="'S/' + ${pedido.costo}">S/50</td>
                             <td class="acciones-cell">
                                 <a th:href="@{/admin/pedidos/{id}/editar(id=${pedido.id})}" href="#" class="btn-accion btn-editar" title="Editar">✏️</a>
                                 <button class="btn-accion btn-reasignar"
                                         th:onclick="'abrirModalAsignar(' + ${pedido.id} + ')'"
-                                        th:text="${pedido.repartidorNombre != null ? 'Re-asignar' : 'Asignar'}">
+                                        th:text="${pedido.repartidor != null ? 'Re-asignar' : 'Asignar'}">
                                     Asignar
                                 </button>
                                 <button class="btn-accion btn-autoasignar"
