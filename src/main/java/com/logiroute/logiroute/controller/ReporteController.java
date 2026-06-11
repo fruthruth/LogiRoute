@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/reportes")
 @RequiredArgsConstructor
-
 public class ReporteController {
 
     private final PedidoService pedidoService;

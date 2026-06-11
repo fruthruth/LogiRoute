@@ -11,7 +11,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/repartidores")
 @RequiredArgsConstructor
-
 public class RepartidorController {
 
     private final RepartidorService repartidorService;
