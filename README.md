@@ -283,11 +283,12 @@ LogiRoute/
 
 ## Equipo
 
-| Integrante | GitHub |
-|---|---|
-| Ruth | [@fruthruth](https://github.com/fruthruth) |
-| _(agregar integrantes)_ | — |
-
+|       Integrantes                 |     GitHub              |
+|-----------------------------------|-------------------------|
+| Chambi Mamani, Sebastián          | [@Walffetx] |
+| Coasaca Cconislla, Saul Teodoro   | [@asulcc]   |
+| Huamaní Fernández Ruth Nayaly     | [@fruthruth](https://github.com/fruthruth) |
+| Palomino Valeriano, Anthony Oliver| [@anthonypalomino24]|
 ---
 
 > Proyecto académico desarrollado con fines educativos — Universidad, 2026.
