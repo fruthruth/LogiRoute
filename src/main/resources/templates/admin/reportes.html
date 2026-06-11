@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiRoute - Informes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../css/style.css">
+</head>
+<body class="admin-page">
+
+    <!-- HEADER -->
+    <header class="admin-header">
+        <div class="admin-header-inner">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <circle cx="16" cy="16" r="16" fill="#fff"/>
+                        <path d="M8 20l4-8 4 4 4-6 4 10" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">Empresa de logística</span>
+                    <span class="brand-sub">Distribución última milla</span>
+                </div>
+            </div>
+            <div class="admin-user">
+                <span class="admin-username">Administrador</span>
+                <a th:href="@{/logout}" href="/logout" class="btn-salir">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M3 12V7a2 2 0 012-2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M3 12v5a2 2 0 002 2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Salir
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- NAVBAR -->
+    <nav class="admin-nav">
+        <div class="admin-nav-inner">
+            <a th:href="@{/admin}" href="#" class="nav-item">Vista general</a>
+            <a th:href="@{/admin/pedidos}" href="#" class="nav-item">Pedidos</a>
+            <a th:href="@{/admin/repartidores}" href="#" class="nav-item">Repartidores</a>
+            <a th:href="@{/admin/promociones}" href="#" class="nav-item">Promociones</a>
+            <a th:href="@{/admin/mapa}" href="#" class="nav-item">Mapa en vivo</a>
+            <a th:href="@{/admin/reportes}" href="#" class="nav-item active">Informes</a>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO -->
+    <main class="admin-main">
+        <section class="dashboard-section">
+
+            <!-- FILTROS -->
+            <div class="reporte-card">
+                <div class="reporte-header">
+                    <span class="reporte-titulo">Informe</span>
+                    <a th:href="@{/admin/reportes/pdf(dia=${dia},mes=${mes},anio=${anio},responsable=${responsable},costoMin=${costoMin},costoMax=${costoMax})}"
+                       href="#" class="btn-pdf">
+                        📄 PDF
+                    </a>
+                </div>
+
+                <form th:action="@{/admin/reportes}" method="get" class="reporte-filtros">
+                    <div class="filtro-grupo">
+                        <label>Día</label>
+                        <input type="number" name="dia" min="1" max="31" placeholder="—"
+                               th:value="${dia}" class="filtro-input filtro-input-sm">
+                    </div>
+                    <div class="filtro-grupo">
+                        <label>Mes</label>
+                        <input type="number" name="mes" min="1" max="12" placeholder="—"
+                               th:value="${mes}" class="filtro-input filtro-input-sm">
+                    </div>
+                    <div class="filtro-grupo">
+                        <label>Año</label>
+                        <input type="number" name="anio" min="2020" max="2099" placeholder="—"
+                               th:value="${anio}" class="filtro-input">
+                    </div>
+                    <div class="filtro-grupo">
+                        <label>Responsable</label>
+                        <input type="text" name="responsable" placeholder="—"
+                               th:value="${responsable}" class="filtro-input">
+                    </div>
+                    <div class="filtro-grupo">
+                        <label>Costo Min</label>
+                        <input type="number" name="costoMin" min="0" placeholder="—"
+                               th:value="${costoMin}" class="filtro-input filtro-input-sm">
+                    </div>
+                    <div class="filtro-grupo">
+                        <label>Costo Max</label>
+                        <input type="number" name="costoMax" min="0" placeholder="—"
+                               th:value="${costoMax}" class="filtro-input filtro-input-sm">
+                    </div>
+                    <button type="submit" class="btn-filtrar">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M3 6h18M7 12h10M11 18h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Filtrar
+                    </button>
+                </form>
+            </div>
+
+            <!-- TABLA -->
+            <div class="reporte-tabla-wrapper">
+                <table class="reporte-tabla">
+                    <thead>
+                        <tr>
+                            <th>Código Paquete</th>
+                            <th>Día</th>
+                            <th>Mes</th>
+                            <th>Año</th>
+                            <th>Responsable</th>
+                            <th>Costo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${pedidos}">
+                            <td th:text="${p.codigo}">XER-XLAJ1568</td>
+                            <td th:text="${p.createdAt.dayOfMonth}">15</td>
+                            <td th:text="${p.createdAt.month.getDisplayName(T(java.time.format.TextStyle).FULL, T(java.util.Locale).forLanguageTag('es'))}">Febrero</td>
+                            <td th:text="${p.createdAt.year}">2026</td>
+                            <td th:text="${p.repartidor != null ? p.repartidor.usuario.nombre : '—'}">Juan Pérez</td>
+                            <td th:text="${p.costo != null ? 'S/' + p.costo : '—'}">S/70</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(pedidos)}">
+                            <td colspan="6" class="reporte-empty">No hay registros con los filtros aplicados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+    </main>
+
+</body>
+</html>
