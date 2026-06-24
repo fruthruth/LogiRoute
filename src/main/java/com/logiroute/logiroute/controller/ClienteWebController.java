@@ -1,7 +1,9 @@
 package com.logiroute.logiroute.controller;
 
-import com.logiroute.logiroute.service.PedidoService;
+import com.logiroute.logiroute.service.IReporteService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,17 +15,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 public class ClienteWebController {
 
-    private final PedidoService pedidoService;
+    private static final Logger log = LoggerFactory.getLogger(ClienteWebController.class);
+
+    private final IReporteService reporteService;
 
     @GetMapping({"", "/"})
     public String index() {
+        log.debug("Renderizando página de seguimiento");
         return "cliente/seguimiento";
     }
 
     @GetMapping("/seguimiento")
     public String seguimiento(@RequestParam(required = false) String codigo, Model model) {
         if (codigo != null && !codigo.isEmpty()) {
-            model.addAttribute("pedido", pedidoService.seguimiento(codigo).orElse(null));
+            log.info("Buscando seguimiento del código: {}", codigo);
+            model.addAttribute("pedido", reporteService.seguimiento(codigo).orElse(null));
             model.addAttribute("codigo", codigo);
         }
         return "cliente/seguimiento";

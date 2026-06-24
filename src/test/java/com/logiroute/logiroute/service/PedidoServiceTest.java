@@ -5,6 +5,7 @@ import com.logiroute.logiroute.model.*;
 import com.logiroute.logiroute.repository.ClienteRepository;
 import com.logiroute.logiroute.repository.PedidoRepository;
 import com.logiroute.logiroute.repository.RepartidorRepository;
+import com.logiroute.logiroute.utils.CodigoGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +32,9 @@ class PedidoServiceTest {
 
     @Mock
     private RepartidorRepository repartidorRepository;
+
+    @Mock
+    private CodigoGenerator codigoGenerator;
 
     @InjectMocks
     private PedidoService pedidoService;
@@ -67,7 +71,6 @@ class PedidoServiceTest {
                 .build();
     }
 
-    //Test 1: Verifica que al crear un pedido, este se guarde con el estado "PENDIENTE" y se genere un código único.
     @Test
     void crearPedido_debeGuardarPedidoConEstadoPendiente() {
         PedidoDTO dto = PedidoDTO.builder()
@@ -79,6 +82,7 @@ class PedidoServiceTest {
                 .build();
 
         when(clienteRepository.findById(1L)).thenReturn(Optional.of(clienteMock));
+        when(codigoGenerator.generarCodigoPedido()).thenReturn("PED12345678");
         when(pedidoRepository.save(any(Pedido.class))).thenAnswer(invocation -> {
             Pedido p = invocation.getArgument(0);
             p.setId(1L);
@@ -94,7 +98,6 @@ class PedidoServiceTest {
         verify(pedidoRepository, times(1)).save(any(Pedido.class));
     }
 
-    // Test 2: Verifica que al actualizar el estado de un pedido existente, este cambie correctamente.
     @Test
     void actualizarEstado_debeCambiarEstadoDelPedido() {
         when(pedidoRepository.findById(1L)).thenReturn(Optional.of(pedidoMock));
@@ -107,7 +110,6 @@ class PedidoServiceTest {
         verify(pedidoRepository, times(1)).save(pedidoMock);
     }
 
-    // Test 3: Verifica que al intentar actualizar el estado de un pedido inexistente, se retorne un Optional vacío.
     @Test
     void obtenerPorCodigo_debeRetornarPedido() {
         when(pedidoRepository.findByCodigo("PED12345678")).thenReturn(Optional.of(pedidoMock));
@@ -118,7 +120,6 @@ class PedidoServiceTest {
         assertEquals("PED12345678", resultado.get().getCodigo());
     }
 
-    // Test 4: Verifica que al intentar obtener un pedido por un código inexistente, se retorne un Optional vacío.
     @Test
     void eliminar_pedidoExistente_debeRetornarTrue() {
         when(pedidoRepository.existsById(1L)).thenReturn(true);
@@ -130,7 +131,6 @@ class PedidoServiceTest {
         verify(pedidoRepository, times(1)).deleteById(1L);
     }
 
-    // Test 5: Verifica que al intentar eliminar un pedido inexistente, se retorne false y no se llame al método deleteById.
     @Test
     void eliminar_pedidoNoExistente_debeRetornarFalse() {
         when(pedidoRepository.existsById(99L)).thenReturn(false);

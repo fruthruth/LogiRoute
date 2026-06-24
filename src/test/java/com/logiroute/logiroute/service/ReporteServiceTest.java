@@ -1,5 +1,6 @@
 package com.logiroute.logiroute.service;
 
+import com.logiroute.logiroute.dto.SeguimientoDTO;
 import com.logiroute.logiroute.model.Pedido;
 import com.logiroute.logiroute.model.Repartidor;
 import com.logiroute.logiroute.model.Usuario;
@@ -92,5 +93,22 @@ class ReporteServiceTest {
         List<Pedido> resultado = reporteService.filtrar(null, null, null, null, null, null);
 
         assertEquals(1, resultado.size());
+    }
+
+    @Test
+    void seguimiento_debeRetornarSeguimientoDTO() {
+        pedidoMock.setFechaEstimada(LocalDateTime.of(2026, 6, 25, 14, 0));
+
+        when(pedidoRepository.findByCodigo("PED12345678")).thenReturn(Optional.of(pedidoMock));
+
+        Optional<SeguimientoDTO> resultado = reporteService.seguimiento("PED12345678");
+
+        assertTrue(resultado.isPresent());
+        assertEquals(1L, resultado.get().getPedidoId());
+        assertEquals("PED12345678", resultado.get().getCodigo());
+        assertEquals("PENDIENTE", resultado.get().getEstado());
+        assertEquals("Juan Perez", resultado.get().getRepartidorNombre());
+        assertEquals("Av. Principal 123", resultado.get().getDireccionOrigen());
+        assertEquals("Jr. Comercio 456", resultado.get().getDireccionDestino());
     }
 }
