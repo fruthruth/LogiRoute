@@ -72,7 +72,7 @@ class RepartidorServiceTest {
                 )
         );
 
-        assertEquals("El email ya está registrado", exception.getMessage());
+        assertEquals("El email ya está registrado: duplicado@test.com", exception.getMessage());
         verify(repartidorRepository, never()).save(any(Repartidor.class));
         verify(usuarioRepository, never()).save(any(Usuario.class));
     }

@@ -1,11 +1,14 @@
 package com.logiroute.logiroute.service;
 
 import com.logiroute.logiroute.dto.PedidoDTO;
-import com.logiroute.logiroute.dto.SeguimientoDTO;
+import com.logiroute.logiroute.exception.DatoDuplicadoException;
+import com.logiroute.logiroute.exception.RecursoNoEncontradoException;
 import com.logiroute.logiroute.model.*;
 import com.logiroute.logiroute.repository.*;
 import com.logiroute.logiroute.utils.CodigoGenerator;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,31 +17,45 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class PedidoService {
+public class PedidoService implements IPedidoService {
+
+    private static final Logger log = LoggerFactory.getLogger(PedidoService.class);
 
     private final PedidoRepository pedidoRepository;
     private final ClienteRepository clienteRepository;
     private final RepartidorRepository repartidorRepository;
+    private final CodigoGenerator codigoGenerator;
 
+    @Override
+    @Transactional(readOnly = true)
     public List<Pedido> listarTodos() {
+        log.debug("Listando todos los pedidos");
         return pedidoRepository.findAll();
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public Optional<Pedido> obtenerPorId(Long id) {
+        log.debug("Buscando pedido con id: {}", id);
         return pedidoRepository.findById(id);
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public Optional<Pedido> obtenerPorCodigo(String codigo) {
+        log.debug("Buscando pedido con código: {}", codigo);
         return pedidoRepository.findByCodigo(codigo);
     }
 
+    @Override
     @Transactional
     public Pedido crear(PedidoDTO dto) {
+        log.info("Creando nuevo pedido para cliente id: {}", dto.getClienteId());
         Cliente cliente = clienteRepository.findById(dto.getClienteId())
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Cliente", dto.getClienteId()));
 
         Pedido pedido = Pedido.builder()
-                .codigo(CodigoGenerator.generarCodigoPedido())
+                .codigo(codigoGenerator.generarCodigoPedido())
                 .cliente(cliente)
                 .direccionOrigen(dto.getDireccionOrigen())
                 .direccionDestino(dto.getDireccionDestino())
@@ -47,16 +64,20 @@ public class PedidoService {
                 .estado(EstadoPedido.PENDIENTE)
                 .build();
 
-        return pedidoRepository.save(pedido);
+        Pedido guardado = pedidoRepository.save(pedido);
+        log.info("Pedido creado con código: {}", guardado.getCodigo());
+        return guardado;
     }
 
+    @Override
     @Transactional
     public Pedido actualizar(Long id, PedidoDTO dto) {
+        log.info("Actualizando pedido id: {}", id);
         Pedido pedido = pedidoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Pedido", id));
 
         Cliente cliente = clienteRepository.findById(dto.getClienteId())
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Cliente", dto.getClienteId()));
 
         pedido.setDireccionOrigen(dto.getDireccionOrigen());
         pedido.setDireccionDestino(dto.getDireccionDestino());
@@ -67,16 +88,20 @@ public class PedidoService {
         return pedidoRepository.save(pedido);
     }
 
+    @Override
     @Transactional
     public Optional<Pedido> actualizarEstado(Long id, String estado) {
+        log.info("Actualizando estado del pedido id: {} a {}", id, estado);
         return pedidoRepository.findById(id).map(pedido -> {
             pedido.setEstado(EstadoPedido.valueOf(estado));
             return pedidoRepository.save(pedido);
         });
     }
 
+    @Override
     @Transactional
     public boolean eliminar(Long id) {
+        log.info("Eliminando pedido id: {}", id);
         if (pedidoRepository.existsById(id)) {
             pedidoRepository.deleteById(id);
             return true;
@@ -84,18 +109,9 @@ public class PedidoService {
         return false;
     }
 
-    public Optional<SeguimientoDTO> seguimiento(String codigo) {
-        return pedidoRepository.findByCodigo(codigo).map(pedido -> SeguimientoDTO.builder()
-                .pedidoId(pedido.getId())
-                .codigo(pedido.getCodigo())
-                .estado(pedido.getEstado().name())
-                .direccionOrigen(pedido.getDireccionOrigen())
-                .direccionDestino(pedido.getDireccionDestino())
-                .repartidorNombre(pedido.getRepartidor() != null
-                        ? pedido.getRepartidor().getUsuario().getNombre()
-                        : null)
-                .fechaEstimada(pedido.getFechaEstimada())
-                .fechaEntrega(pedido.getFechaEntrega())
-                .build());
+    @Override
+    @Transactional(readOnly = true)
+    public long contar() {
+        return pedidoRepository.count();
     }
 }

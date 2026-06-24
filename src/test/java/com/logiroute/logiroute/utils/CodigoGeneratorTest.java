@@ -6,46 +6,42 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CodigoGeneratorTest {
 
-    // Test 1: Verifica que el código generado para un pedido comience con "PED" y tenga 11 caracteres.
+    private final CodigoGenerator codigoGenerator = new CodigoGenerator();
+
     @Test
     void generarCodigoPedido_debeEmpezarConPED() {
-        String codigo = CodigoGenerator.generarCodigoPedido();
+        String codigo = codigoGenerator.generarCodigoPedido();
         assertTrue(codigo.startsWith("PED"), "El código debe empezar con 'PED'");
     }
 
-    // Test 2: Verifica que el código generado para una ruta comience con "RUT" y tenga 11 caracteres.
     @Test
     void generarCodigoPedido_debeTener11Caracteres() {
-        String codigo = CodigoGenerator.generarCodigoPedido();
+        String codigo = codigoGenerator.generarCodigoPedido();
         assertEquals(11, codigo.length(), "El código debe tener 11 caracteres (PED + 8 dígitos)");
     }
 
-    // Test 3: Verifica que el código generado para una ruta comience con "RUT" y tenga 11 caracteres.
     @Test
     void generarCodigoRuta_debeEmpezarConRUT() {
-        String codigo = CodigoGenerator.generarCodigoRuta();
+        String codigo = codigoGenerator.generarCodigoRuta();
         assertTrue(codigo.startsWith("RUT"), "El código debe empezar con 'RUT'");
     }
 
-    //  Test 4: Verifica que el código generado para una ruta tenga 11 caracteres.
     @Test
     void generarCodigoRuta_debeTener11Caracteres() {
-        String codigo = CodigoGenerator.generarCodigoRuta();
+        String codigo = codigoGenerator.generarCodigoRuta();
         assertEquals(11, codigo.length(), "El código debe tener 11 caracteres (RUT + 8 dígitos)");
     }
 
-    // Test 5: Verifica que los códigos generados para pedidos sean únicos.
     @Test
     void generarCodigosPedido_debenSerUnicos() {
-        String codigo1 = CodigoGenerator.generarCodigoPedido();
-        String codigo2 = CodigoGenerator.generarCodigoPedido();
+        String codigo1 = codigoGenerator.generarCodigoPedido();
+        String codigo2 = codigoGenerator.generarCodigoPedido();
         assertNotEquals(codigo1, codigo2, "Dos códigos generados no deben ser iguales");
     }
 
-    // Test 6: Verifica que los códigos generados para rutas sean únicos.
     @Test
     void generarCodigoPedido_debeContenerSoloDigitosDespuesDelPrefijo() {
-        String codigo = CodigoGenerator.generarCodigoPedido();
+        String codigo = codigoGenerator.generarCodigoPedido();
         String sufijo = codigo.substring(3);
         assertDoesNotThrow(() -> Long.parseLong(sufijo), "Los 8 caracteres después de 'PED' deben ser numéricos");
     }
