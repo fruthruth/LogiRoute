@@ -11,6 +11,8 @@ public interface IRepartidorService {
 
     Optional<Repartidor> obtenerPorId(Long id);
 
+    Optional<Repartidor> obtenerPorLicencia(String licencia);
+
     List<Repartidor> listarDisponibles();
 
     Repartidor crear(String nombre, String email, String password,
@@ -19,7 +21,7 @@ public interface IRepartidorService {
     Repartidor actualizar(Long id, String nombre, String email,
                           String telefono, String licencia);
 
-    Optional<Repartidor> actualizarEstado(Long id, String estado);
+    Repartidor actualizarEstado(Long id, String estado);
 
     boolean eliminar(Long id);
 }

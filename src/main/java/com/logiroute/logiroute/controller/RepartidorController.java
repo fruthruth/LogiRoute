@@ -6,10 +6,12 @@ import com.logiroute.logiroute.service.IRepartidorService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/repartidores")
@@ -46,14 +48,48 @@ public class RepartidorController {
         return ResponseEntity.ok(disponibles);
     }
 
+    @PostMapping
+    public ResponseEntity<RepartidorResponseDTO> crear(@RequestBody Map<String, String> request) {
+        log.info("API: Creando repartidor con email: {}", request.get("email"));
+        Repartidor repartidor = repartidorService.crear(
+                request.get("nombre"),
+                request.get("email"),
+                request.get("password"),
+                request.get("telefono"),
+                request.get("licencia")
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(toResponseDTO(repartidor));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<RepartidorResponseDTO> actualizar(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> request) {
+        log.info("API: Actualizando repartidor id: {}", id);
+        Repartidor repartidor = repartidorService.actualizar(
+                id,
+                request.get("nombre"),
+                request.get("email"),
+                request.get("telefono"),
+                request.get("licencia")
+        );
+        return ResponseEntity.ok(toResponseDTO(repartidor));
+    }
+
     @PutMapping("/{id}/estado")
     public ResponseEntity<RepartidorResponseDTO> actualizarEstado(
             @PathVariable Long id,
             @RequestParam String estado) {
         log.info("API: Actualizando estado del repartidor id: {} a {}", id, estado);
-        return repartidorService.actualizarEstado(id, estado)
-                .map(r -> ResponseEntity.ok(toResponseDTO(r)))
-                .orElse(ResponseEntity.notFound().build());
+        Repartidor repartidor = repartidorService.actualizarEstado(id, estado);
+        return ResponseEntity.ok(toResponseDTO(repartidor));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        log.info("API: Eliminando repartidor id: {}", id);
+        repartidorService.eliminar(id);
+        return ResponseEntity.noContent().build();
     }
 
     private RepartidorResponseDTO toResponseDTO(Repartidor r) {

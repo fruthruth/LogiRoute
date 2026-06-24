@@ -27,14 +27,16 @@
             </div>
             <div class="admin-user">
                 <span class="admin-username">Administrador</span>
-                <a th:href="@{/logout}" href="/logout" class="btn-salir">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M3 12V7a2 2 0 012-2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M3 12v5a2 2 0 002 2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                    Salir
-                </a>
+                <form th:action="@{/logout}" method="post" style="display:inline">
+                    <button type="submit" class="btn-salir" style="background:none;border:none;cursor:pointer;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 12V7a2 2 0 012-2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M3 12v5a2 2 0 002 2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Salir
+                    </button>
+                </form>
             </div>
         </div>
     </header>
@@ -56,6 +58,10 @@
         <section class="dashboard-section">
             <h2 class="section-title">Gestión de repartidores</h2>
 
+            <!-- Mensajes flash -->
+            <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+            <div th:if="${error}" class="alert alert-warning" th:text="${error}"></div>
+
             <!-- Toolbar -->
             <div class="table-toolbar">
                 <div class="search-bar-table">
@@ -76,33 +82,25 @@
                             <p class="repartidor-nombre" th:text="${r.usuario.nombre}">Carlos Ramírez</p>
                             <p class="repartidor-telefono" th:text="${r.telefono}">+51 985159785</p>
                             <p class="repartidor-detalle">
-                                <span>Licencia : </span>
+                                <span>Email: </span>
+                                <span th:text="${r.usuario.email}">correo@test.com</span>
+                            </p>
+                            <p class="repartidor-detalle">
+                                <span>Licencia: </span>
                                 <span th:text="${r.licencia}">LIC-001</span>
                             </p>
                             <p class="repartidor-detalle">
-                                <span>Estado &nbsp;: </span>
-                                <span th:text="${r.estado}">Disponible</span>
+                                <span>Estado: </span>
+                                <span th:text="${r.estado}">DISPONIBLE</span>
                             </p>
                         </div>
                     </div>
-                    <div class="repartidor-card-mid">
-                        <p class="repartidor-entregas">
-                            <span class="entregas-num" th:text="0">25</span>
-                            <span class="entregas-label">Entregas</span>
-                        </p>
-                        <p class="repartidor-rating">
-                            <span th:text="'N/A'">4.5</span>
-                            <span class="star">⭐</span>
-                            <span class="rating-label">calificación</span>
-                        </p>
-                    </div>
                     <div class="repartidor-card-right">
-                        <a th:href="@{/admin/repartidores/{id}/editar(id=${r.id})}" href="#" class="btn-icon" title="Editar">✏️</a>
-                        <form th:action="@{/admin/repartidores/{id}/eliminar(id=${r.id})}" action="#" method="post" style="display:inline;"
+                        <a th:href="@{/admin/repartidores/{id}/editar(id=${r.id})}" class="btn-icon" title="Editar">✏️</a>
+                        <form th:action="@{/admin/repartidores/{id}/eliminar(id=${r.id})}" method="post" style="display:inline;"
                               onsubmit="return confirm('¿Eliminar este repartidor?')">
                             <button type="submit" class="btn-icon btn-icon-delete" title="Eliminar">🗑️</button>
                         </form>
-                        <a th:href="@{/admin/mapa?repartidorId={id}(id=${r.id})}" href="#" class="btn-icon" title="Ver ubicación">📍</a>
                     </div>
                 </div>
 
@@ -123,7 +121,7 @@
                 <button class="modal-close" onclick="cerrarModal()">✕</button>
             </div>
 
-            <form th:action="@{/admin/repartidores/crear}" action="/admin/repartidores/crear" method="post" class="modal-form">
+            <form th:action="@{/admin/repartidores/crear}" method="post" class="modal-form">
 
                 <div class="modal-grid">
                     <div class="modal-field">
@@ -132,33 +130,19 @@
                     </div>
                     <div class="modal-field">
                         <label>Teléfono</label>
-                        <input type="text" name="telefono">
+                        <input type="text" name="telefono" required>
                     </div>
                     <div class="modal-field modal-field-full">
                         <label>Correo electrónico</label>
-                        <input type="email" name="email">
+                        <input type="email" name="email" required>
                     </div>
                     <div class="modal-field">
-                        <label>Tipo de vehículo</label>
-                        <select name="tipoVehiculo">
-                            <option value="">Seleccionar...</option>
-                            <option value="AUTO">Auto</option>
-                            <option value="MOTO">Moto</option>
-                            <option value="BICICLETA">Bicicleta</option>
-                            <option value="CAMIONETA">Camioneta</option>
-                        </select>
+                        <label>Licencia</label>
+                        <input type="text" name="licencia" placeholder="LIC-001" required>
                     </div>
                     <div class="modal-field">
-                        <label>Placa</label>
-                        <input type="text" name="placa" placeholder="ABC-123">
-                    </div>
-                    <div class="modal-field">
-                        <label>Estado</label>
-                        <select name="estado">
-                            <option value="DISPONIBLE">Disponible</option>
-                            <option value="EN_RUTA">En ruta</option>
-                            <option value="INACTIVO">Inactivo</option>
-                        </select>
+                        <label>Contraseña</label>
+                        <input type="password" name="password" value="123456">
                     </div>
                 </div>
 

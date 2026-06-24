@@ -42,13 +42,6 @@ public class AdminWebController {
         return "admin/pedidos";
     }
 
-    @GetMapping("/repartidores")
-    public String repartidores(Model model) {
-        log.debug("Renderizando gestión de repartidores");
-        model.addAttribute("repartidores", repartidorService.listarTodos());
-        return "admin/repartidores";
-    }
-
     @GetMapping("/promociones")
     public String promociones() {
         return "admin/promociones";
