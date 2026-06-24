@@ -27,14 +27,16 @@
             </div>
             <div class="admin-user">
                 <span class="admin-username">Administrador</span>
-                <a th:href="@{/logout}" href="/logout" class="btn-salir">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M3 12V7a2 2 0 012-2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M3 12v5a2 2 0 002 2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                    Salir
-                </a>
+                <form th:action="@{/logout}" method="post" style="display:inline">
+                    <button type="submit" class="btn-salir" style="background:none;border:none;cursor:pointer;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 12V7a2 2 0 012-2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M3 12v5a2 2 0 002 2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Salir
+                    </button>
+                </form>
             </div>
         </div>
     </header>
@@ -98,7 +100,7 @@
                                 </span>
                             </td>
                             <td th:text="${pedido.repartidor?.usuario?.nombre ?: '-'}">Carlos Ruiz</td>
-                            <td th:text="'S/' + ${pedido.costo}">S/50</td>
+                            <td th:text="${pedido.costo != null ? 'S/' + pedido.costo : '—'}">S/50</td>
                             <td class="acciones-cell">
                                 <a th:href="@{/admin/pedidos/{id}/editar(id=${pedido.id})}" href="#" class="btn-accion btn-editar" title="Editar">✏️</a>
                                 <button class="btn-accion btn-reasignar"
@@ -203,7 +205,7 @@
                     <label>Seleccionar repartidor</label>
                     <select name="repartidorId" required>
                         <option value="">Selecciona...</option>
-                        <option th:each="r : ${repartidores}" th:value="${r.id}" th:text="${r.nombre}">Repartidor</option>
+                        <option th:each="r : ${repartidores}" th:value="${r.id}" th:text="${r.usuario.nombre}">Repartidor</option>
                     </select>
                 </div>
                 <div class="modal-actions">
