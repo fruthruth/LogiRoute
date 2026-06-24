@@ -27,14 +27,16 @@
             </div>
             <div class="admin-user">
                 <span class="admin-username">Administrador</span>
-                <a th:href="@{/logout}" href="/logout" class="btn-salir">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M3 12V7a2 2 0 012-2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M3 12v5a2 2 0 002 2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                    Salir
-                </a>
+                <form th:action="@{/logout}" method="post" style="display:inline">
+                    <button type="submit" class="btn-salir" style="background:none;border:none;cursor:pointer;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 12V7a2 2 0 012-2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M3 12v5a2 2 0 002 2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Salir
+                    </button>
+                </form>
             </div>
         </div>
     </header>
@@ -63,49 +65,21 @@
                 <div class="stat-card stat-blue">
                     <div class="stat-icon">📦</div>
                     <div class="stat-info">
-                        <span class="stat-label">Total de paquetes</span>
+                        <span class="stat-label">Total de pedidos</span>
                     </div>
-                    <span class="stat-number" th:text="${totalPaquetes != null ? totalPaquetes : 0}">0</span>
+                    <span class="stat-number" th:text="${totalPedidos}">0</span>
                 </div>
 
-                <!-- Pendientes -->
-                <div class="stat-card stat-yellow">
-                    <div class="stat-icon">🕐</div>
-                    <div class="stat-info">
-                        <span class="stat-label">Pendientes</span>
-                    </div>
-                    <span class="stat-number" th:text="${pendientes != null ? pendientes : 0}">0</span>
-                </div>
-
-                <!-- En tránsito -->
+                <!-- Repartidores -->
                 <div class="stat-card stat-purple">
                     <div class="stat-icon">🚚</div>
                     <div class="stat-info">
-                        <span class="stat-label">En tránsito</span>
+                        <span class="stat-label">Repartidores registrados</span>
                     </div>
-                    <span class="stat-number" th:text="${enTransito != null ? enTransito : 0}">0</span>
-                </div>
-
-                <!-- Entregados -->
-                <div class="stat-card stat-green">
-                    <div class="stat-icon">✅</div>
-                    <div class="stat-info">
-                        <span class="stat-label">Entregados</span>
-                    </div>
-                    <span class="stat-number" th:text="${entregados != null ? entregados : 0}">0</span>
+                    <span class="stat-number" th:text="${totalRepartidores}">0</span>
                 </div>
             </div>
 
-            <!-- Repartidores activos -->
-            <div class="repartidores-activos-card">
-                <div class="ra-left">
-                    <span class="ra-number" th:text="${repartidoresActivos != null ? repartidoresActivos : 0}">0</span>
-                </div>
-                <div class="ra-right">
-                    <span class="ra-label">Repartidores activos</span>
-                    <div class="ra-icon">🚛</div>
-                </div>
-            </div>
         </section>
 
     </main>
