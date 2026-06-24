@@ -1,5 +1,8 @@
 package com.logiroute.logiroute.service;
 
+import com.logiroute.logiroute.exception.DatoDuplicadoException;
+import com.logiroute.logiroute.exception.EstadoInvalidoException;
+import com.logiroute.logiroute.exception.RecursoNoEncontradoException;
 import com.logiroute.logiroute.model.Repartidor;
 import com.logiroute.logiroute.model.Usuario;
 import com.logiroute.logiroute.repository.RepartidorRepository;
@@ -36,6 +39,7 @@ class RepartidorServiceTest {
     void crearRepartidor_debeGuardarUsuarioYRepartidor() {
         when(passwordEncoder.encode("123456")).thenReturn("$2a$10$encoded");
         when(usuarioRepository.existsByEmail("repartidor@test.com")).thenReturn(false);
+        when(repartidorRepository.findByLicencia("LIC-001")).thenReturn(Optional.empty());
         when(usuarioRepository.save(any(Usuario.class))).thenAnswer(invocation -> {
             Usuario u = invocation.getArgument(0);
             u.setId(1L);
@@ -65,7 +69,7 @@ class RepartidorServiceTest {
     void crearRepartidor_emailDuplicado_debeLanzarExcepcion() {
         when(usuarioRepository.existsByEmail("duplicado@test.com")).thenReturn(true);
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () ->
+        DatoDuplicadoException exception = assertThrows(DatoDuplicadoException.class, () ->
                 repartidorService.crear(
                         "Juan Perez", "duplicado@test.com", "123456",
                         "988777666", "LIC-002"
@@ -74,7 +78,24 @@ class RepartidorServiceTest {
 
         assertEquals("El email ya está registrado: duplicado@test.com", exception.getMessage());
         verify(repartidorRepository, never()).save(any(Repartidor.class));
-        verify(usuarioRepository, never()).save(any(Usuario.class));
+    }
+
+    @Test
+    void crearRepartidor_licenciaDuplicada_debeLanzarExcepcion() {
+        when(usuarioRepository.existsByEmail("repartidor@test.com")).thenReturn(false);
+        when(repartidorRepository.findByLicencia("LIC-001")).thenReturn(Optional.of(
+                Repartidor.builder().id(1L).licencia("LIC-001").build()
+        ));
+
+        DatoDuplicadoException exception = assertThrows(DatoDuplicadoException.class, () ->
+                repartidorService.crear(
+                        "Juan Perez", "repartidor@test.com", "123456",
+                        "988777666", "LIC-001"
+                )
+        );
+
+        assertEquals("La licencia ya está registrada: LIC-001", exception.getMessage());
+        verify(repartidorRepository, never()).save(any(Repartidor.class));
     }
 
     @Test
@@ -94,6 +115,70 @@ class RepartidorServiceTest {
     }
 
     @Test
+    void obtenerPorLicencia_debeRetornarRepartidor() {
+        Repartidor repartidor = Repartidor.builder()
+                .id(1L)
+                .licencia("LIC-001")
+                .build();
+
+        when(repartidorRepository.findByLicencia("LIC-001")).thenReturn(Optional.of(repartidor));
+
+        Optional<Repartidor> resultado = repartidorService.obtenerPorLicencia("LIC-001");
+
+        assertTrue(resultado.isPresent());
+        assertEquals("LIC-001", resultado.get().getLicencia());
+    }
+
+    @Test
+    void actualizarEstado_estadoValido_debeActualizar() {
+        Usuario usuario = Usuario.builder().id(1L).nombre("Test").build();
+        Repartidor repartidor = Repartidor.builder()
+                .id(1L)
+                .usuario(usuario)
+                .estado(Repartidor.EstadoRepartidor.DISPONIBLE)
+                .build();
+
+        when(repartidorRepository.findById(1L)).thenReturn(Optional.of(repartidor));
+        when(repartidorRepository.save(any(Repartidor.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Repartidor resultado = repartidorService.actualizarEstado(1L, "EN_RUTA");
+
+        assertEquals(Repartidor.EstadoRepartidor.EN_RUTA, resultado.getEstado());
+        verify(repartidorRepository, times(1)).save(repartidor);
+    }
+
+    @Test
+    void actualizarEstado_estadoInvalido_debeLanzarExcepcion() {
+        Repartidor repartidor = Repartidor.builder()
+                .id(1L)
+                .estado(Repartidor.EstadoRepartidor.DISPONIBLE)
+                .build();
+
+        when(repartidorRepository.findById(1L)).thenReturn(Optional.of(repartidor));
+
+        assertThrows(EstadoInvalidoException.class, () ->
+                repartidorService.actualizarEstado(1L, "ESTADO_FALSO")
+        );
+    }
+
+    @Test
+    void actualizarEstado_mismoEstado_noDebeGuardar() {
+        Usuario usuario = Usuario.builder().id(1L).nombre("Test").build();
+        Repartidor repartidor = Repartidor.builder()
+                .id(1L)
+                .usuario(usuario)
+                .estado(Repartidor.EstadoRepartidor.DISPONIBLE)
+                .build();
+
+        when(repartidorRepository.findById(1L)).thenReturn(Optional.of(repartidor));
+
+        Repartidor resultado = repartidorService.actualizarEstado(1L, "DISPONIBLE");
+
+        assertEquals(Repartidor.EstadoRepartidor.DISPONIBLE, resultado.getEstado());
+        verify(repartidorRepository, never()).save(any());
+    }
+
+    @Test
     void eliminar_repartidorExistente_debeEliminarUsuarioTambien() {
         Usuario usuario = Usuario.builder().id(1L).build();
         Repartidor repartidor = Repartidor.builder()
@@ -101,7 +186,6 @@ class RepartidorServiceTest {
                 .usuario(usuario)
                 .build();
 
-        when(repartidorRepository.existsById(1L)).thenReturn(true);
         when(repartidorRepository.findById(1L)).thenReturn(Optional.of(repartidor));
         doNothing().when(repartidorRepository).deleteById(1L);
         doNothing().when(usuarioRepository).deleteById(1L);
@@ -111,5 +195,16 @@ class RepartidorServiceTest {
         assertTrue(resultado);
         verify(repartidorRepository, times(1)).deleteById(1L);
         verify(usuarioRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void eliminar_repartidorNoExistente_debeLanzarExcepcion() {
+        when(repartidorRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(RecursoNoEncontradoException.class, () ->
+                repartidorService.eliminar(99L)
+        );
+
+        verify(repartidorRepository, never()).deleteById(anyLong());
     }
 }
