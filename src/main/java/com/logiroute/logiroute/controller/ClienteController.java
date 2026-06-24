@@ -1,8 +1,14 @@
 package com.logiroute.logiroute.controller;
 
+import com.logiroute.logiroute.dto.response.ClienteResponseDTO;
 import com.logiroute.logiroute.model.Cliente;
-import com.logiroute.logiroute.service.ClienteService;
+import com.logiroute.logiroute.model.Pedido;
+import com.logiroute.logiroute.dto.response.PedidoResponseDTO;
+import com.logiroute.logiroute.service.IClienteService;
+import com.logiroute.logiroute.service.IPedidoService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,24 +19,43 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ClienteController {
 
-    private final ClienteService clienteService;
+    private static final Logger log = LoggerFactory.getLogger(ClienteController.class);
+
+    private final IClienteService clienteService;
+    private final IPedidoService pedidoService;
 
     @GetMapping
-    public ResponseEntity<List<Cliente>> listarTodos() {
-        return ResponseEntity.ok(clienteService.listarTodos());
+    public ResponseEntity<List<ClienteResponseDTO>> listarTodos() {
+        log.debug("API: Listando todos los clientes");
+        List<ClienteResponseDTO> clientes = clienteService.listarTodos().stream()
+                .map(this::toResponseDTO)
+                .toList();
+        return ResponseEntity.ok(clientes);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Cliente> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<ClienteResponseDTO> obtenerPorId(@PathVariable Long id) {
+        log.debug("API: Buscando cliente id: {}", id);
         return clienteService.obtenerPorId(id)
-                .map(ResponseEntity::ok)
+                .map(c -> ResponseEntity.ok(toResponseDTO(c)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<Cliente> obtenerPorUsuarioId(@PathVariable Long usuarioId) {
+    public ResponseEntity<ClienteResponseDTO> obtenerPorUsuarioId(@PathVariable Long usuarioId) {
+        log.debug("API: Buscando cliente por usuario id: {}", usuarioId);
         return clienteService.obtenerPorUsuarioId(usuarioId)
-                .map(ResponseEntity::ok)
+                .map(c -> ResponseEntity.ok(toResponseDTO(c)))
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    private ClienteResponseDTO toResponseDTO(Cliente c) {
+        return ClienteResponseDTO.builder()
+                .id(c.getId())
+                .nombre(c.getUsuario().getNombre())
+                .email(c.getUsuario().getEmail())
+                .telefono(c.getTelefono())
+                .direccion(c.getDireccion())
+                .build();
     }
 }
