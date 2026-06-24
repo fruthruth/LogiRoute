@@ -11,7 +11,9 @@
         <div class="nav-brand">LogiRoute</div>
         <div class="nav-links">
             <a th:href="@{/cliente/seguimiento}" class="active">Seguimiento</a>
-            <a th:href="@{/logout}" class="btn-logout">Salir</a>
+            <form th:action="@{/logout}" method="post" style="display:inline">
+                <button type="submit" class="btn-logout" style="background:none;border:none;cursor:pointer;color:inherit;text-decoration:none;">Salir</button>
+            </form>
         </div>
     </nav>
 
