@@ -1,9 +1,9 @@
 package com.logiroute.logiroute.controller;
 
 import com.logiroute.logiroute.dto.response.ClienteResponseDTO;
+import com.logiroute.logiroute.dto.response.PedidoResponseDTO;
 import com.logiroute.logiroute.model.Cliente;
 import com.logiroute.logiroute.model.Pedido;
-import com.logiroute.logiroute.dto.response.PedidoResponseDTO;
 import com.logiroute.logiroute.service.IClienteService;
 import com.logiroute.logiroute.service.IPedidoService;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +49,16 @@ public class ClienteController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/{id}/pedidos")
+    public ResponseEntity<List<PedidoResponseDTO>> listarPedidosPorCliente(@PathVariable Long id) {
+        log.debug("API: Listando pedidos del cliente id: {}", id);
+        List<PedidoResponseDTO> pedidos = pedidoService.listarTodos().stream()
+                .filter(p -> p.getCliente() != null && p.getCliente().getId().equals(id))
+                .map(this::toPedidoResponseDTO)
+                .toList();
+        return ResponseEntity.ok(pedidos);
+    }
+
     private ClienteResponseDTO toResponseDTO(Cliente c) {
         return ClienteResponseDTO.builder()
                 .id(c.getId())
@@ -56,6 +66,24 @@ public class ClienteController {
                 .email(c.getUsuario().getEmail())
                 .telefono(c.getTelefono())
                 .direccion(c.getDireccion())
+                .build();
+    }
+
+    private PedidoResponseDTO toPedidoResponseDTO(Pedido p) {
+        return PedidoResponseDTO.builder()
+                .id(p.getId())
+                .codigo(p.getCodigo())
+                .clienteNombre(p.getCliente() != null ? p.getCliente().getUsuario().getNombre() : null)
+                .repartidorNombre(p.getRepartidor() != null ? p.getRepartidor().getUsuario().getNombre() : null)
+                .direccionOrigen(p.getDireccionOrigen())
+                .direccionDestino(p.getDireccionDestino())
+                .peso(p.getPeso())
+                .tipoPaquete(p.getTipoPaquete())
+                .estado(p.getEstado().name())
+                .costo(p.getCosto())
+                .fechaEstimada(p.getFechaEstimada())
+                .fechaEntrega(p.getFechaEntrega())
+                .createdAt(p.getCreatedAt())
                 .build();
     }
 }
