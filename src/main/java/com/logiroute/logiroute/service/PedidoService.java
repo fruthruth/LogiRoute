@@ -1,7 +1,7 @@
 package com.logiroute.logiroute.service;
 
 import com.logiroute.logiroute.dto.PedidoDTO;
-import com.logiroute.logiroute.exception.DatoDuplicadoException;
+import com.logiroute.logiroute.exception.EstadoInvalidoException;
 import com.logiroute.logiroute.exception.RecursoNoEncontradoException;
 import com.logiroute.logiroute.model.*;
 import com.logiroute.logiroute.repository.*;
@@ -92,8 +92,15 @@ public class PedidoService implements IPedidoService {
     @Transactional
     public Optional<Pedido> actualizarEstado(Long id, String estado) {
         log.info("Actualizando estado del pedido id: {} a {}", id, estado);
+        EstadoPedido nuevoEstado;
+        try {
+            nuevoEstado = EstadoPedido.valueOf(estado);
+        } catch (IllegalArgumentException e) {
+            throw new EstadoInvalidoException("Estado inválido: " + estado);
+        }
+
         return pedidoRepository.findById(id).map(pedido -> {
-            pedido.setEstado(EstadoPedido.valueOf(estado));
+            pedido.setEstado(nuevoEstado);
             return pedidoRepository.save(pedido);
         });
     }

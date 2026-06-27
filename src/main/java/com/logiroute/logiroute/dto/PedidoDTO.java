@@ -27,5 +27,6 @@ public class PedidoDTO {
     @NotBlank(message = "El tipo de paquete es obligatorio")
     private String tipoPaquete;
 
+    @NotNull(message = "El cliente es obligatorio")
     private Long clienteId;
 }
