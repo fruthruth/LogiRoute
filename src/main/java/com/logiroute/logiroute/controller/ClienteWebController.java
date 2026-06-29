@@ -1,6 +1,5 @@
 package com.logiroute.logiroute.controller;
 
-import com.logiroute.logiroute.dto.SeguimientoDTO;
 import com.logiroute.logiroute.service.IReporteService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -30,8 +29,7 @@ public class ClienteWebController {
     public String seguimiento(@RequestParam(required = false) String codigo, Model model) {
         if (codigo != null && !codigo.isEmpty()) {
             log.info("Buscando seguimiento del código: {}", codigo);
-            SeguimientoDTO dto = reporteService.seguimiento(codigo).orElse(null);
-            model.addAttribute("pedido", dto);
+            model.addAttribute("pedido", reporteService.seguimiento(codigo).orElse(null));
             model.addAttribute("codigo", codigo);
         }
         return "cliente/seguimiento";
