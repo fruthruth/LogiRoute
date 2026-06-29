@@ -5,9 +5,11 @@ import com.logiroute.logiroute.dto.PedidoDTO;
 import com.logiroute.logiroute.exception.EstadoInvalidoException;
 import com.logiroute.logiroute.exception.RecursoNoEncontradoException;
 import com.logiroute.logiroute.model.Pedido;
+import com.logiroute.logiroute.model.Repartidor;
 import com.logiroute.logiroute.service.IAsignacionService;
 import com.logiroute.logiroute.service.IClienteService;
 import com.logiroute.logiroute.service.IPedidoService;
+import com.logiroute.logiroute.service.IRepartidorService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin/pedidos")
@@ -28,6 +31,7 @@ public class AdminPedidoWebController {
     private final IPedidoService pedidoService;
     private final IAsignacionService asignacionService;
     private final IClienteService clienteService;
+    private final IRepartidorService repartidorService;
 
     @PostMapping("/crear")
     public String crear(
@@ -130,6 +134,36 @@ public class AdminPedidoWebController {
         } catch (Exception e) {
             log.error("Error inesperado al asignar: {}", e.getMessage());
             ra.addFlashAttribute("error", "Error al asignar repartidor");
+        }
+        return "redirect:/admin/pedidos";
+    }
+
+    @GetMapping("/{id}/autoasignar")
+    public String autoAsignar(@PathVariable Long id, RedirectAttributes ra) {
+        log.info("Auto-asignando repartidor al pedido id: {}", id);
+        try {
+            Pedido pedido = pedidoService.obtenerPorId(id)
+                    .orElseThrow(() -> new RecursoNoEncontradoException("Pedido", id));
+
+            List<Repartidor> disponibles = repartidorService.listarDisponibles();
+            if (disponibles.isEmpty()) {
+                ra.addFlashAttribute("error", "No hay repartidores disponibles para auto-asignar");
+                return "redirect:/admin/pedidos";
+            }
+
+            Repartidor repartidor = disponibles.get(0);
+            AsignacionDTO dto = AsignacionDTO.builder()
+                    .pedidoId(id)
+                    .repartidorId(repartidor.getId())
+                    .build();
+            asignacionService.asignar(dto);
+            ra.addFlashAttribute("mensaje", "Repartidor \"" + repartidor.getUsuario().getNombre() + "\" asignado automáticamente");
+        } catch (RecursoNoEncontradoException e) {
+            log.error("Error en auto-asignación: {}", e.getMessage());
+            ra.addFlashAttribute("error", e.getMessage());
+        } catch (Exception e) {
+            log.error("Error inesperado en auto-asignación: {}", e.getMessage());
+            ra.addFlashAttribute("error", "Error al auto-asignar repartidor");
         }
         return "redirect:/admin/pedidos";
     }
