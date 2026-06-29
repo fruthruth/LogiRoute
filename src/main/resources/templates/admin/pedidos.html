@@ -58,6 +58,10 @@
         <section class="dashboard-section">
             <h2 class="section-title">Gestión de pedidos</h2>
 
+            <!-- Mensajes flash -->
+            <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+            <div th:if="${error}" class="alert alert-warning" th:text="${error}"></div>
+
             <!-- Barra de búsqueda y botón -->
             <div class="table-toolbar">
                 <div class="search-bar-table">
@@ -76,10 +80,11 @@
                         <tr>
                             <th>Código</th>
                             <th>Cliente</th>
-                            <th>Dirección</th>
+                            <th>Origen</th>
+                            <th>Destino</th>
                             <th>Estado</th>
                             <th>Repartidor</th>
-                            <th>Monto</th>
+                            <th>Costo</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -87,20 +92,25 @@
                         <tr th:each="pedido : ${pedidos}">
                             <td th:text="${pedido.codigo}">TRK-2026-00-1234</td>
                             <td th:text="${pedido.cliente.usuario.nombre}">Juan Pérez</td>
+                            <td th:text="${pedido.direccionOrigen}">Av. Principal 123</td>
                             <td th:text="${pedido.direccionDestino}">Av. Larco 1234, Miraflores</td>
                             <td>
                                 <span class="estado-badge"
                                       th:classappend="${pedido.estado.name() == 'EN_TRANSITO'} ? 'estado-transito' :
                                                       (${pedido.estado.name() == 'PENDIENTE'} ? 'estado-pendiente' :
-                                                      (${pedido.estado.name() == 'ENTREGADO'} ? 'estado-entregado' : 'estado-pendiente'))"
+                                                      (${pedido.estado.name() == 'ENTREGADO'} ? 'estado-entregado' :
+                                                      (${pedido.estado.name() == 'CANCELADO'} ? 'estado-cancelado' : 'estado-pendiente')))"
                                       th:text="${pedido.estado.name() == 'EN_TRANSITO'} ? 'En camino' :
                                                (${pedido.estado.name() == 'PENDIENTE'} ? 'Pendiente' :
-                                               (${pedido.estado.name() == 'ENTREGADO'} ? 'Entregado' : ${pedido.estado.name()}))">
+                                               (${pedido.estado.name() == 'ENTREGADO'} ? 'Entregado' :
+                                               (${pedido.estado.name() == 'CANCELADO'} ? 'Cancelado' :
+                                               (${pedido.estado.name() == 'ASIGNADO'} ? 'Asignado' :
+                                               (${pedido.estado.name() == 'EN_RECOJO'} ? 'En recojo' : ${pedido.estado.name()})))))">
                                     Pendiente
                                 </span>
                             </td>
-                            <td th:text="${pedido.repartidor?.usuario?.nombre ?: '-'}">Carlos Ruiz</td>
-                            <td th:text="${pedido.costo != null ? 'S/' + pedido.costo : '—'}">S/50</td>
+                            <td th:text="${pedido.repartidor?.usuario?.nombre ?: '-'}">-</td>
+                            <td th:text="${pedido.costo != null ? 'S/' + pedido.costo : '—'}">—</td>
                             <td class="acciones-cell">
                                 <a th:href="@{/admin/pedidos/{id}/editar(id=${pedido.id})}" href="#" class="btn-accion btn-editar" title="Editar">✏️</a>
                                 <button class="btn-accion btn-reasignar"
@@ -116,7 +126,7 @@
                         </tr>
                         <!-- Fila vacía si no hay pedidos -->
                         <tr th:if="${#lists.isEmpty(pedidos)}">
-                            <td colspan="7" class="table-empty">No hay pedidos registrados.</td>
+                            <td colspan="8" class="table-empty">No hay pedidos registrados.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -132,55 +142,37 @@
                 <button class="modal-close" onclick="cerrarModal()">✕</button>
             </div>
 
-            <form th:action="@{/admin/pedidos/crear}" action="/admin/pedidos/crear" method="post" class="modal-form">
+            <form th:action="@{/admin/pedidos/crear}" method="post" class="modal-form">
 
                 <div class="modal-grid">
-                    <div class="modal-field">
-                        <label>Nombre del cliente</label>
-                        <input type="text" name="nombreCliente" required>
-                    </div>
-                    <div class="modal-field">
-                        <label>Teléfono</label>
-                        <input type="text" name="telefonoCliente">
+                    <div class="modal-field modal-field-full">
+                        <label>Cliente</label>
+                        <select name="clienteId" required>
+                            <option value="">Selecciona un cliente...</option>
+                            <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.usuario.nombre}">Cliente</option>
+                        </select>
                     </div>
                     <div class="modal-field modal-field-full">
-                        <label>Email</label>
-                        <input type="email" name="emailCliente">
-                    </div>
-                    <div class="modal-field">
-                        <label>Nombre de receptor</label>
-                        <input type="text" name="nombreReceptor">
-                    </div>
-                    <div class="modal-field">
-                        <label>Teléfono</label>
-                        <input type="text" name="telefonoReceptor">
+                        <label>Dirección de origen</label>
+                        <input type="text" name="direccionOrigen" placeholder="Av. Principal 123" required>
                     </div>
                     <div class="modal-field modal-field-full">
-                        <label>Dirección de entrega</label>
-                        <input type="text" name="direccionEntrega" required>
+                        <label>Dirección de destino</label>
+                        <input type="text" name="direccionDestino" placeholder="Av. Larco 1234, Miraflores" required>
                     </div>
-                    <div class="modal-field modal-field-full">
-                        <label>Peso (máximo 20kg)</label>
-                        <input type="number" name="peso" min="0.1" max="20" step="0.1">
+                    <div class="modal-field">
+                        <label>Peso (kg, máx. 20)</label>
+                        <input type="number" name="peso" min="0.1" max="20" step="0.1" required>
                     </div>
-                </div>
-
-                <div class="modal-pago">
-                    <p class="pago-title">Pago</p>
-                    <div class="modal-grid">
-                        <div class="modal-field">
-                            <label>Monto a Cobrar</label>
-                            <input type="number" name="monto" min="0" step="0.01" required>
-                        </div>
-                        <div class="modal-field">
-                            <label>Método de pago</label>
-                            <select name="metodoPago">
-                                <option value="">Selecciona...</option>
-                                <option value="EFECTIVO">Efectivo</option>
-                                <option value="TARJETA">Tarjeta</option>
-                                <option value="TRANSFERENCIA">Transferencia</option>
-                            </select>
-                        </div>
+                    <div class="modal-field">
+                        <label>Tipo de paquete</label>
+                        <select name="tipoPaquete" required>
+                            <option value="">Selecciona...</option>
+                            <option value="DOCUMENTO">Documento</option>
+                            <option value="PAQUETE_PEQUENO">Paquete pequeño</option>
+                            <option value="PAQUETE_MEDIANO">Paquete mediano</option>
+                            <option value="PAQUETE_GRANDE">Paquete grande</option>
+                        </select>
                     </div>
                 </div>
 
@@ -199,7 +191,7 @@
                 <h3 class="modal-title">Asignar Repartidor</h3>
                 <button class="modal-close" onclick="cerrarModalAsignar()">✕</button>
             </div>
-            <form th:action="@{/admin/pedidos/asignar}" action="/admin/pedidos/asignar" method="post" class="modal-form">
+            <form th:action="@{/admin/pedidos/asignar}" method="post" class="modal-form">
                 <input type="hidden" name="pedidoId" id="pedidoIdAsignar">
                 <div class="modal-field">
                     <label>Seleccionar repartidor</label>

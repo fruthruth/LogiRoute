@@ -1,6 +1,7 @@
 package com.logiroute.logiroute.controller;
 
 import com.logiroute.logiroute.model.Pedido;
+import com.logiroute.logiroute.service.IClienteService;
 import com.logiroute.logiroute.service.IPedidoService;
 import com.logiroute.logiroute.service.IRepartidorService;
 import com.logiroute.logiroute.service.IReporteService;
@@ -25,6 +26,7 @@ public class AdminWebController {
     private final IPedidoService pedidoService;
     private final IRepartidorService repartidorService;
     private final IReporteService reporteService;
+    private final IClienteService clienteService;
 
     @GetMapping({ "", "/" })
     public String dashboard(Model model) {
@@ -39,6 +41,7 @@ public class AdminWebController {
         log.debug("Renderizando gestión de pedidos");
         model.addAttribute("pedidos", pedidoService.listarTodos());
         model.addAttribute("repartidores", repartidorService.listarTodos());
+        model.addAttribute("clientes", clienteService.listarTodos());
         return "admin/pedidos";
     }
 
