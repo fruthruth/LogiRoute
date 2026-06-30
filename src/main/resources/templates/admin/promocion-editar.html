@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiRoute - Editar Promoción</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../css/style.css">
+</head>
+<body class="admin-page">
+
+    <!-- HEADER -->
+    <header class="admin-header">
+        <div class="admin-header-inner">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <circle cx="16" cy="16" r="16" fill="#fff"/>
+                        <path d="M8 20l4-8 4 4 4-6 4 10" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">Empresa de logística</span>
+                    <span class="brand-sub">Distribución última milla</span>
+                </div>
+            </div>
+            <div class="admin-user">
+                <span class="admin-username">Administrador</span>
+                <form th:action="@{/logout}" method="post" style="display:inline">
+                    <button type="submit" class="btn-salir" style="background:none;border:none;cursor:pointer;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 12V7a2 2 0 012-2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M3 12v5a2 2 0 002 2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Salir
+                    </button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <!-- NAVBAR -->
+    <nav class="admin-nav">
+        <div class="admin-nav-inner">
+            <a href="#" th:href="@{/admin}" class="nav-item">Vista general</a>
+            <a href="#" th:href="@{/admin/pedidos}" class="nav-item">Pedidos</a>
+            <a href="#" th:href="@{/admin/repartidores}" class="nav-item">Repartidores</a>
+            <a href="#" th:href="@{/admin/promociones}" class="nav-item active">Promociones</a>
+            <a href="#" th:href="@{/admin/mapa}" class="nav-item">Mapa en vivo</a>
+            <a href="#" th:href="@{/admin/reportes}" class="nav-item">Informes</a>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO -->
+    <main class="admin-main">
+        <section class="dashboard-section">
+            <h2 class="section-title">Editar Promoción</h2>
+
+            <!-- Mensajes flash -->
+            <div th:if="${error}" class="alert alert-warning" th:text="${error}"></div>
+
+            <div class="reporte-card" style="max-width: 700px;">
+
+                <!-- Información de la promoción -->
+                <div style="margin-bottom: 20px; padding: 12px 16px; background: #f8f9fa; border-radius: 8px;">
+                    <p style="margin: 4px 0;"><strong>Estado actual:</strong>
+                        <span class="estado-badge"
+                              th:classappend="${promocion.activa} ? 'estado-entregado' : 'estado-cancelado'"
+                              th:text="${promocion.activa} ? 'Activa' : 'Inactiva'">
+                        </span>
+                    </p>
+                </div>
+
+                <!-- FORMULARIO: Actualizar datos -->
+                <form th:action="@{/admin/promociones/{id}/actualizar(id=${promocion.id})}" method="post" class="modal-form">
+
+                    <div class="modal-grid">
+                        <div class="modal-field modal-field-full">
+                            <label>Título</label>
+                            <input type="text" name="titulo" th:value="${promocion.titulo}" required>
+                        </div>
+                        <div class="modal-field modal-field-full">
+                            <label>Descripción</label>
+                            <textarea name="descripcion" rows="3" required style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-family:inherit;" th:text="${promocion.descripcion}"></textarea>
+                        </div>
+                        <div class="modal-field">
+                            <label>Descuento (%)</label>
+                            <input type="number" name="descuentoPorcentaje" th:value="${promocion.descuentoPorcentaje}" min="0.1" max="100" step="0.1" required>
+                        </div>
+                        <div class="modal-field">
+                            <label>Monto mínimo (S/)</label>
+                            <input type="number" name="montoMinimo" th:value="${promocion.montoMinimo}" min="0" step="0.01">
+                        </div>
+                        <div class="modal-field">
+                            <label>Fecha y hora inicio</label>
+                            <input type="datetime-local" name="fechaInicio" th:value="${#temporals.format(promocion.fechaInicio, 'yyyy-MM-dd\\'T\\'HH:mm')}" required>
+                        </div>
+                        <div class="modal-field">
+                            <label>Fecha y hora fin</label>
+                            <input type="datetime-local" name="fechaFin" th:value="${#temporals.format(promocion.fechaFin, 'yyyy-MM-dd\\'T\\'HH:mm')}" required>
+                        </div>
+                    </div>
+
+                    <div class="modal-actions" style="margin-top: 24px;">
+                        <a th:href="@{/admin/promociones}" class="btn-cancelar" style="text-decoration:none; display:inline-flex; align-items:center;">Cancelar</a>
+                        <button type="submit" class="btn-registrar">Guardar cambios</button>
+                    </div>
+                </form>
+
+                <!-- FORMULARIO: Cambiar estado (separado, no anidado) -->
+                <div style="margin-top: 24px; border-top: 1px solid #eee; padding-top: 16px;">
+                    <label style="font-weight:600; margin-bottom:8px; display:block;">Cambiar estado</label>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <form th:action="@{/admin/promociones/{id}/estado(id=${promocion.id})}" method="post" style="display:inline;">
+                            <input type="hidden" name="activa" value="true">
+                            <button type="submit" class="btn-registrar"
+                                    th:disabled="${promocion.activa}"
+                                    th:style="${promocion.activa} ? 'opacity:0.5;cursor:default;' : ''">
+                                Activar
+                            </button>
+                        </form>
+                        <form th:action="@{/admin/promociones/{id}/estado(id=${promocion.id})}" method="post" style="display:inline;">
+                            <input type="hidden" name="activa" value="false">
+                            <button type="submit" class="btn-registrar"
+                                    th:disabled="${!promocion.activa}"
+                                    th:style="${!promocion.activa} ? 'opacity:0.5;cursor:default;' : ''">
+                                Desactivar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Botón eliminar -->
+                <div style="margin-top: 24px; border-top: 1px solid #eee; padding-top: 16px;">
+                    <form th:action="@{/admin/promociones/{id}/eliminar(id=${promocion.id})}" method="post"
+                          onsubmit="return confirm('¿Estás seguro de eliminar esta promoción? Esta acción no se puede deshacer.')">
+                        <button type="submit" class="btn-cancelar" style="background:#e74c3c; color:white;">
+                            Eliminar promoción
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+
+        </section>
+    </main>
+
+</body>
+</html>
