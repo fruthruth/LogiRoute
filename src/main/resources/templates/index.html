@@ -66,19 +66,26 @@
     <section class="promos">
         <div class="container">
             <div class="promos-grid">
-                <div class="promo-card">
+                <div th:each="promo : ${promocionesActivas}" class="promo-card">
+                    <div class="promo-header">
+                        <span class="promo-badge">Promoción</span>
+                    </div>
+                    <p class="promo-desc" th:text="${promo.descripcion}">Descripción de la promoción</p>
+                    <p class="promo-validity">Válido hasta el <span th:text="${#temporals.format(promo.fechaFin, 'dd/MM/yyyy')}">01/01/2026</span></p>
+                </div>
+                <div th:if="${#lists.isEmpty(promocionesActivas)}" class="promo-card">
                     <div class="promo-header">
                         <span class="promo-badge">Promoción</span>
                     </div>
                     <p class="promo-desc">Descuento del 15% para envíos que superen los S/100</p>
-                    <p class="promo-validity">Válido hasta el 12/6/2026</p>
+                    <p class="promo-validity">Válido hasta el 31/12/2026</p>
                 </div>
-                <div class="promo-card">
+                <div th:if="${#lists.isEmpty(promocionesActivas)}" class="promo-card">
                     <div class="promo-header">
                         <span class="promo-badge">Promoción</span>
                     </div>
                     <p class="promo-desc">Por fiestas patrias<br>Descuento del 10%</p>
-                    <p class="promo-validity">Válido hasta el 12/7/2026</p>
+                    <p class="promo-validity">Válido hasta el 31/07/2026</p>
                 </div>
             </div>
         </div>

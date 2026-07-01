@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LogiRoute - Promociones</title>
+    <title>LogiRoute - Gestión de Promociones</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}" href="../css/style.css">
@@ -27,14 +27,16 @@
             </div>
             <div class="admin-user">
                 <span class="admin-username">Administrador</span>
-                <a th:href="@{/logout}" href="/logout" class="btn-salir">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M3 12V7a2 2 0 012-2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M3 12v5a2 2 0 002 2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                    Salir
-                </a>
+                <form th:action="@{/logout}" method="post" style="display:inline">
+                    <button type="submit" class="btn-salir" style="background:none;border:none;cursor:pointer;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 12V7a2 2 0 012-2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M3 12v5a2 2 0 002 2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Salir
+                    </button>
+                </form>
             </div>
         </div>
     </header>
@@ -54,14 +56,143 @@
     <!-- CONTENIDO -->
     <main class="admin-main">
         <section class="dashboard-section">
-            <h2 class="section-title">Promociones</h2>
-            <div style="text-align:center;padding:60px 20px;">
-                <div style="font-size:64px;margin-bottom:24px;">🚧</div>
-                <h3 style="font-size:24px;color:#333;margin-bottom:12px;">Página en construcción</h3>
-                <p style="color:#888;font-size:16px;">Estamos trabajando para traerte las mejores promociones. ¡Vuelve pronto!</p>
+            <h2 class="section-title">Gestión de promociones</h2>
+
+            <!-- Mensajes flash -->
+            <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+            <div th:if="${error}" class="alert alert-warning" th:text="${error}"></div>
+
+            <!-- Toolbar -->
+            <div class="table-toolbar">
+                <div class="search-bar-table">
+                    <input type="text" id="searchInput" placeholder="" class="table-search-input" onkeyup="filtrarTabla()">
+                </div>
+                <button class="btn-filtrar">
+                    <span>▼</span> Filtrar
+                </button>
+                <button class="btn-agregar" onclick="abrirModal()">+ Agregar promoción</button>
+            </div>
+
+            <!-- Tabla de promociones -->
+            <div class="table-wrapper">
+                <table class="admin-table" id="tablaPromociones">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Descripción</th>
+                            <th>Descuento</th>
+                            <th>Monto Mín.</th>
+                            <th>Inicio</th>
+                            <th>Fin</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${promociones}">
+                            <td th:text="${p.titulo}">Promo-verano</td>
+                            <td th:text="${p.descripcion}">Descuento de verano</td>
+                            <td th:text="${p.descuentoPorcentaje + '%'}">15%</td>
+                            <td th:text="${p.montoMinimo != null ? 'S/' + p.montoMinimo : 'Sin mínimo'}">S/50</td>
+                            <td th:text="${#temporals.format(p.fechaInicio, 'dd/MM/yyyy')}">01/01/2026</td>
+                            <td th:text="${#temporals.format(p.fechaFin, 'dd/MM/yyyy')}">31/12/2026</td>
+                            <td>
+                                <span class="estado-badge"
+                                      th:classappend="${p.activa} ? 'estado-entregado' : 'estado-cancelado'"
+                                      th:text="${p.activa} ? 'Activa' : 'Inactiva'">
+                                    Activa
+                                </span>
+                            </td>
+                            <td class="acciones-cell">
+                                <a th:href="@{/admin/promociones/{id}/editar(id=${p.id})}" href="#" class="btn-accion btn-editar" title="Editar">✏️</a>
+                                <form th:action="@{/admin/promociones/{id}/estado(id=${p.id})}" method="post" style="display:inline;">
+                                    <input type="hidden" name="activa" th:value="${!p.activa}">
+                                    <button type="submit" class="btn-accion"
+                                            th:text="${p.activa} ? 'Desactivar' : 'Activar'"
+                                            th:title="${p.activa} ? 'Desactivar' : 'Activar'">
+                                        Activar
+                                    </button>
+                                </form>
+                                <form th:action="@{/admin/promociones/{id}/eliminar(id=${p.id})}" method="post" style="display:inline;"
+                                      onsubmit="return confirm('¿Eliminar esta promoción?')">
+                                    <button type="submit" class="btn-accion btn-reasignar" title="Eliminar">🗑️</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(promociones)}">
+                            <td colspan="8" class="table-empty">No hay promociones registradas.</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </section>
     </main>
+
+    <!-- MODAL: Nueva Promoción -->
+    <div class="modal-overlay" id="modalPromocion">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">Nueva promoción</h3>
+                <button class="modal-close" onclick="cerrarModal()">✕</button>
+            </div>
+
+            <form th:action="@{/admin/promociones/crear}" method="post" class="modal-form">
+
+                <div class="modal-grid">
+                    <div class="modal-field modal-field-full">
+                        <label>Título</label>
+                        <input type="text" name="titulo" placeholder="Ej: Promo de verano" required>
+                    </div>
+                    <div class="modal-field modal-field-full">
+                        <label>Descripción</label>
+                        <textarea name="descripcion" rows="3" placeholder="Describe la promoción..." required style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-family:inherit;"></textarea>
+                    </div>
+                    <div class="modal-field">
+                        <label>Descuento (%)</label>
+                        <input type="number" name="descuentoPorcentaje" min="0.1" max="100" step="0.1" required>
+                    </div>
+                    <div class="modal-field">
+                        <label>Monto mínimo (S/)</label>
+                        <input type="number" name="montoMinimo" min="0" step="0.01" placeholder="Opcional">
+                    </div>
+                    <div class="modal-field">
+                        <label>Fecha y hora inicio</label>
+                        <input type="datetime-local" name="fechaInicio" required>
+                    </div>
+                    <div class="modal-field">
+                        <label>Fecha y hora fin</label>
+                        <input type="datetime-local" name="fechaFin" required>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn-registrar">Crear promoción</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function abrirModal() {
+            document.getElementById('modalPromocion').classList.add('active');
+        }
+        function cerrarModal() {
+            document.getElementById('modalPromocion').classList.remove('active');
+        }
+        function filtrarTabla() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const filas = document.querySelectorAll('#tablaPromociones tbody tr');
+            filas.forEach(fila => {
+                fila.style.display = fila.textContent.toLowerCase().includes(input) ? '' : 'none';
+            });
+        }
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) this.classList.remove('active');
+            });
+        });
+    </script>
 
 </body>
 </html>
