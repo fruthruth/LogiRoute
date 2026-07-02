@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -17,4 +19,6 @@ public class RepartidorResponseDTO {
     private String telefono;
     private String licencia;
     private String estado;
+    private BigDecimal latitude;
+    private BigDecimal longitude;
 }

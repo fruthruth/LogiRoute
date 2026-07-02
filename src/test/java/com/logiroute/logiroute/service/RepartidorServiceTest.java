@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -206,5 +207,38 @@ class RepartidorServiceTest {
         );
 
         verify(repartidorRepository, never()).deleteById(anyLong());
+    }
+
+    @Test
+    void actualizarUbicacion_coordenadasValidas_debeActualizar() {
+        Usuario usuario = Usuario.builder().id(1L).nombre("Test").build();
+        Repartidor repartidor = Repartidor.builder()
+                .id(1L)
+                .usuario(usuario)
+                .estado(Repartidor.EstadoRepartidor.DISPONIBLE)
+                .build();
+
+        when(repartidorRepository.findById(1L)).thenReturn(Optional.of(repartidor));
+        when(repartidorRepository.save(any(Repartidor.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Repartidor resultado = repartidorService.actualizarUbicacion(1L,
+                new BigDecimal("-12.1234567"),
+                new BigDecimal("-77.1234567"));
+
+        assertNotNull(resultado.getLatitude());
+        assertNotNull(resultado.getLongitude());
+        assertEquals(0, new BigDecimal("-12.1234567").compareTo(resultado.getLatitude()));
+        verify(repartidorRepository, times(1)).save(any(Repartidor.class));
+    }
+
+    @Test
+    void actualizarUbicacion_repartidorNoExistente_debeLanzarExcepcion() {
+        when(repartidorRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(RecursoNoEncontradoException.class, () ->
+                repartidorService.actualizarUbicacion(99L,
+                        new BigDecimal("-12.0"),
+                        new BigDecimal("-77.0"))
+        );
     }
 }
