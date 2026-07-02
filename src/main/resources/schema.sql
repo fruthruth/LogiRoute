@@ -3,6 +3,7 @@
 -- Compatible con: MySQL 8+
 -- Ejecutar: mysql -u root -p logiroute_db < schema.sql
 -- FASE 1 (Persona D): Agregadas columnas latitude/longitude
+-- Actualizada
 -- ============================================================
 
 SET NAMES utf8mb4;
