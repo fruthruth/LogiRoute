@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -29,6 +30,12 @@ public class Repartidor {
 
     @Column(nullable = false, length = 20)
     private String licencia;
+
+    @Column(precision = 10, scale = 7)
+    private BigDecimal latitude;
+
+    @Column(precision = 10, scale = 7)
+    private BigDecimal longitude;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
