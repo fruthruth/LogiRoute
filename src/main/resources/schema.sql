@@ -1,15 +1,11 @@
 -- ============================================================
 -- LogiRoute - Script Completo de Base de Datos + Datos de Prueba
--- Compatible con: MySQL 8+
--- Ejecutar: mysql -u root -p logiroute_db < schema-completo.sql
 -- ============================================================
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
--- ============================================================
 -- TABLA: usuarios
--- ============================================================
 CREATE TABLE IF NOT EXISTS usuarios (
     id          BIGINT       NOT NULL AUTO_INCREMENT,
     nombre      VARCHAR(100) NOT NULL,
@@ -24,9 +20,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     CHECK (rol IN ('ADMINISTRADOR', 'REPARTIDOR', 'USUARIO'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
 -- TABLA: administradores
--- ============================================================
 CREATE TABLE IF NOT EXISTS administradores (
     id            BIGINT       NOT NULL AUTO_INCREMENT,
     usuario_id    BIGINT       NOT NULL,
@@ -37,16 +31,16 @@ CREATE TABLE IF NOT EXISTS administradores (
     CONSTRAINT fk_admin_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
--- TABLA: repartidores
--- ============================================================
+-- TABLA: repartidores (CON COORDENADAS PARA MAPA EN VIVO)
 CREATE TABLE IF NOT EXISTS repartidores (
-    id          BIGINT       NOT NULL AUTO_INCREMENT,
-    usuario_id  BIGINT       NOT NULL,
-    telefono    VARCHAR(20)  NOT NULL,
-    licencia    VARCHAR(20)  NOT NULL,
-    estado      VARCHAR(20)  NOT NULL DEFAULT 'DISPONIBLE',
-    created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id          BIGINT        NOT NULL AUTO_INCREMENT,
+    usuario_id  BIGINT        NOT NULL,
+    telefono    VARCHAR(20)   NOT NULL,
+    licencia    VARCHAR(20)   NOT NULL,
+    latitude    DECIMAL(10,7) NULL,
+    longitude   DECIMAL(10,7) NULL,
+    estado      VARCHAR(20)   NOT NULL DEFAULT 'DISPONIBLE',
+    created_at  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     UNIQUE KEY uk_repartidor_usuario (usuario_id),
     UNIQUE KEY uk_repartidor_licencia (licencia),
@@ -54,9 +48,7 @@ CREATE TABLE IF NOT EXISTS repartidores (
     CHECK (estado IN ('DISPONIBLE', 'EN_RUTA', 'INACTIVO'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
 -- TABLA: clientes
--- ============================================================
 CREATE TABLE IF NOT EXISTS clientes (
     id          BIGINT       NOT NULL AUTO_INCREMENT,
     usuario_id  BIGINT       NOT NULL,
@@ -68,9 +60,7 @@ CREATE TABLE IF NOT EXISTS clientes (
     CONSTRAINT fk_cliente_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
 -- TABLA: vehiculos
--- ============================================================
 CREATE TABLE IF NOT EXISTS vehiculos (
     id                BIGINT        NOT NULL AUTO_INCREMENT,
     placa             VARCHAR(20)   NOT NULL,
@@ -87,9 +77,7 @@ CREATE TABLE IF NOT EXISTS vehiculos (
     CHECK (estado IN ('DISPONIBLE', 'EN_USO', 'EN_MANTENIMIENTO'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
 -- TABLA: rutas
--- ============================================================
 CREATE TABLE IF NOT EXISTS rutas (
     id                   BIGINT        NOT NULL AUTO_INCREMENT,
     nombre               VARCHAR(100)  NOT NULL,
@@ -102,9 +90,7 @@ CREATE TABLE IF NOT EXISTS rutas (
     PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
 -- TABLA: pedidos
--- ============================================================
 CREATE TABLE IF NOT EXISTS pedidos (
     id                  BIGINT        NOT NULL AUTO_INCREMENT,
     codigo              VARCHAR(20)   NOT NULL,
@@ -129,9 +115,7 @@ CREATE TABLE IF NOT EXISTS pedidos (
     CHECK (estado IN ('PENDIENTE', 'ASIGNADO', 'EN_RECOJO', 'EN_TRANSITO', 'ENTREGADO', 'CANCELADO'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
 -- TABLA: entregas
--- ============================================================
 CREATE TABLE IF NOT EXISTS entregas (
     id              BIGINT       NOT NULL AUTO_INCREMENT,
     pedido_id       BIGINT       NOT NULL,
@@ -149,9 +133,7 @@ CREATE TABLE IF NOT EXISTS entregas (
     CHECK (estado IN ('PENDIENTE', 'EN_CAMINO', 'ENTREGADO', 'FALLIDO'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
 -- TABLA: incidentes
--- ============================================================
 CREATE TABLE IF NOT EXISTS incidentes (
     id            BIGINT       NOT NULL AUTO_INCREMENT,
     pedido_id     BIGINT       NOT NULL,
@@ -163,9 +145,7 @@ CREATE TABLE IF NOT EXISTS incidentes (
     CHECK (tipo IN ('RETRASO', 'DANO', 'ROBO', 'DIRECCION_INCORRECTA', 'CLIENTE_AUSENTE'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
 -- TABLA: promociones
--- ============================================================
 CREATE TABLE IF NOT EXISTS promociones (
     id                      BIGINT        NOT NULL AUTO_INCREMENT,
     titulo                  VARCHAR(100)  NOT NULL,
@@ -185,10 +165,8 @@ CREATE TABLE IF NOT EXISTS promociones (
 -- DATOS DE PRUEBA
 -- ============================================================
 
--- ------------------------------------------------------------
--- USUARIOS (1 admin + 15 repartidores + 14 clientes = 30)
+-- USUARIOS (1 admin + 15 repartidores + 14 clientes = 30 usuarios)
 -- Password de todos: 123456 (BCrypt hash)
--- ------------------------------------------------------------
 INSERT INTO usuarios (id, nombre, email, password, rol, activo) VALUES
 -- Admin
 (1,  'Carlos Mendoza',    'admin@logiroute.com',       '$2a$10$Keg30UKRXQjNuJ59CSTmQOtRXQO6Bvr3qpEdeUcsh3wes/7FWVwBS', 'ADMINISTRADOR', TRUE),
@@ -224,35 +202,29 @@ INSERT INTO usuarios (id, nombre, email, password, rol, activo) VALUES
 (29, 'Diana Medina',      'diana.medina@gmail.com',       '$2a$10$Keg30UKRXQjNuJ59CSTmQOtRXQO6Bvr3qpEdeUcsh3wes/7FWVwBS', 'USUARIO', TRUE),
 (30, 'Gloria Sanchez',    'gloria.sanchez@hotmail.com',   '$2a$10$Keg30UKRXQjNuJ59CSTmQOtRXQO6Bvr3qpEdeUcsh3wes/7FWVwBS', 'USUARIO', TRUE);
 
--- ------------------------------------------------------------
 -- ADMINISTRADOR
--- ------------------------------------------------------------
 INSERT INTO administradores (usuario_id, departamento) VALUES
 (1, 'Sistemas');
 
--- ------------------------------------------------------------
--- REPARTIDORES (15)
--- ------------------------------------------------------------
-INSERT INTO repartidores (id, usuario_id, telefono, licencia, estado) VALUES
-(1,  2,  '991234567', 'LIC-001', 'DISPONIBLE'),
-(2,  3,  '992345678', 'LIC-002', 'DISPONIBLE'),
-(3,  4,  '993456789', 'LIC-003', 'EN_RUTA'),
-(4,  5,  '994567890', 'LIC-004', 'DISPONIBLE'),
-(5,  6,  '995678901', 'LIC-005', 'DISPONIBLE'),
-(6,  7,  '996789012', 'LIC-006', 'EN_RUTA'),
-(7,  8,  '997890123', 'LIC-007', 'DISPONIBLE'),
-(8,  9,  '998901234', 'LIC-008', 'DISPONIBLE'),
-(9,  10, '999012345', 'LIC-009', 'INACTIVO'),
-(10, 11, '981123456', 'LIC-010', 'DISPONIBLE'),
-(11, 12, '982234567', 'LIC-011', 'EN_RUTA'),
-(12, 13, '983345678', 'LIC-012', 'DISPONIBLE'),
-(13, 14, '984456789', 'LIC-013', 'DISPONIBLE'),
-(14, 15, '985567890', 'LIC-014', 'DISPONIBLE'),
-(15, 16, '986678901', 'LIC-015', 'EN_RUTA');
+-- REPARTIDORES (15) CON COORDENADAS DE LIMA, PERU
+INSERT INTO repartidores (id, usuario_id, telefono, licencia, latitude, longitude, estado) VALUES
+(1,  2,  '991234567', 'LIC-001', -12.1191427, -77.0298243, 'DISPONIBLE'),
+(2,  3,  '992345678', 'LIC-002', -12.1214442, -77.0307238, 'DISPONIBLE'),
+(3,  4,  '993456789', 'LIC-003', -12.1218663, -77.0298085, 'EN_RUTA'),
+(4,  5,  '994567890', 'LIC-004', -12.0923182, -77.0543020, 'DISPONIBLE'),
+(5,  6,  '995678901', 'LIC-005', -12.1149769, -77.0378148, 'DISPONIBLE'),
+(6,  7,  '996789012', 'LIC-006', -12.0752836, -77.0862876, 'EN_RUTA'),
+(7,  8,  '997890123', 'LIC-007', -12.1272085, -77.0353444, 'DISPONIBLE'),
+(8,  9,  '998901234', 'LIC-008', -12.0683394, -77.0628131, 'DISPONIBLE'),
+(9,  10, '999012345', 'LIC-009', -12.0463900, -77.0427874, 'INACTIVO'),
+(10, 11, '981123456', 'LIC-010', -12.0973835, -77.0357773, 'DISPONIBLE'),
+(11, 12, '982234567', 'LIC-011', -12.1091581, -77.0552365, 'EN_RUTA'),
+(12, 13, '983345678', 'LIC-012', -12.1532085, -77.0294304, 'DISPONIBLE'),
+(13, 14, '984456789', 'LIC-013', -12.1487518, -77.0213080, 'DISPONIBLE'),
+(14, 15, '985567890', 'LIC-014', -12.0613946, -77.0347485, 'DISPONIBLE'),
+(15, 16, '986678901', 'LIC-015', -12.1836495, -77.0153406, 'EN_RUTA');
 
--- ------------------------------------------------------------
 -- CLIENTES (14)
--- ------------------------------------------------------------
 INSERT INTO clientes (id, usuario_id, telefono, direccion) VALUES
 (1,  17, '998111222', 'Av. Javier Prado Este 4200, Santiago de Surco'),
 (2,  18, '998222333', 'Jr. de la Unión 678, Cercado de Lima'),
@@ -269,9 +241,7 @@ INSERT INTO clientes (id, usuario_id, telefono, direccion) VALUES
 (13, 29, '997444555', 'Av. Guardia Civil 500, Chorrillos'),
 (14, 30, '997555666', 'Jr. Carabayllo 123, Santa Anita');
 
--- ------------------------------------------------------------
 -- VEHICULOS (15, uno por repartidor)
--- ------------------------------------------------------------
 INSERT INTO vehiculos (id, placa, marca, modelo, anio, capacidad_kg, estado, repartidor_id) VALUES
 (1,  'ABC-123', 'Honda',    'Wave 110',    2023, 10.00, 'EN_USO',       1),
 (2,  'ABC-456', 'Yamaha',   'FZ 2.0',      2022, 12.00, 'EN_USO',       2),
@@ -289,24 +259,92 @@ INSERT INTO vehiculos (id, placa, marca, modelo, anio, capacidad_kg, estado, rep
 (14, 'MNO-456', 'Yamaha',   'Aerox 155',   2024, 12.00, 'EN_USO',       14),
 (15, 'MNO-789', 'Honda',    'Forza 350',   2023, 25.00, 'EN_USO',       15);
 
--- ------------------------------------------------------------
--- RUTAS (10 rutas comunes en Lima)
--- ------------------------------------------------------------
+-- RUTAS — 75 rutas reales del Perú
 INSERT INTO rutas (id, nombre, origen, destino, distancia_km, tiempo_estimado_min, activa) VALUES
-(1,  'Centro - Miraflores',     'Cercado de Lima',          'Miraflores',              8.50,  25.00, TRUE),
-(2,  'Surco - San Isidro',      'Santiago de Surco',        'San Isidro',              6.20,  18.00, TRUE),
-(3,  'San Miguel - Barranco',   'San Miguel',               'Barranco',                5.80,  15.00, TRUE),
-(4,  'Los Olivos - Centro',     'Los Olivos',               'Cercado de Lima',         12.30, 35.00, TRUE),
-(5,  'Surquillo - Miraflores',  'Surquillo',                'Miraflores',              3.20,  10.00, TRUE),
-(6,  'Magdalena - San Borja',   'Magdalena del Mar',        'San Borja',               7.10,  20.00, TRUE),
-(7,  'Chorrillos - Centro',     'Chorrillos',               'Cercado de Lima',         15.60, 40.00, TRUE),
-(8,  'Santa Anita - Surco',     'Santa Anita',              'Santiago de Surco',       9.40,  28.00, TRUE),
-(9,  'Lince - San Isidro',      'Lince',                    'San Isidro',              4.50,  12.00, TRUE),
-(10, 'Breña - Magdalena',       'Breña',                    'Magdalena del Mar',       5.00,  14.00, TRUE);
+(1,  'Cercado - Cayma',                  'Cercado de Arequipa',        'Cayma',                     5.20,  15.00, TRUE),
+(2,  'Cercado - Cerro Colorado',         'Cercado de Arequipa',        'Cerro Colorado',            8.70,  22.00, TRUE),
+(3,  'Cercado - Sachaca',                'Cercado de Arequipa',        'Sachaca',                   7.30,  20.00, TRUE),
+(4,  'Cercado - Yanahuara',              'Cercado de Arequipa',        'Yanahuara',                 3.80,  12.00, TRUE),
+(5,  'Cercado - Socabaya',               'Cercado de Arequipa',        'Socabaya',                  6.10,  18.00, TRUE),
+(6,  'Cercado - Paucarpata',             'Cercado de Arequipa',        'Paucarpata',                4.50,  14.00, TRUE),
+(7,  'Cercado - Miraflores (Arequipa)',  'Cercado de Arequipa',        'Miraflores',                3.20,  10.00, TRUE),
+(8,  'Cercado - José Luis Bustamante',   'Cercado de Arequipa',        'José Luis Bustamante y Rivero', 5.80, 16.00, TRUE),
+(9,  'Cercado - Jacobo Hunter',          'Cercado de Arequipa',        'Jacobo Hunter',             4.10,  12.00, TRUE),
+(10, 'Cercado - Mariano Melgar',         'Cercado de Arequipa',        'Mariano Melgar',            6.90,  19.00, TRUE),
+(11, 'Cercado - Chiguata',               'Cercado de Arequipa',        'Chiguata',                 12.50,  30.00, TRUE),
+(12, 'Cercado - La Joya',                'Cercado de Arequipa',        'La Joya',                  15.80,  35.00, TRUE),
+(13, 'Cercado - Vítor',                  'Cercado de Arequipa',        'Vítor',                    18.20,  40.00, TRUE),
+(14, 'Cercado - Quequeña',               'Cercado de Arequipa',        'Quequeña',                 14.30,  32.00, TRUE),
+(15, 'Cercado - Sabandía',               'Cercado de Arequipa',        'Sabandía',                  8.60,  22.00, TRUE),
+(16, 'Cercado - Yura',                   'Cercado de Arequipa',        'Yura',                     11.40,  28.00, TRUE),
+(17, 'Cercado - Tiabaya',                'Cercado de Arequipa',        'Tiabaya',                   9.70,  24.00, TRUE),
+(18, 'Cercado - Uchumayo',               'Cercado de Arequipa',        'Uchumayo',                 13.10,  30.00, TRUE),
+(19, 'Cercado - Polobaya',               'Cercado de Arequipa',        'Polobaya',                 16.50,  38.00, TRUE),
+(20, 'Cercado - Yarabamba',              'Cercado de Arequipa',        'Yarabamba',                19.80,  42.00, TRUE),
+(21, 'Cercado - Characato',              'Cercado de Arequipa',        'Characato',                10.20,  25.00, TRUE),
+(22, 'Cercado - Pocsi',                  'Cercado de Arequipa',        'Pocsi',                     7.80,  20.00, TRUE),
+(23, 'Cercado - San Juan de Siguas',     'Cercado de Arequipa',        'San Juan de Siguas',       22.40,  48.00, TRUE),
+(24, 'Cercado - Santa Rita de Siguas',   'Cercado de Arequipa',        'Santa Rita de Siguas',     25.10,  52.00, TRUE),
+(25, 'Cercado - Santa Isabel de Siguas', 'Cercado de Arequipa',        'Santa Isabel de Siguas',   23.70,  50.00, TRUE),
+(26, 'Cercado - San Juan de Tarucani',   'Cercado de Arequipa',        'San Juan de Tarucani',     28.60,  55.00, TRUE),
+(27, 'Yanahuara - Selva Alegre',         'Yanahuara',                  'Selva Alegre',              2.10,   8.00, TRUE),
+(28, 'Cayma - Paucarpata',               'Cayma',                      'Paucarpata',                6.40,  18.00, TRUE),
+(29, 'Sachaca - Hunter',                 'Sachaca',                    'Jacobo Hunter',             5.30,  15.00, TRUE),
+(30, 'Cerro Colorado - La Joya',         'Cerro Colorado',             'La Joya',                   9.20,  22.00, TRUE),
+(31, 'Socabaya - Uchumayo',              'Socabaya',                   'Uchumayo',                  8.70,  22.00, TRUE),
+(32, 'Paucarpata - Bustamante',          'Paucarpata',                 'José Luis Bustamante',      3.60,  10.00, TRUE),
+(33, 'Miraflores - Selva Alegre',        'Miraflores',                 'Selva Alegre',              2.80,   9.00, TRUE),
+(34, 'Cercado - Av. Ejército',           'Cercado de Arequipa',        'Av. Ejército (zona norte)', 4.20,  12.00, TRUE),
+(35, 'Cercado - Av. Dolores',            'Cercado de Arequipa',        'Av. Dolores (zona este)',   3.50,  10.00, TRUE),
+(36, 'Cercado - Av. Parra',              'Cercado de Arequipa',        'Av. Parra (zona sur)',      5.10,  14.00, TRUE),
+(37, 'Cercado - Av. La Marina',          'Cercado de Arequipa',        'Av. La Marina (zona oeste)',4.80,  13.00, TRUE),
+(38, 'Cercado - Mercado San Camilo',     'Cercado de Arequipa',        'Mercado San Camilo',        1.20,   5.00, TRUE),
+(39, 'Cercado - Selva Alegre',           'Cercado de Arequipa',        'Selva Alegre',              2.50,   8.00, TRUE),
+(40, 'Cercado - Zona Industrial',        'Cercado de Arequipa',        'Zona Industrial (José Luis Bustamante)', 7.30, 20.00, TRUE),
+(41, 'Cercado - Av. Venezuela',          'Cercado de Arequipa',        'Av. Venezuela (zona norte)',5.60,  16.00, TRUE),
+(42, 'Cercado - Av. Torres Belón',       'Cercado de Arequipa',        'Av. Torres Belón (zona sur)',4.90,  14.00, TRUE);
+INSERT INTO rutas (id, nombre, origen, destino, distancia_km, tiempo_estimado_min, activa) VALUES
+(43, 'Cercado - Miraflores',              'Cercado de Lima',            'Miraflores',                 8.50,  25.00, TRUE),
+(44, 'Surco - San Isidro',                'Santiago de Surco',          'San Isidro',                 6.20,  18.00, TRUE),
+(45, 'San Miguel - Barranco',             'San Miguel',                 'Barranco',                   5.80,  15.00, TRUE),
+(46, 'Los Olivos - Centro',               'Los Olivos',                 'Cercado de Lima',           12.30,  35.00, TRUE),
+(47, 'Surquillo - Miraflores',            'Surquillo',                  'Miraflores',                 3.20,  10.00, TRUE),
+(48, 'Magdalena - San Borja',             'Magdalena del Mar',          'San Borja',                  7.10,  20.00, TRUE),
+(49, 'Chorrillos - Centro',               'Chorrillos',                 'Cercado de Lima',           15.60,  40.00, TRUE),
+(50, 'Santa Anita - Surco',               'Santa Anita',                'Santiago de Surco',          9.40,  28.00, TRUE),
+(51, 'Lince - San Isidro',                'Lince',                      'San Isidro',                 4.50,  12.00, TRUE),
+(52, 'Breña - Magdalena',                 'Breña',                      'Magdalena del Mar',          5.00,  14.00, TRUE),
+(53, 'Cercado - San Juan de Lurigancho',  'Cercado de Lima',            'San Juan de Lurigancho',    18.20,  50.00, TRUE),
+(54, 'Cercado - Villa María del Triunfo', 'Cercado de Lima',            'Villa María del Triunfo',   16.70,  45.00, TRUE),
+(55, 'Cercado - Comas',                   'Cercado de Lima',            'Comas',                     14.50,  40.00, TRUE),
+(56, 'Cercado - Carabayllo',              'Cercado de Lima',            'Carabayllo',                22.30,  55.00, TRUE),
+(57, 'Cercado - Ate',                     'Cercado de Lima',            'Ate',                       11.80,  32.00, TRUE),
+(58, 'Cercate - Santa Anita',             'Cercado de Lima',            'Santa Anita',                4.60,  14.00, TRUE),
+(59, 'Cercado - San Martín de Porres',    'Cercado de Lima',            'San Martín de Porres',      10.40,  30.00, TRUE),
+(60, 'Cercado - Rímac',                   'Cercado de Lima',            'Rímac',                      3.80,  12.00, TRUE),
+(61, 'Cercado - El Agustino',             'Cercado de Lima',            'El Agustino',                6.20,  18.00, TRUE),
+(62, 'Miraflores - San Isidro',           'Miraflores',                 'San Isidro',                 3.40,  10.00, TRUE);
+INSERT INTO rutas (id, nombre, origen, destino, distancia_km, tiempo_estimado_min, activa) VALUES
+(63, 'Cercado - San Sebastián',           'Cercado del Cusco',          'San Sebastián',              5.80,  18.00, TRUE),
+(64, 'Cercado - San Jerónimo',            'Cercado del Cusco',          'San Jerónimo',               6.40,  20.00, TRUE),
+(65, 'Cercado - Wanchaq',                'Cercado del Cusco',          'Wanchaq',                    3.20,  10.00, TRUE),
+(66, 'Cercado - Saylla',                  'Cercado del Cusco',          'Saylla',                     8.10,  22.00, TRUE),
+(67, 'Cercado - Huancaurique',            'Cercado del Cusco',          'Huancaurique',              12.50,  30.00, TRUE);
 
--- ------------------------------------------------------------
--- PEDIDOS (30 pedidos en diversos estados)
--- ------------------------------------------------------------
+INSERT INTO rutas (id, nombre, origen, destino, distancia_km, tiempo_estimado_min, activa) VALUES
+(68, 'Cercado - San Carlos',              'Cercado de Puno',            'San Carlos',                 4.30,  12.00, TRUE),
+(69, 'Cercado - Ayaviri',                 'Cercado de Puno',            'Ayaviri',                   42.50,  90.00, TRUE),
+(70, 'Cercado - Juliaca',                 'Cercado de Puno',            'Juliaca',                   45.00,  95.00, TRUE),
+(71, 'Cercado - Chucuito',                'Cercado de Puno',            'Chucuito',                  18.20,  40.00, TRUE);
+
+INSERT INTO rutas (id, nombre, origen, destino, distancia_km, tiempo_estimado_min, activa) VALUES
+(72, 'Cercado - Alto de la Alianza',      'Cercado de Tacna',           'Alto de la Alianza',         5.60,  15.00, TRUE),
+(73, 'Cercado - Ciudad Nueva',            'Cercado de Tacna',           'Ciudad Nueva',               7.80,  20.00, TRUE),
+(74, 'Cercado - Pocollay',                'Cercado de Tacna',           'Pocollay',                   9.40,  24.00, TRUE);
+
+INSERT INTO rutas (id, nombre, origen, destino, distancia_km, tiempo_estimado_min, activa) VALUES
+(75, 'Cercado - Santiago de Ica',         'Cercado de Ica',             'Santiago de Ica',            6.20,  18.00, TRUE);
+
 INSERT INTO pedidos (id, codigo, cliente_id, repartidor_id, ruta_id, direccion_origen, direccion_destino, peso, tipo_paquete, estado, costo, fecha_estimada, fecha_entrega, created_at) VALUES
 -- ENTREGADOS (1-8)
 (1,  'TRK-2026-001', 1,  1,  1, 'Av. Javier Prado Este 4200', 'Av. Larco 1234, Miraflores',     2.50, 'PAQUETE_MEDIANO', 'ENTREGADO', 35.00, '2026-06-25 14:00:00', '2026-06-25 13:45:00', '2026-06-25 09:00:00'),
@@ -350,9 +388,7 @@ INSERT INTO pedidos (id, codigo, cliente_id, repartidor_id, ruta_id, direccion_o
 (29, 'TRK-2026-029', 9,  NULL, NULL, 'Av. Benavides 890',      'Av. La Marina 500, San Miguel',   1.20, 'DOCUMENTO',       'CANCELADO', NULL, NULL, NULL, '2026-06-29 14:00:00'),
 (30, 'TRK-2026-030', 6,  NULL, NULL, 'Calle Los Olivos 567',   'Jr. de la Unión 100, Centro',     2.80, 'PAQUETE_MEDIANO', 'CANCELADO', NULL, NULL, NULL, '2026-06-29 16:00:00');
 
--- ------------------------------------------------------------
 -- ENTREGAS (para los pedidos ENTREGADOS y EN_TRANSITO)
--- ------------------------------------------------------------
 INSERT INTO entregas (id, pedido_id, repartidor_id, fecha_recojo, fecha_entrega, firma, foto, estado) VALUES
 (1,  1,  1,  '2026-06-25 10:00:00', '2026-06-25 13:45:00', 'M. Gutierrez',  'foto_001.jpg', 'ENTREGADO'),
 (2,  2,  2,  '2026-06-25 11:00:00', '2026-06-25 15:30:00', 'A. Torres',     'foto_002.jpg', 'ENTREGADO'),
@@ -373,9 +409,7 @@ INSERT INTO entregas (id, pedido_id, repartidor_id, fecha_recojo, fecha_entrega,
 (17, 17, 12, '2026-06-30 15:00:00', NULL, NULL, NULL, 'PENDIENTE'),
 (18, 18, 13, '2026-06-30 12:30:00', NULL, NULL, NULL, 'PENDIENTE');
 
--- ------------------------------------------------------------
 -- INCIDENTES (5 incidentes de ejemplo)
--- ------------------------------------------------------------
 INSERT INTO incidentes (pedido_id, tipo, descripcion, created_at) VALUES
 (9,  'RETRASO',                'Trafico intenso en la Via Expresa, retardo de 15 minutos', '2026-06-30 10:30:00'),
 (12, 'DANO',                   'Paquete recibio golpe menor durante el transporte',        '2026-06-30 12:00:00'),
@@ -383,9 +417,7 @@ INSERT INTO incidentes (pedido_id, tipo, descripcion, created_at) VALUES
 (30, 'DIRECCION_INCORRECTA',   'Direccion proporcionada no existe, cliente cancelo',        '2026-06-29 17:00:00'),
 (4,  'RETRASO',                'Lluvia fuerte dificulto el desplazamiento',                '2026-06-26 15:00:00');
 
--- ------------------------------------------------------------
 -- PROMOCIONES
--- ------------------------------------------------------------
 INSERT IGNORE INTO promociones (titulo, descripcion, descuento_porcentaje, monto_minimo, fecha_inicio, fecha_fin, activa) VALUES
 ('Promo de bienvenida', 'Descuento del 15% para envios que superen los S/100', 15.00, 100.00, '2026-01-01 00:00:00', '2026-12-31 23:59:59', TRUE),
 ('Fiestas patrias', 'Descuento del 10% por fiestas patrias', 10.00, NULL, '2026-07-01 00:00:00', '2026-07-31 23:59:59', TRUE),
