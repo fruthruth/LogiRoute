@@ -1,7 +1,9 @@
 package com.logiroute.logiroute.controller;
 
 import com.logiroute.logiroute.model.Pedido;
+import com.logiroute.logiroute.service.IClienteService;
 import com.logiroute.logiroute.service.IPedidoService;
+import com.logiroute.logiroute.service.IPromocionService;
 import com.logiroute.logiroute.service.IRepartidorService;
 import com.logiroute.logiroute.service.IReporteService;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +27,15 @@ public class AdminWebController {
     private final IPedidoService pedidoService;
     private final IRepartidorService repartidorService;
     private final IReporteService reporteService;
+    private final IClienteService clienteService;
+    private final IPromocionService promocionService;
 
     @GetMapping({ "", "/" })
     public String dashboard(Model model) {
         log.debug("Renderizando dashboard");
         model.addAttribute("totalPedidos", pedidoService.contar());
         model.addAttribute("totalRepartidores", repartidorService.listarTodos().size());
+        model.addAttribute("promocionesActivas", promocionService.listarActivasVigentes());
         return "admin/dashboard";
     }
 
@@ -39,12 +44,9 @@ public class AdminWebController {
         log.debug("Renderizando gestión de pedidos");
         model.addAttribute("pedidos", pedidoService.listarTodos());
         model.addAttribute("repartidores", repartidorService.listarTodos());
+        model.addAttribute("clientes", clienteService.listarTodos());
+        model.addAttribute("promocionesActivas", promocionService.listarActivasVigentes());
         return "admin/pedidos";
-    }
-
-    @GetMapping("/promociones")
-    public String promociones() {
-        return "admin/promociones";
     }
 
     @GetMapping("/mapa")

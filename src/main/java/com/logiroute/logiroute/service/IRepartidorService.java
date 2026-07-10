@@ -2,6 +2,7 @@ package com.logiroute.logiroute.service;
 
 import com.logiroute.logiroute.model.Repartidor;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +23,8 @@ public interface IRepartidorService {
                           String telefono, String licencia);
 
     Repartidor actualizarEstado(Long id, String estado);
+
+    Repartidor actualizarUbicacion(Long id, BigDecimal latitude, BigDecimal longitude);
 
     boolean eliminar(Long id);
 }

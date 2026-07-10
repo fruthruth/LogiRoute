@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiRoute - Editar Pedido</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../css/style.css">
+</head>
+<body class="admin-page">
+
+    <!-- HEADER -->
+    <header class="admin-header">
+        <div class="admin-header-inner">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <circle cx="16" cy="16" r="16" fill="#fff"/>
+                        <path d="M8 20l4-8 4 4 4-6 4 10" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">Empresa de logística</span>
+                    <span class="brand-sub">Distribución última milla</span>
+                </div>
+            </div>
+            <div class="admin-user">
+                <span class="admin-username">Administrador</span>
+                <form th:action="@{/logout}" method="post" style="display:inline">
+                    <button type="submit" class="btn-salir" style="background:none;border:none;cursor:pointer;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 12V7a2 2 0 012-2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M3 12v5a2 2 0 002 2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Salir
+                    </button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <!-- NAVBAR -->
+    <nav class="admin-nav">
+        <div class="admin-nav-inner">
+            <a href="#" th:href="@{/admin}" class="nav-item">Vista general</a>
+            <a href="#" th:href="@{/admin/pedidos}" class="nav-item active">Pedidos</a>
+            <a href="#" th:href="@{/admin/repartidores}" class="nav-item">Repartidores</a>
+            <a href="#" th:href="@{/admin/promociones}" class="nav-item">Promociones</a>
+            <a href="#" th:href="@{/admin/mapa}" class="nav-item">Mapa en vivo</a>
+            <a href="#" th:href="@{/admin/reportes}" class="nav-item">Informes</a>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO -->
+    <main class="admin-main">
+        <section class="dashboard-section">
+            <h2 class="section-title">Editar Pedido</h2>
+
+            <!-- Mensajes flash -->
+            <div th:if="${error}" class="alert alert-warning" th:text="${error}"></div>
+
+            <div class="reporte-card" style="max-width: 700px;">
+
+                <!-- Información del pedido -->
+                <div style="margin-bottom: 20px; padding: 12px 16px; background: #f8f9fa; border-radius: 8px;">
+                    <p style="margin: 4px 0;"><strong>Código:</strong> <span th:text="${pedido.codigo}">TRK-0000</span></p>
+                    <p style="margin: 4px 0;"><strong>Estado actual:</strong>
+                        <span class="estado-badge"
+                              th:classappend="${pedido.estado.name() == 'EN_TRANSITO'} ? 'estado-transito' :
+                                              (${pedido.estado.name() == 'PENDIENTE'} ? 'estado-pendiente' :
+                                              (${pedido.estado.name() == 'ENTREGADO'} ? 'estado-entregado' :
+                                              (${pedido.estado.name() == 'CANCELADO'} ? 'estado-cancelado' : 'estado-pendiente')))"
+                              th:text="${pedido.estado.name()}">
+                        </span>
+                    </p>
+                </div>
+
+                <!-- FORMULARIO: Actualizar datos -->
+                <form th:action="@{/admin/pedidos/{id}/actualizar(id=${pedido.id})}" method="post" class="modal-form">
+
+                    <div class="modal-grid">
+                        <div class="modal-field modal-field-full">
+                            <label>Cliente</label>
+                            <select name="clienteId" required>
+                                <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.usuario.nombre}"
+                                        th:selected="${c.id == pedido.cliente.id}">
+                                    Cliente
+                                </option>
+                            </select>
+                        </div>
+                        <div class="modal-field modal-field-full">
+                            <label>Dirección de origen</label>
+                            <input type="text" name="direccionOrigen" th:value="${pedido.direccionOrigen}" required>
+                        </div>
+                        <div class="modal-field modal-field-full">
+                            <label>Dirección de destino</label>
+                            <input type="text" name="direccionDestino" th:value="${pedido.direccionDestino}" required>
+                        </div>
+                        <div class="modal-field">
+                            <label>Peso (kg)</label>
+                            <input type="number" name="peso" th:value="${pedido.peso}" min="0.1" max="20" step="0.1" required>
+                        </div>
+                        <div class="modal-field">
+                            <label>Tipo de paquete</label>
+                            <select name="tipoPaquete" required>
+                                <option value="DOCUMENTO" th:selected="${pedido.tipoPaquete == 'DOCUMENTO'}">Documento</option>
+                                <option value="PAQUETE_PEQUENO" th:selected="${pedido.tipoPaquete == 'PAQUETE_PEQUENO'}">Paquete pequeño</option>
+                                <option value="PAQUETE_MEDIANO" th:selected="${pedido.tipoPaquete == 'PAQUETE_MEDIANO'}">Paquete mediano</option>
+                                <option value="PAQUETE_GRANDE" th:selected="${pedido.tipoPaquete == 'PAQUETE_GRANDE'}">Paquete grande</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="modal-actions" style="margin-top: 24px;">
+                        <a th:href="@{/admin/pedidos}" class="btn-cancelar" style="text-decoration:none; display:inline-flex; align-items:center;">Cancelar</a>
+                        <button type="submit" class="btn-registrar">Guardar cambios</button>
+                    </div>
+                </form>
+
+                <!-- FORMULARIO: Cambiar estado (separado, no anidado) -->
+                <div style="margin-top: 24px; border-top: 1px solid #eee; padding-top: 16px;">
+                    <label style="font-weight:600; margin-bottom:8px; display:block;">Cambiar estado</label>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <form th:action="@{/admin/pedidos/{id}/estado(id=${pedido.id})}" method="post" style="display:inline;">
+                            <input type="hidden" name="estado" value="PENDIENTE">
+                            <button type="submit" class="btn-registrar"
+                                    th:disabled="${pedido.estado.name() == 'PENDIENTE'}"
+                                    th:style="${pedido.estado.name() == 'PENDIENTE'} ? 'opacity:0.5;cursor:default;' : ''">
+                                PENDIENTE
+                            </button>
+                        </form>
+                        <form th:action="@{/admin/pedidos/{id}/estado(id=${pedido.id})}" method="post" style="display:inline;">
+                            <input type="hidden" name="estado" value="ASIGNADO">
+                            <button type="submit" class="btn-registrar"
+                                    th:disabled="${pedido.estado.name() == 'ASIGNADO'}"
+                                    th:style="${pedido.estado.name() == 'ASIGNADO'} ? 'opacity:0.5;cursor:default;' : ''">
+                                ASIGNADO
+                            </button>
+                        </form>
+                        <form th:action="@{/admin/pedidos/{id}/estado(id=${pedido.id})}" method="post" style="display:inline;">
+                            <input type="hidden" name="estado" value="EN_RECOJO">
+                            <button type="submit" class="btn-registrar"
+                                    th:disabled="${pedido.estado.name() == 'EN_RECOJO'}"
+                                    th:style="${pedido.estado.name() == 'EN_RECOJO'} ? 'opacity:0.5;cursor:default;' : ''">
+                                EN RECOJO
+                            </button>
+                        </form>
+                        <form th:action="@{/admin/pedidos/{id}/estado(id=${pedido.id})}" method="post" style="display:inline;">
+                            <input type="hidden" name="estado" value="EN_TRANSITO">
+                            <button type="submit" class="btn-registrar"
+                                    th:disabled="${pedido.estado.name() == 'EN_TRANSITO'}"
+                                    th:style="${pedido.estado.name() == 'EN_TRANSITO'} ? 'opacity:0.5;cursor:default;' : ''">
+                                EN TRÁNSITO
+                            </button>
+                        </form>
+                        <form th:action="@{/admin/pedidos/{id}/estado(id=${pedido.id})}" method="post" style="display:inline;">
+                            <input type="hidden" name="estado" value="ENTREGADO">
+                            <button type="submit" class="btn-registrar"
+                                    th:disabled="${pedido.estado.name() == 'ENTREGADO'}"
+                                    th:style="${pedido.estado.name() == 'ENTREGADO'} ? 'opacity:0.5;cursor:default;' : ''">
+                                ENTREGADO
+                            </button>
+                        </form>
+                        <form th:action="@{/admin/pedidos/{id}/estado(id=${pedido.id})}" method="post" style="display:inline;">
+                            <input type="hidden" name="estado" value="CANCELADO">
+                            <button type="submit" class="btn-registrar"
+                                    th:disabled="${pedido.estado.name() == 'CANCELADO'}"
+                                    th:style="${pedido.estado.name() == 'CANCELADO'} ? 'opacity:0.5;cursor:default;' : ''">
+                                CANCELADO
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Botón eliminar -->
+                <div style="margin-top: 24px; border-top: 1px solid #eee; padding-top: 16px;">
+                    <form th:action="@{/admin/pedidos/{id}/eliminar(id=${pedido.id})}" method="post"
+                          onsubmit="return confirm('¿Estás seguro de eliminar este pedido? Esta acción no se puede deshacer.')">
+                        <button type="submit" class="btn-cancelar" style="background:#e74c3c; color:white;">
+                            Eliminar pedido
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+
+        </section>
+    </main>
+
+</body>
+</html>

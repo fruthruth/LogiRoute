@@ -1,17 +1,11 @@
 -- ============================================================
 -- LogiRoute - Script Completo de Base de Datos + Datos de Prueba
--- Compatible con: MySQL 8+
--- Ejecutar: mysql -u root -p logiroute_db < schema.sql
--- FASE 1 (Persona D): Agregadas columnas latitude/longitude
--- Actualizada
 -- ============================================================
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
--- ============================================================
 -- TABLA: usuarios
--- ============================================================
 CREATE TABLE IF NOT EXISTS usuarios (
     id          BIGINT       NOT NULL AUTO_INCREMENT,
     nombre      VARCHAR(100) NOT NULL,
@@ -26,9 +20,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     CHECK (rol IN ('ADMINISTRADOR', 'REPARTIDOR', 'USUARIO'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
 -- TABLA: administradores
--- ============================================================
 CREATE TABLE IF NOT EXISTS administradores (
     id            BIGINT       NOT NULL AUTO_INCREMENT,
     usuario_id    BIGINT       NOT NULL,
@@ -39,9 +31,7 @@ CREATE TABLE IF NOT EXISTS administradores (
     CONSTRAINT fk_admin_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
 -- TABLA: repartidores (CON COORDENADAS PARA MAPA EN VIVO)
--- ============================================================
 CREATE TABLE IF NOT EXISTS repartidores (
     id          BIGINT        NOT NULL AUTO_INCREMENT,
     usuario_id  BIGINT        NOT NULL,
@@ -58,9 +48,7 @@ CREATE TABLE IF NOT EXISTS repartidores (
     CHECK (estado IN ('DISPONIBLE', 'EN_RUTA', 'INACTIVO'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
 -- TABLA: clientes
--- ============================================================
 CREATE TABLE IF NOT EXISTS clientes (
     id          BIGINT       NOT NULL AUTO_INCREMENT,
     usuario_id  BIGINT       NOT NULL,
@@ -72,9 +60,7 @@ CREATE TABLE IF NOT EXISTS clientes (
     CONSTRAINT fk_cliente_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
 -- TABLA: vehiculos
--- ============================================================
 CREATE TABLE IF NOT EXISTS vehiculos (
     id                BIGINT        NOT NULL AUTO_INCREMENT,
     placa             VARCHAR(20)   NOT NULL,
@@ -91,9 +77,7 @@ CREATE TABLE IF NOT EXISTS vehiculos (
     CHECK (estado IN ('DISPONIBLE', 'EN_USO', 'EN_MANTENIMIENTO'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
 -- TABLA: rutas
--- ============================================================
 CREATE TABLE IF NOT EXISTS rutas (
     id                   BIGINT        NOT NULL AUTO_INCREMENT,
     nombre               VARCHAR(100)  NOT NULL,
@@ -106,9 +90,7 @@ CREATE TABLE IF NOT EXISTS rutas (
     PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
 -- TABLA: pedidos
--- ============================================================
 CREATE TABLE IF NOT EXISTS pedidos (
     id                  BIGINT        NOT NULL AUTO_INCREMENT,
     codigo              VARCHAR(20)   NOT NULL,
@@ -133,9 +115,7 @@ CREATE TABLE IF NOT EXISTS pedidos (
     CHECK (estado IN ('PENDIENTE', 'ASIGNADO', 'EN_RECOJO', 'EN_TRANSITO', 'ENTREGADO', 'CANCELADO'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
 -- TABLA: entregas
--- ============================================================
 CREATE TABLE IF NOT EXISTS entregas (
     id              BIGINT       NOT NULL AUTO_INCREMENT,
     pedido_id       BIGINT       NOT NULL,
@@ -153,9 +133,7 @@ CREATE TABLE IF NOT EXISTS entregas (
     CHECK (estado IN ('PENDIENTE', 'EN_CAMINO', 'ENTREGADO', 'FALLIDO'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
 -- TABLA: incidentes
--- ============================================================
 CREATE TABLE IF NOT EXISTS incidentes (
     id            BIGINT       NOT NULL AUTO_INCREMENT,
     pedido_id     BIGINT       NOT NULL,
@@ -167,9 +145,7 @@ CREATE TABLE IF NOT EXISTS incidentes (
     CHECK (tipo IN ('RETRASO', 'DANO', 'ROBO', 'DIRECCION_INCORRECTA', 'CLIENTE_AUSENTE'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
 -- TABLA: promociones
--- ============================================================
 CREATE TABLE IF NOT EXISTS promociones (
     id                      BIGINT        NOT NULL AUTO_INCREMENT,
     titulo                  VARCHAR(100)  NOT NULL,
@@ -189,10 +165,8 @@ CREATE TABLE IF NOT EXISTS promociones (
 -- DATOS DE PRUEBA
 -- ============================================================
 
--- ------------------------------------------------------------
--- USUARIOS (1 admin + 15 repartidores + 14 clientes = 30)
+-- USUARIOS (1 admin + 15 repartidores + 14 clientes = 30 usuarios)
 -- Password de todos: 123456 (BCrypt hash)
--- ------------------------------------------------------------
 INSERT INTO usuarios (id, nombre, email, password, rol, activo) VALUES
 -- Admin
 (1,  'Carlos Mendoza',    'admin@logiroute.com',       '$2a$10$Keg30UKRXQjNuJ59CSTmQOtRXQO6Bvr3qpEdeUcsh3wes/7FWVwBS', 'ADMINISTRADOR', TRUE),
@@ -228,15 +202,11 @@ INSERT INTO usuarios (id, nombre, email, password, rol, activo) VALUES
 (29, 'Diana Medina',      'diana.medina@gmail.com',       '$2a$10$Keg30UKRXQjNuJ59CSTmQOtRXQO6Bvr3qpEdeUcsh3wes/7FWVwBS', 'USUARIO', TRUE),
 (30, 'Gloria Sanchez',    'gloria.sanchez@hotmail.com',   '$2a$10$Keg30UKRXQjNuJ59CSTmQOtRXQO6Bvr3qpEdeUcsh3wes/7FWVwBS', 'USUARIO', TRUE);
 
--- ------------------------------------------------------------
 -- ADMINISTRADOR
--- ------------------------------------------------------------
 INSERT INTO administradores (usuario_id, departamento) VALUES
 (1, 'Sistemas');
 
--- ------------------------------------------------------------
 -- REPARTIDORES (15) CON COORDENADAS DE LIMA, PERU
--- ------------------------------------------------------------
 INSERT INTO repartidores (id, usuario_id, telefono, licencia, latitude, longitude, estado) VALUES
 (1,  2,  '991234567', 'LIC-001', -12.1191427, -77.0298243, 'DISPONIBLE'),
 (2,  3,  '992345678', 'LIC-002', -12.1214442, -77.0307238, 'DISPONIBLE'),
@@ -254,9 +224,7 @@ INSERT INTO repartidores (id, usuario_id, telefono, licencia, latitude, longitud
 (14, 15, '985567890', 'LIC-014', -12.0613946, -77.0347485, 'DISPONIBLE'),
 (15, 16, '986678901', 'LIC-015', -12.1836495, -77.0153406, 'EN_RUTA');
 
--- ------------------------------------------------------------
 -- CLIENTES (14)
--- ------------------------------------------------------------
 INSERT INTO clientes (id, usuario_id, telefono, direccion) VALUES
 (1,  17, '998111222', 'Av. Javier Prado Este 4200, Santiago de Surco'),
 (2,  18, '998222333', 'Jr. de la Unión 678, Cercado de Lima'),
@@ -273,9 +241,7 @@ INSERT INTO clientes (id, usuario_id, telefono, direccion) VALUES
 (13, 29, '997444555', 'Av. Guardia Civil 500, Chorrillos'),
 (14, 30, '997555666', 'Jr. Carabayllo 123, Santa Anita');
 
--- ------------------------------------------------------------
 -- VEHICULOS (15, uno por repartidor)
--- ------------------------------------------------------------
 INSERT INTO vehiculos (id, placa, marca, modelo, anio, capacidad_kg, estado, repartidor_id) VALUES
 (1,  'ABC-123', 'Honda',    'Wave 110',    2023, 10.00, 'EN_USO',       1),
 (2,  'ABC-456', 'Yamaha',   'FZ 2.0',      2022, 12.00, 'EN_USO',       2),
@@ -293,16 +259,7 @@ INSERT INTO vehiculos (id, placa, marca, modelo, anio, capacidad_kg, estado, rep
 (14, 'MNO-456', 'Yamaha',   'Aerox 155',   2024, 12.00, 'EN_USO',       14),
 (15, 'MNO-789', 'Honda',    'Forza 350',   2023, 25.00, 'EN_USO',       15);
 
--- ============================================================
 -- RUTAS — 75 rutas reales del Perú
--- 42 en Arequipa | 20 en Lima | 5 en Cusco | 4 en Puno
--- 3 en Tacna | 1 en Ica | 1 en Ayacucho | 1 en Huancayo
--- ============================================================
-
--- ------------------------------------------------------------
--- AREQUIPA (42 rutas)
--- Distritos y zonas de la ciudad blanca
--- ------------------------------------------------------------
 INSERT INTO rutas (id, nombre, origen, destino, distancia_km, tiempo_estimado_min, activa) VALUES
 (1,  'Cercado - Cayma',                  'Cercado de Arequipa',        'Cayma',                     5.20,  15.00, TRUE),
 (2,  'Cercado - Cerro Colorado',         'Cercado de Arequipa',        'Cerro Colorado',            8.70,  22.00, TRUE),
@@ -346,11 +303,6 @@ INSERT INTO rutas (id, nombre, origen, destino, distancia_km, tiempo_estimado_mi
 (40, 'Cercado - Zona Industrial',        'Cercado de Arequipa',        'Zona Industrial (José Luis Bustamante)', 7.30, 20.00, TRUE),
 (41, 'Cercado - Av. Venezuela',          'Cercado de Arequipa',        'Av. Venezuela (zona norte)',5.60,  16.00, TRUE),
 (42, 'Cercado - Av. Torres Belón',       'Cercado de Arequipa',        'Av. Torres Belón (zona sur)',4.90,  14.00, TRUE);
-
--- ------------------------------------------------------------
--- LIMA (20 rutas)
--- Distritos y zonas metropolitanas
--- ------------------------------------------------------------
 INSERT INTO rutas (id, nombre, origen, destino, distancia_km, tiempo_estimado_min, activa) VALUES
 (43, 'Cercado - Miraflores',              'Cercado de Lima',            'Miraflores',                 8.50,  25.00, TRUE),
 (44, 'Surco - San Isidro',                'Santiago de Surco',          'San Isidro',                 6.20,  18.00, TRUE),
@@ -372,10 +324,6 @@ INSERT INTO rutas (id, nombre, origen, destino, distancia_km, tiempo_estimado_mi
 (60, 'Cercado - Rímac',                   'Cercado de Lima',            'Rímac',                      3.80,  12.00, TRUE),
 (61, 'Cercado - El Agustino',             'Cercado de Lima',            'El Agustino',                6.20,  18.00, TRUE),
 (62, 'Miraflores - San Isidro',           'Miraflores',                 'San Isidro',                 3.40,  10.00, TRUE);
-
--- ------------------------------------------------------------
--- CUSCO (5 rutas)
--- ------------------------------------------------------------
 INSERT INTO rutas (id, nombre, origen, destino, distancia_km, tiempo_estimado_min, activa) VALUES
 (63, 'Cercado - San Sebastián',           'Cercado del Cusco',          'San Sebastián',              5.80,  18.00, TRUE),
 (64, 'Cercado - San Jerónimo',            'Cercado del Cusco',          'San Jerónimo',               6.40,  20.00, TRUE),
@@ -383,32 +331,20 @@ INSERT INTO rutas (id, nombre, origen, destino, distancia_km, tiempo_estimado_mi
 (66, 'Cercado - Saylla',                  'Cercado del Cusco',          'Saylla',                     8.10,  22.00, TRUE),
 (67, 'Cercado - Huancaurique',            'Cercado del Cusco',          'Huancaurique',              12.50,  30.00, TRUE);
 
--- ------------------------------------------------------------
--- PUNO (4 rutas)
--- ------------------------------------------------------------
 INSERT INTO rutas (id, nombre, origen, destino, distancia_km, tiempo_estimado_min, activa) VALUES
 (68, 'Cercado - San Carlos',              'Cercado de Puno',            'San Carlos',                 4.30,  12.00, TRUE),
 (69, 'Cercado - Ayaviri',                 'Cercado de Puno',            'Ayaviri',                   42.50,  90.00, TRUE),
 (70, 'Cercado - Juliaca',                 'Cercado de Puno',            'Juliaca',                   45.00,  95.00, TRUE),
 (71, 'Cercado - Chucuito',                'Cercado de Puno',            'Chucuito',                  18.20,  40.00, TRUE);
 
--- ------------------------------------------------------------
--- TACNA (3 rutas)
--- ------------------------------------------------------------
 INSERT INTO rutas (id, nombre, origen, destino, distancia_km, tiempo_estimado_min, activa) VALUES
 (72, 'Cercado - Alto de la Alianza',      'Cercado de Tacna',           'Alto de la Alianza',         5.60,  15.00, TRUE),
 (73, 'Cercado - Ciudad Nueva',            'Cercado de Tacna',           'Ciudad Nueva',               7.80,  20.00, TRUE),
 (74, 'Cercado - Pocollay',                'Cercado de Tacna',           'Pocollay',                   9.40,  24.00, TRUE);
 
--- ------------------------------------------------------------
--- ICA (1 ruta)
--- ------------------------------------------------------------
 INSERT INTO rutas (id, nombre, origen, destino, distancia_km, tiempo_estimado_min, activa) VALUES
 (75, 'Cercado - Santiago de Ica',         'Cercado de Ica',             'Santiago de Ica',            6.20,  18.00, TRUE);
 
--- ------------------------------------------------------------
--- PEDIDOS (30 pedidos en diversos estados)
--- ------------------------------------------------------------
 INSERT INTO pedidos (id, codigo, cliente_id, repartidor_id, ruta_id, direccion_origen, direccion_destino, peso, tipo_paquete, estado, costo, fecha_estimada, fecha_entrega, created_at) VALUES
 -- ENTREGADOS (1-8)
 (1,  'TRK-2026-001', 1,  1,  1, 'Av. Javier Prado Este 4200', 'Av. Larco 1234, Miraflores',     2.50, 'PAQUETE_MEDIANO', 'ENTREGADO', 35.00, '2026-06-25 14:00:00', '2026-06-25 13:45:00', '2026-06-25 09:00:00'),
@@ -452,9 +388,7 @@ INSERT INTO pedidos (id, codigo, cliente_id, repartidor_id, ruta_id, direccion_o
 (29, 'TRK-2026-029', 9,  NULL, NULL, 'Av. Benavides 890',      'Av. La Marina 500, San Miguel',   1.20, 'DOCUMENTO',       'CANCELADO', NULL, NULL, NULL, '2026-06-29 14:00:00'),
 (30, 'TRK-2026-030', 6,  NULL, NULL, 'Calle Los Olivos 567',   'Jr. de la Unión 100, Centro',     2.80, 'PAQUETE_MEDIANO', 'CANCELADO', NULL, NULL, NULL, '2026-06-29 16:00:00');
 
--- ------------------------------------------------------------
 -- ENTREGAS (para los pedidos ENTREGADOS y EN_TRANSITO)
--- ------------------------------------------------------------
 INSERT INTO entregas (id, pedido_id, repartidor_id, fecha_recojo, fecha_entrega, firma, foto, estado) VALUES
 (1,  1,  1,  '2026-06-25 10:00:00', '2026-06-25 13:45:00', 'M. Gutierrez',  'foto_001.jpg', 'ENTREGADO'),
 (2,  2,  2,  '2026-06-25 11:00:00', '2026-06-25 15:30:00', 'A. Torres',     'foto_002.jpg', 'ENTREGADO'),
@@ -475,9 +409,7 @@ INSERT INTO entregas (id, pedido_id, repartidor_id, fecha_recojo, fecha_entrega,
 (17, 17, 12, '2026-06-30 15:00:00', NULL, NULL, NULL, 'PENDIENTE'),
 (18, 18, 13, '2026-06-30 12:30:00', NULL, NULL, NULL, 'PENDIENTE');
 
--- ------------------------------------------------------------
 -- INCIDENTES (5 incidentes de ejemplo)
--- ------------------------------------------------------------
 INSERT INTO incidentes (pedido_id, tipo, descripcion, created_at) VALUES
 (9,  'RETRASO',                'Trafico intenso en la Via Expresa, retardo de 15 minutos', '2026-06-30 10:30:00'),
 (12, 'DANO',                   'Paquete recibio golpe menor durante el transporte',        '2026-06-30 12:00:00'),
@@ -485,9 +417,7 @@ INSERT INTO incidentes (pedido_id, tipo, descripcion, created_at) VALUES
 (30, 'DIRECCION_INCORRECTA',   'Direccion proporcionada no existe, cliente cancelo',        '2026-06-29 17:00:00'),
 (4,  'RETRASO',                'Lluvia fuerte dificulto el desplazamiento',                '2026-06-26 15:00:00');
 
--- ------------------------------------------------------------
 -- PROMOCIONES
--- ------------------------------------------------------------
 INSERT IGNORE INTO promociones (titulo, descripcion, descuento_porcentaje, monto_minimo, fecha_inicio, fecha_fin, activa) VALUES
 ('Promo de bienvenida', 'Descuento del 15% para envios que superen los S/100', 15.00, 100.00, '2026-01-01 00:00:00', '2026-12-31 23:59:59', TRUE),
 ('Fiestas patrias', 'Descuento del 10% por fiestas patrias', 10.00, NULL, '2026-07-01 00:00:00', '2026-07-31 23:59:59', TRUE),
