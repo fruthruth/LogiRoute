@@ -14,6 +14,8 @@ public interface IRepartidorService {
 
     Optional<Repartidor> obtenerPorLicencia(String licencia);
 
+    Optional<Repartidor> obtenerPorEmail(String email);
+
     List<Repartidor> listarDisponibles();
 
     Repartidor crear(String nombre, String email, String password,

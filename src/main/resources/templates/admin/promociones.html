@@ -94,8 +94,8 @@
                             <td th:text="${p.descripcion}">Descuento de verano</td>
                             <td th:text="${p.descuentoPorcentaje + '%'}">15%</td>
                             <td th:text="${p.montoMinimo != null ? 'S/' + p.montoMinimo : 'Sin mínimo'}">S/50</td>
-                            <td th:text="${#temporals.format(p.fechaInicio, 'dd/MM/yyyy')}">01/01/2026</td>
-                            <td th:text="${#temporals.format(p.fechaFin, 'dd/MM/yyyy')}">31/12/2026</td>
+                            <td th:text="${T(com.logiroute.logiroute.utils.DateFormatter).format(p.fechaInicio, 'dd/MM/yyyy')}">01/01/2026</td>
+                            <td th:text="${T(com.logiroute.logiroute.utils.DateFormatter).format(p.fechaFin, 'dd/MM/yyyy')}">31/12/2026</td>
                             <td>
                                 <span class="estado-badge"
                                       th:classappend="${p.activa} ? 'estado-entregado' : 'estado-cancelado'"
@@ -145,7 +145,7 @@
                     </div>
                     <div class="modal-field modal-field-full">
                         <label>Descripción</label>
-                        <textarea name="descripcion" rows="3" placeholder="Describe la promoción..." required style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-family:inherit;"></textarea>
+                        <textarea name="descripcion" rows="3" placeholder="Describe la promoción..." required style="width:100%;padding:0.6rem 0.75rem;border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;font-family:inherit;background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.9);outline:none;"></textarea>
                     </div>
                     <div class="modal-field">
                         <label>Descuento (%)</label>

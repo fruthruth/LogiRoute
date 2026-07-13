@@ -367,7 +367,7 @@
                     <span class="promo-badge">⚡ Promo</span>
                 </div>
                 <p class="promo-desc" th:text="${promo.descripcion}"></p>
-                <p class="promo-validity">Válido hasta el <span th:text="${#temporals.format(promo.fechaFin, 'dd/MM/yyyy')}"></span></p>
+                <p class="promo-validity">Válido hasta el <span th:text="${T(com.logiroute.logiroute.utils.DateFormatter).format(promo.fechaFin, 'dd/MM/yyyy')}"></span></p>
             </div>
             <div th:if="${#lists.isEmpty(promocionesActivas)}" class="promo-card">
                 <div class="promo-header">

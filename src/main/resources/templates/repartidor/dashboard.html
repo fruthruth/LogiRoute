@@ -76,11 +76,8 @@
                             <td th:text="${pedido.direccionDestino}"></td>
                             <td>
                                 <span class="estado-badge"
-                                      th:classappend="${pedido.estado.name() == 'EN_TRANSITO'} ? 'estado-transito' :
-                                                      (${pedido.estado.name() == 'PENDIENTE'} ? 'estado-pendiente' :
-                                                      (${pedido.estado.name() == 'ENTREGADO'} ? 'estado-entregado' :
-                                                      (${pedido.estado.name() == 'CANCELADO'} ? 'estado-cancelado' : 'estado-pendiente')))"
-                                      th:text="${pedido.estado.name()}">
+                                      th:classappend="${pedido.estadoCssClass}"
+                                      th:text="${pedido.estadoTexto}">
                                 </span>
                             </td>
                             <td>

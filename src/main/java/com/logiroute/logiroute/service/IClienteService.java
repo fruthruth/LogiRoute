@@ -14,6 +14,8 @@ public interface IClienteService {
 
     Optional<Cliente> obtenerPorUsuarioId(Long usuarioId);
 
+    Optional<Cliente> obtenerPorEmail(String email);
+
     Cliente crear(ClienteDTO dto);
 
     Cliente actualizar(Long id, ClienteDTO dto);

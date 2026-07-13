@@ -81,8 +81,8 @@
                                 <td th:text="${pedido.direccionDestino}"></td>
                                 <td>
                                     <span class="estado-badge"
-                                          th:classappend="${pedido.estado.name() == 'ENTREGADO'} ? 'estado-entregado' : (${pedido.estado.name() == 'PENDIENTE'} ? 'estado-pendiente' : 'estado-transito')"
-                                          th:text="${pedido.estado.name()}">
+                                          th:classappend="${pedido.estadoCssClass}"
+                                          th:text="${pedido.estadoTexto}">
                                     </span>
                                 </td>
                                 <td>

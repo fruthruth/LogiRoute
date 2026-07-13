@@ -64,8 +64,8 @@
             <div class="reporte-card" style="max-width: 700px;">
 
                 <!-- Información de la promoción -->
-                <div style="margin-bottom: 20px; padding: 12px 16px; background: #f8f9fa; border-radius: 8px;">
-                    <p style="margin: 4px 0;"><strong>Estado actual:</strong>
+                <div style="margin-bottom: 20px; padding: 12px 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px;">
+                    <p style="margin: 4px 0; color: rgba(255,255,255,0.9);"><strong style="color: rgba(255,255,255,0.5);">Estado actual:</strong>
                         <span class="estado-badge"
                               th:classappend="${promocion.activa} ? 'estado-entregado' : 'estado-cancelado'"
                               th:text="${promocion.activa} ? 'Activa' : 'Inactiva'">
@@ -83,7 +83,7 @@
                         </div>
                         <div class="modal-field modal-field-full">
                             <label>Descripción</label>
-                            <textarea name="descripcion" rows="3" required style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-family:inherit;" th:text="${promocion.descripcion}"></textarea>
+                            <textarea name="descripcion" rows="3" required style="width:100%;padding:0.6rem 0.75rem;border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;font-family:inherit;background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.9);outline:none;" th:text="${promocion.descripcion}"></textarea>
                         </div>
                         <div class="modal-field">
                             <label>Descuento (%)</label>
@@ -95,11 +95,11 @@
                         </div>
                         <div class="modal-field">
                             <label>Fecha y hora inicio</label>
-                            <input type="datetime-local" name="fechaInicio" th:value="${#temporals.format(promocion.fechaInicio, 'yyyy-MM-dd\\'T\\'HH:mm')}" required>
+                            <input type="datetime-local" name="fechaInicio" th:value="${T(com.logiroute.logiroute.utils.DateFormatter).toIso(promocion.fechaInicio)}" required>
                         </div>
                         <div class="modal-field">
                             <label>Fecha y hora fin</label>
-                            <input type="datetime-local" name="fechaFin" th:value="${#temporals.format(promocion.fechaFin, 'yyyy-MM-dd\\'T\\'HH:mm')}" required>
+                            <input type="datetime-local" name="fechaFin" th:value="${T(com.logiroute.logiroute.utils.DateFormatter).toIso(promocion.fechaFin)}" required>
                         </div>
                     </div>
 

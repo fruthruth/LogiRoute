@@ -66,18 +66,11 @@
                             <td th:text="${pedido.direccionDestino}"></td>
                             <td>
                                 <span class="estado-badge"
-                                      th:classappend="${pedido.estado.name() == 'ENTREGADO'} ? 'estado-entregado' :
-                                                      (${pedido.estado.name() == 'PENDIENTE'} ? 'estado-pendiente' :
-                                                      (${pedido.estado.name() == 'CANCELADO'} ? 'estado-cancelado' : 'estado-transito'))"
-                                      th:text="${pedido.estado.name() == 'PENDIENTE'} ? 'Pendiente' :
-                                               (${pedido.estado.name() == 'ASIGNADO'} ? 'Asignado' :
-                                               (${pedido.estado.name() == 'EN_RECOJO'} ? 'En recojo' :
-                                               (${pedido.estado.name() == 'EN_TRANSITO'} ? 'En camino' :
-                                               (${pedido.estado.name() == 'ENTREGADO'} ? 'Entregado' :
-                                               (${pedido.estado.name() == 'CANCELADO'} ? 'Cancelado' : ${pedido.estado.name()}))))))">
+                                      th:classappend="${pedido.estadoCssClass}"
+                                      th:text="${pedido.estadoTexto}">
                                 </span>
                             </td>
-                            <td th:text="${#temporals.format(pedido.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td th:text="${T(com.logiroute.logiroute.utils.DateFormatter).format(pedido.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                             <td>
                                 <a th:href="@{/cliente/pedidos/{id}(id=${pedido.id})}" class="btn-accion">Ver detalle</a>
                             </td>

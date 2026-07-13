@@ -10,6 +10,10 @@ public interface IPedidoService {
 
     List<Pedido> listarTodos();
 
+    List<Pedido> listarPorClienteId(Long clienteId);
+
+    List<Pedido> listarPorRepartidorId(Long repartidorId);
+
     Optional<Pedido> obtenerPorId(Long id);
 
     Optional<Pedido> obtenerPorCodigo(String codigo);
@@ -23,4 +27,6 @@ public interface IPedidoService {
     boolean eliminar(Long id);
 
     long contar();
+
+    long contarEntregasHoyPorRepartidor(Long repartidorId);
 }

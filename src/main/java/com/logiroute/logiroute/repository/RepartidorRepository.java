@@ -13,4 +13,6 @@ public interface RepartidorRepository extends JpaRepository<Repartidor, Long> {
     List<Repartidor> findByEstado(Repartidor.EstadoRepartidor estado);
 
     Optional<Repartidor> findByLicencia(String licencia);
+
+    Optional<Repartidor> findByUsuarioEmail(String email);
 }

@@ -46,6 +46,13 @@ public class ClienteService implements IClienteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Optional<Cliente> obtenerPorEmail(String email) {
+        log.debug("Buscando cliente con email: {}", email);
+        return clienteRepository.findByUsuarioEmail(email);
+    }
+
+    @Override
     @Transactional
     public Cliente crear(ClienteDTO dto) {
         log.info("Creando cliente para usuario id: {}", dto.getUsuarioId());

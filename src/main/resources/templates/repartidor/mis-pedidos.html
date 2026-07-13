@@ -66,12 +66,8 @@
                             <td th:text="${pedido.peso + ' kg'}"></td>
                             <td>
                                 <span class="estado-badge"
-                                      th:classappend="${pedido.estado.name() == 'EN_TRANSITO'} ? 'estado-transito' :
-                                                      (${pedido.estado.name() == 'ASIGNADO'} ? 'estado-pendiente' :
-                                                      (${pedido.estado.name() == 'EN_RECOJO'} ? 'estado-transito' : 'estado-pendiente'))"
-                                      th:text="${pedido.estado.name() == 'ASIGNADO'} ? 'Asignado' :
-                                               (${pedido.estado.name() == 'EN_RECOJO'} ? 'En recojo' :
-                                               (${pedido.estado.name() == 'EN_TRANSITO'} ? 'En camino' : ${pedido.estado.name()}))">
+                                      th:classappend="${pedido.estadoCssClass}"
+                                      th:text="${pedido.estadoTexto}">
                                 </span>
                             </td>
                             <td class="acciones-cell">

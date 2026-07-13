@@ -52,6 +52,13 @@ public class RepartidorService implements IRepartidorService {
 
     @Override
     @Transactional(readOnly = true)
+    public Optional<Repartidor> obtenerPorEmail(String email) {
+        log.debug("Buscando repartidor con email: {}", email);
+        return repartidorRepository.findByUsuarioEmail(email);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<Repartidor> listarDisponibles() {
         log.debug("Listando repartidores disponibles");
         return repartidorRepository.findByEstado(Repartidor.EstadoRepartidor.DISPONIBLE);

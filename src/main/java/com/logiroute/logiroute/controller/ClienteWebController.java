@@ -38,9 +38,7 @@ public class ClienteWebController {
             return "redirect:/login";
         }
 
-        List<Pedido> pedidos = pedidoService.listarTodos().stream()
-                .filter(p -> p.getCliente() != null && p.getCliente().getId().equals(cliente.getId()))
-                .toList();
+        List<Pedido> pedidos = pedidoService.listarPorClienteId(cliente.getId());
 
         List<Pedido> recientes = pedidos.stream()
                 .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
@@ -71,9 +69,7 @@ public class ClienteWebController {
             return "redirect:/login";
         }
 
-        List<Pedido> pedidos = pedidoService.listarTodos().stream()
-                .filter(p -> p.getCliente() != null && p.getCliente().getId().equals(cliente.getId()))
-                .toList();
+        List<Pedido> pedidos = pedidoService.listarPorClienteId(cliente.getId());
 
         model.addAttribute("pedidos", pedidos);
         model.addAttribute("cliente", cliente);
@@ -162,8 +158,6 @@ public class ClienteWebController {
         }
 
         try {
-            cliente.setTelefono(telefono);
-            cliente.setDireccion(direccion);
             clienteService.actualizar(cliente.getId(), ClienteDTO.builder()
                     .telefono(telefono)
                     .direccion(direccion)
@@ -178,9 +172,6 @@ public class ClienteWebController {
     private Cliente getClienteFromAuth(Authentication auth) {
         if (auth == null) return null;
         String email = auth.getName();
-        return clienteService.listarTodos().stream()
-                .filter(c -> c.getUsuario().getEmail().equals(email))
-                .findFirst()
-                .orElse(null);
+        return clienteService.obtenerPorEmail(email).orElse(null);
     }
 }

@@ -59,11 +59,11 @@
                             <td th:text="${pedido.direccionDestino}"></td>
                             <td>
                                 <span class="estado-badge"
-                                      th:classappend="${pedido.estado.name() == 'ENTREGADO'} ? 'estado-entregado' : 'estado-cancelado'"
-                                      th:text="${pedido.estado.name() == 'ENTREGADO'} ? 'Entregado' : 'Cancelado'">
+                                      th:classappend="${pedido.estadoCssClass}"
+                                      th:text="${pedido.estadoTexto}">
                                 </span>
                             </td>
-                            <td th:text="${pedido.fechaEntrega != null ? #temporals.format(pedido.fechaEntrega, 'dd/MM/yyyy HH:mm') : '—'}"></td>
+                            <td th:text="${pedido.fechaEntrega != null ? T(com.logiroute.logiroute.utils.DateFormatter).format(pedido.fechaEntrega, 'dd/MM/yyyy HH:mm') : '—'}"></td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(pedidos)}">
                             <td colspan="4" class="table-empty">No hay entregas en el historial.</td>
