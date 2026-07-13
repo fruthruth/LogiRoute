@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiRoute - Mis Pedidos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../css/style.css">
+</head>
+<body class="admin-page">
+
+    <header class="admin-header">
+        <div class="admin-header-inner">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <circle cx="16" cy="16" r="16" fill="#fff"/>
+                        <path d="M8 20l4-8 4 4 4-6 4 10" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">LogiRoute</span>
+                    <span class="brand-sub">Mis Pedidos</span>
+                </div>
+            </div>
+            <div class="admin-user">
+                <span class="admin-username" th:text="${cliente.usuario.nombre}">Cliente</span>
+                <form th:action="@{/logout}" method="post" style="display:inline">
+                    <button type="submit" class="btn-salir" style="background:none;border:none;cursor:pointer;">Salir</button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <nav class="admin-nav">
+        <div class="admin-nav-inner">
+            <a th:href="@{/cliente}" class="nav-item">Inicio</a>
+            <a th:href="@{/cliente/pedidos}" class="nav-item active">Mis pedidos</a>
+            <a th:href="@{/cliente/pedidos/crear}" class="nav-item">Nuevo pedido</a>
+            <a th:href="@{/cliente/perfil}" class="nav-item">Mi perfil</a>
+        </div>
+    </nav>
+
+    <main class="admin-main">
+        <section class="dashboard-section">
+            <h2 class="section-title">Mis pedidos</h2>
+
+            <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+            <div th:if="${error}" class="alert alert-warning" th:text="${error}"></div>
+
+            <div class="table-wrapper">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Destino</th>
+                            <th>Estado</th>
+                            <th>Fecha creación</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="pedido : ${pedidos}">
+                            <td th:text="${pedido.codigo}"></td>
+                            <td th:text="${pedido.direccionDestino}"></td>
+                            <td>
+                                <span class="estado-badge"
+                                      th:classappend="${pedido.estado.name() == 'ENTREGADO'} ? 'estado-entregado' :
+                                                      (${pedido.estado.name() == 'PENDIENTE'} ? 'estado-pendiente' :
+                                                      (${pedido.estado.name() == 'CANCELADO'} ? 'estado-cancelado' : 'estado-transito'))"
+                                      th:text="${pedido.estado.name() == 'PENDIENTE'} ? 'Pendiente' :
+                                               (${pedido.estado.name() == 'ASIGNADO'} ? 'Asignado' :
+                                               (${pedido.estado.name() == 'EN_RECOJO'} ? 'En recojo' :
+                                               (${pedido.estado.name() == 'EN_TRANSITO'} ? 'En camino' :
+                                               (${pedido.estado.name() == 'ENTREGADO'} ? 'Entregado' :
+                                               (${pedido.estado.name() == 'CANCELADO'} ? 'Cancelado' : ${pedido.estado.name()}))))))">
+                                </span>
+                            </td>
+                            <td th:text="${#temporals.format(pedido.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td>
+                                <a th:href="@{/cliente/pedidos/{id}(id=${pedido.id})}" class="btn-accion">Ver detalle</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(pedidos)}">
+                            <td colspan="5" class="table-empty">No tienes pedidos registrados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>

@@ -44,7 +44,7 @@ public class AuthWebController {
             if (authentication.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"))) {
                 return "redirect:/admin";
-             } else if (authentication.getAuthorities().stream()
+            } else if (authentication.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_REPARTIDOR"))) {
                 return "redirect:/repartidor";
             } else {

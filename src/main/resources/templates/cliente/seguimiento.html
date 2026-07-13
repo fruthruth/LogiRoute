@@ -4,60 +4,95 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LogiRoute - Seguimiento</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../css/style.css">
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-brand">LogiRoute</div>
         <div class="nav-links">
-            <a th:href="@{/cliente/seguimiento}" class="active">Seguimiento</a>
-            <form th:action="@{/logout}" method="post" style="display:inline">
-                <button type="submit" class="btn-logout" style="background:none;border:none;cursor:pointer;color:inherit;text-decoration:none;">Salir</button>
-            </form>
+            <a th:href="@{/}" class="active">Inicio</a>
+            <a th:href="@{/login}">Iniciar sesión</a>
         </div>
     </nav>
 
     <div class="container">
         <h1>Seguimiento de Pedido</h1>
 
-        <form th:action="@{/cliente/seguimiento}" method="get" class="search-form">
+        <form id="searchForm" class="search-form">
             <div class="form-group">
                 <label for="codigo">Código de Pedido</label>
-                <input type="text" id="codigo" name="codigo" th:value="${codigo}"
-                       placeholder="Ej: PED12345678" required>
+                <input type="text" id="codigo" placeholder="Ej: PED12345678" required>
             </div>
             <button type="submit" class="btn btn-primary">Buscar</button>
         </form>
 
-        <div th:if="${pedido}" class="result-card">
+        <div id="resultCard" class="result-card" style="display:none">
             <h2>Estado del Pedido</h2>
             <div class="detail-grid">
                 <div class="detail-item">
                     <strong>Código:</strong>
-                    <span th:text="${pedido.codigo}"></span>
+                    <span id="tCodigo"></span>
                 </div>
                 <div class="detail-item">
                     <strong>Estado:</strong>
-                    <span class="badge" th:text="${pedido.estado}"></span>
+                    <span id="tEstado" class="badge"></span>
                 </div>
                 <div class="detail-item">
                     <strong>Origen:</strong>
-                    <span th:text="${pedido.direccionOrigen}"></span>
+                    <span id="tOrigen"></span>
                 </div>
                 <div class="detail-item">
                     <strong>Destino:</strong>
-                    <span th:text="${pedido.direccionDestino}"></span>
+                    <span id="tDestino"></span>
                 </div>
-                <div class="detail-item" th:if="${pedido.repartidorNombre}">
+                <div class="detail-item" id="tRepartidorRow" style="display:none">
                     <strong>Repartidor:</strong>
-                    <span th:text="${pedido.repartidorNombre}"></span>
+                    <span id="tRepartidor"></span>
                 </div>
             </div>
         </div>
 
-        <div th:if="${codigo and pedido == null}" class="alert alert-warning">
-            No se encontró un pedido con el código: <span th:text="${codigo}"></span>
+        <div id="errorDiv" class="alert alert-warning" style="display:none">
+            No se encontró un pedido con ese código.
         </div>
     </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const codigo = document.getElementById('codigo').value.trim();
+            const resultCard = document.getElementById('resultCard');
+            const errorDiv = document.getElementById('errorDiv');
+            resultCard.style.display = 'none';
+            errorDiv.style.display = 'none';
+            if (!codigo) return;
+            try {
+                const res = await fetch('/api/publico/seguimiento/' + encodeURIComponent(codigo));
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('tCodigo').textContent = data.codigo;
+                    document.getElementById('tEstado').textContent = data.estado.replace('_', ' ');
+                    document.getElementById('tEstado').style.background =
+                        data.estado === 'ENTREGADO' ? '#16a34a' :
+                        data.estado === 'CANCELADO' ? '#dc2626' : '#f59e0b';
+                    document.getElementById('tOrigen').textContent = data.direccionOrigen || '-';
+                    document.getElementById('tDestino').textContent = data.direccionDestino || '-';
+                    if (data.repartidorNombre) {
+                        document.getElementById('tRepartidor').textContent = data.repartidorNombre;
+                        document.getElementById('tRepartidorRow').style.display = 'block';
+                    } else {
+                        document.getElementById('tRepartidorRow').style.display = 'none';
+                    }
+                    resultCard.style.display = 'block';
+                } else {
+                    errorDiv.style.display = 'block';
+                }
+            } catch(err) {
+                errorDiv.style.display = 'block';
+            }
+        });
+    </script>
 </body>
 </html>
