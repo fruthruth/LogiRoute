@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LogiRoute - Historial de Entregas</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>LogiRoute - Mis Pedidos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../css/style.css">
 </head>
 <body class="admin-page">
 
@@ -19,11 +21,11 @@
                 </div>
                 <div class="brand-text">
                     <span class="brand-name">LogiRoute</span>
-                    <span class="brand-sub">Historial de Entregas</span>
+                    <span class="brand-sub">Mis Pedidos</span>
                 </div>
             </div>
             <div class="admin-user">
-                <span class="admin-username" th:text="${repartidor.usuario.nombre}">Repartidor</span>
+                <span class="admin-username" th:text="${cliente.usuario.nombre}">Cliente</span>
                 <form th:action="@{/logout}" method="post" style="display:inline">
                     <button type="submit" class="btn-salir" style="background:none;border:none;cursor:pointer;">Salir</button>
                 </form>
@@ -33,15 +35,19 @@
 
     <nav class="admin-nav">
         <div class="admin-nav-inner">
-            <a th:href="@{/repartidor}" class="nav-item">Inicio</a>
-            <a th:href="@{/repartidor/pedidos}" class="nav-item">Mis pedidos</a>
-            <a th:href="@{/repartidor/historial}" class="nav-item active">Historial</a>
+            <a th:href="@{/cliente}" class="nav-item">Inicio</a>
+            <a th:href="@{/cliente/pedidos}" class="nav-item active">Mis pedidos</a>
+            <a th:href="@{/cliente/pedidos/crear}" class="nav-item">Nuevo pedido</a>
+            <a th:href="@{/cliente/perfil}" class="nav-item">Mi perfil</a>
         </div>
     </nav>
 
     <main class="admin-main">
         <section class="dashboard-section">
-            <h2 class="section-title">Historial de entregas</h2>
+            <h2 class="section-title">Mis pedidos</h2>
+
+            <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+            <div th:if="${error}" class="alert alert-warning" th:text="${error}"></div>
 
             <div class="table-wrapper">
                 <table class="admin-table">
@@ -50,7 +56,8 @@
                             <th>Código</th>
                             <th>Destino</th>
                             <th>Estado</th>
-                            <th>Fecha entrega</th>
+                            <th>Fecha creación</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -63,10 +70,13 @@
                                       th:text="${pedido.estadoTexto}">
                                 </span>
                             </td>
-                            <td th:text="${pedido.fechaEntrega != null ? T(com.logiroute.logiroute.utils.DateFormatter).format(pedido.fechaEntrega, 'dd/MM/yyyy HH:mm') : '—'}"></td>
+                            <td th:text="${T(com.logiroute.logiroute.utils.DateFormatter).format(pedido.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td>
+                                <a th:href="@{/cliente/pedidos/{id}(id=${pedido.id})}" class="btn-accion">Ver detalle</a>
+                            </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(pedidos)}">
-                            <td colspan="4" class="table-empty">No hay entregas en el historial.</td>
+                            <td colspan="5" class="table-empty">No tienes pedidos registrados.</td>
                         </tr>
                     </tbody>
                 </table>

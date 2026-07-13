@@ -64,15 +64,12 @@
             <div class="reporte-card" style="max-width: 700px;">
 
                 <!-- Información del pedido -->
-                <div style="margin-bottom: 20px; padding: 12px 16px; background: #f8f9fa; border-radius: 8px;">
-                    <p style="margin: 4px 0;"><strong>Código:</strong> <span th:text="${pedido.codigo}">TRK-0000</span></p>
-                    <p style="margin: 4px 0;"><strong>Estado actual:</strong>
+                <div style="margin-bottom: 20px; padding: 12px 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px;">
+                    <p style="margin: 4px 0; color: rgba(255,255,255,0.9);"><strong style="color: rgba(255,255,255,0.5);">Código:</strong> <span th:text="${pedido.codigo}">TRK-0000</span></p>
+                    <p style="margin: 4px 0; color: rgba(255,255,255,0.9);"><strong style="color: rgba(255,255,255,0.5);">Estado actual:</strong>
                         <span class="estado-badge"
-                              th:classappend="${pedido.estado.name() == 'EN_TRANSITO'} ? 'estado-transito' :
-                                              (${pedido.estado.name() == 'PENDIENTE'} ? 'estado-pendiente' :
-                                              (${pedido.estado.name() == 'ENTREGADO'} ? 'estado-entregado' :
-                                              (${pedido.estado.name() == 'CANCELADO'} ? 'estado-cancelado' : 'estado-pendiente')))"
-                              th:text="${pedido.estado.name()}">
+                              th:classappend="${pedido.estadoCssClass}"
+                              th:text="${pedido.estadoTexto}">
                         </span>
                     </p>
                 </div>

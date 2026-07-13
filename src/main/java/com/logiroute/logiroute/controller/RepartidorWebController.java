@@ -1,6 +1,7 @@
 package com.logiroute.logiroute.controller;
 
 import com.logiroute.logiroute.exception.RecursoNoEncontradoException;
+import com.logiroute.logiroute.model.EstadoPedido;
 import com.logiroute.logiroute.model.Pedido;
 import com.logiroute.logiroute.model.Repartidor;
 import com.logiroute.logiroute.service.IAsignacionService;
@@ -37,16 +38,11 @@ public class RepartidorWebController {
             return "redirect:/login";
         }
 
-        List<Pedido> pedidosActivos = pedidoService.listarTodos().stream()
-                .filter(p -> p.getRepartidor() != null && p.getRepartidor().getId().equals(repartidor.getId()))
-                .filter(p -> !p.getEstado().name().equals("ENTREGADO") && !p.getEstado().name().equals("CANCELADO"))
+        List<Pedido> pedidosActivos = pedidoService.listarPorRepartidorId(repartidor.getId()).stream()
+                .filter(p -> p.getEstado() != EstadoPedido.ENTREGADO && p.getEstado() != EstadoPedido.CANCELADO)
                 .toList();
 
-        long entregasHoy = pedidoService.listarTodos().stream()
-                .filter(p -> p.getRepartidor() != null && p.getRepartidor().getId().equals(repartidor.getId()))
-                .filter(p -> p.getEstado().name().equals("ENTREGADO"))
-                .filter(p -> p.getFechaEntrega() != null && p.getFechaEntrega().toLocalDate().equals(java.time.LocalDate.now()))
-                .count();
+        long entregasHoy = pedidoService.contarEntregasHoyPorRepartidor(repartidor.getId());
 
         model.addAttribute("repartidor", repartidor);
         model.addAttribute("pedidosActivos", pedidosActivos);
@@ -63,9 +59,8 @@ public class RepartidorWebController {
             return "redirect:/login";
         }
 
-        List<Pedido> pedidos = pedidoService.listarTodos().stream()
-                .filter(p -> p.getRepartidor() != null && p.getRepartidor().getId().equals(repartidor.getId()))
-                .filter(p -> !p.getEstado().name().equals("ENTREGADO") && !p.getEstado().name().equals("CANCELADO"))
+        List<Pedido> pedidos = pedidoService.listarPorRepartidorId(repartidor.getId()).stream()
+                .filter(p -> p.getEstado() != EstadoPedido.ENTREGADO && p.getEstado() != EstadoPedido.CANCELADO)
                 .toList();
 
         model.addAttribute("pedidos", pedidos);
@@ -131,9 +126,8 @@ public class RepartidorWebController {
             return "redirect:/login";
         }
 
-        List<Pedido> historial = pedidoService.listarTodos().stream()
-                .filter(p -> p.getRepartidor() != null && p.getRepartidor().getId().equals(repartidor.getId()))
-                .filter(p -> p.getEstado().name().equals("ENTREGADO") || p.getEstado().name().equals("CANCELADO"))
+        List<Pedido> historial = pedidoService.listarPorRepartidorId(repartidor.getId()).stream()
+                .filter(p -> p.getEstado() == EstadoPedido.ENTREGADO || p.getEstado() == EstadoPedido.CANCELADO)
                 .toList();
 
         model.addAttribute("pedidos", historial);
@@ -144,9 +138,6 @@ public class RepartidorWebController {
     private Repartidor getRepartidorFromAuth(Authentication auth) {
         if (auth == null) return null;
         String email = auth.getName();
-        return repartidorService.listarTodos().stream()
-                .filter(r -> r.getUsuario().getEmail().equals(email))
-                .findFirst()
-                .orElse(null);
+        return repartidorService.obtenerPorEmail(email).orElse(null);
     }
 }

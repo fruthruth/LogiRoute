@@ -96,16 +96,8 @@
                             <td th:text="${pedido.direccionDestino}">Av. Larco 1234, Miraflores</td>
                             <td>
                                 <span class="estado-badge"
-                                      th:classappend="${pedido.estado.name() == 'EN_TRANSITO'} ? 'estado-transito' :
-                                                      (${pedido.estado.name() == 'PENDIENTE'} ? 'estado-pendiente' :
-                                                      (${pedido.estado.name() == 'ENTREGADO'} ? 'estado-entregado' :
-                                                      (${pedido.estado.name() == 'CANCELADO'} ? 'estado-cancelado' : 'estado-pendiente')))"
-                                      th:text="${pedido.estado.name() == 'EN_TRANSITO'} ? 'En camino' :
-                                               (${pedido.estado.name() == 'PENDIENTE'} ? 'Pendiente' :
-                                               (${pedido.estado.name() == 'ENTREGADO'} ? 'Entregado' :
-                                               (${pedido.estado.name() == 'CANCELADO'} ? 'Cancelado' :
-                                               (${pedido.estado.name() == 'ASIGNADO'} ? 'Asignado' :
-                                               (${pedido.estado.name() == 'EN_RECOJO'} ? 'En recojo' : ${pedido.estado.name()})))))">
+                                      th:classappend="${pedido.estadoCssClass}"
+                                      th:text="${pedido.estadoTexto}">
                                     Pendiente
                                 </span>
                             </td>
