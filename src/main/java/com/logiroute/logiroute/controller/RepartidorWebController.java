@@ -135,6 +135,23 @@ public class RepartidorWebController {
         return "repartidor/historial";
     }
 
+    @GetMapping("/mapa")
+    public String mapa(Model model, Authentication auth) {
+        log.debug("Renderizando mapa de repartidor");
+        Repartidor repartidor = getRepartidorFromAuth(auth);
+        if (repartidor == null) {
+            return "redirect:/login";
+        }
+
+        List<Pedido> pedidosActivos = pedidoService.listarPorRepartidorId(repartidor.getId()).stream()
+                .filter(p -> p.getEstado() != EstadoPedido.ENTREGADO && p.getEstado() != EstadoPedido.CANCELADO)
+                .toList();
+
+        model.addAttribute("repartidor", repartidor);
+        model.addAttribute("pedidos", pedidosActivos);
+        return "repartidor/mapa";
+    }
+
     private Repartidor getRepartidorFromAuth(Authentication auth) {
         if (auth == null) return null;
         String email = auth.getName();
