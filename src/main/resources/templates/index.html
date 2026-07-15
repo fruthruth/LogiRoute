@@ -6,118 +6,454 @@
     <title>LogiRoute - Empresa de Logística</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../css/style.css">
+    <style>
+        body.landing { background: #0f0a1a; overflow-x: hidden; }
+
+        /* ── Header ── */
+        .landing-header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(15,10,26,0.85); backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 0 2rem; height: 64px;
+        }
+        .landing-header-inner {
+            max-width: 1100px; margin: 0 auto; height: 100%;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .lh-brand { display: flex; align-items: center; gap: 0.7rem; text-decoration: none; }
+        .lh-logo {
+            width: 40px; height: 40px; background: linear-gradient(135deg, #7c3aed, #a855f7);
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 20px rgba(124,58,237,0.4);
+        }
+        .lh-brand-name {
+            font-family: var(--font-main); font-weight: 800; font-size: 1.15rem;
+            color: #fff; letter-spacing: -0.02em;
+        }
+        .lh-nav { display: flex; align-items: center; gap: 0.5rem; }
+        .lh-nav a {
+            color: rgba(255,255,255,0.7); text-decoration: none;
+            font-family: var(--font-main); font-size: 0.88rem; font-weight: 500;
+            padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.2s;
+        }
+        .lh-nav a:hover { color: #fff; background: rgba(255,255,255,0.08); }
+        .lh-login {
+            background: linear-gradient(135deg, #7c3aed, #a855f7) !important;
+            color: #fff !important; font-weight: 600 !important;
+            box-shadow: 0 4px 16px rgba(124,58,237,0.35);
+        }
+        .lh-login:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(124,58,237,0.5); }
+
+        /* ── Hero ── */
+        .landing-hero {
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            padding: 6rem 1.5rem 3rem; position: relative;
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -10%, rgba(124,58,237,0.35) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(168,85,247,0.15) 0%, transparent 50%),
+                #0f0a1a;
+        }
+        .landing-hero::before {
+            content: ''; position: absolute; inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%237c3aed' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+        .hero-content { position: relative; text-align: center; max-width: 680px; width: 100%; }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            background: rgba(124,58,237,0.2); border: 1px solid rgba(124,58,237,0.3);
+            border-radius: 50px; padding: 0.35rem 1rem; margin-bottom: 1.5rem;
+            font-family: var(--font-main); font-size: 0.78rem; font-weight: 600;
+            color: #c084fc; letter-spacing: 0.03em;
+        }
+        .hero-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: #a855f7; }
+        .hero-title {
+            font-family: var(--font-main); font-weight: 800; font-size: 3rem;
+            line-height: 1.1; color: #fff; margin-bottom: 1rem; letter-spacing: -0.03em;
+        }
+        .hero-title span {
+            background: linear-gradient(135deg, #a855f7 0%, #60a5fa 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-sub {
+            font-family: var(--font-body); font-size: 1.1rem; line-height: 1.6;
+            color: rgba(255,255,255,0.6); margin-bottom: 2.5rem; max-width: 520px;
+            margin-left: auto; margin-right: auto;
+        }
+
+        /* ── Search ── */
+        .hero-search {
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 18px; padding: 0.5rem; display: flex; gap: 0.5rem;
+            max-width: 520px; margin: 0 auto;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+        }
+        .hero-search input {
+            flex: 1; border: none; outline: none; background: transparent;
+            font-family: var(--font-body); font-size: 1rem; color: #fff;
+            padding: 0.8rem 1rem;
+        }
+        .hero-search input::placeholder { color: rgba(255,255,255,0.35); }
+        .hero-search-btn {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: #fff; border: none; border-radius: 13px; padding: 0.8rem 1.8rem;
+            font-family: var(--font-main); font-weight: 700; font-size: 0.92rem;
+            cursor: pointer; transition: all 0.2s; white-space: nowrap;
+        }
+        .hero-search-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(124,58,237,0.5); }
+
+        /* ── Tracking Result ── */
+        .tracking-result {
+            display: none; margin-top: 1.5rem; background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 16px;
+            padding: 1.25rem 1.5rem; text-align: left; max-width: 520px; margin-left: auto; margin-right: auto;
+        }
+        .tracking-result.show { display: block; animation: fadeUp 0.3s ease; }
+        .tr-title {
+            font-family: var(--font-main); font-weight: 700; font-size: 0.9rem;
+            color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+        .tr-row { display: flex; justify-content: space-between; align-items: center; padding: 0.55rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .tr-row:last-child { border-bottom: none; }
+        .tr-label { font-size: 0.85rem; color: rgba(255,255,255,0.45); }
+        .tr-value { font-size: 0.9rem; color: #fff; font-weight: 500; }
+        .tr-estado {
+            display: inline-block; padding: 0.25rem 0.7rem; border-radius: 20px;
+            font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;
+        }
+        .tracking-error {
+            display: none; margin-top: 1rem; color: #f87171; font-size: 0.88rem;
+            max-width: 520px; margin-left: auto; margin-right: auto;
+        }
+        .tracking-error.show { display: block; animation: fadeUp 0.3s ease; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ── Stats Row ── */
+        .hero-stats {
+            display: flex; justify-content: center; gap: 3rem; margin-top: 3rem;
+            padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.08);
+        }
+        .hs-item { text-align: center; }
+        .hs-num { font-family: var(--font-main); font-weight: 800; font-size: 1.8rem; color: #fff; }
+        .hs-label { font-size: 0.78rem; color: rgba(255,255,255,0.4); margin-top: 0.2rem; }
+
+        /* ── Section Titles ── */
+        .section-header { text-align: center; margin-bottom: 2.5rem; }
+        .section-eyebrow {
+            font-family: var(--font-main); font-size: 0.78rem; font-weight: 700;
+            color: #a855f7; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;
+        }
+        .section-title {
+            font-family: var(--font-main); font-weight: 800; font-size: 1.8rem;
+            color: #fff; letter-spacing: -0.02em;
+        }
+        .section-sub { font-size: 0.95rem; color: rgba(255,255,255,0.5); margin-top: 0.5rem; }
+
+        /* ── Features ── */
+        .landing-features {
+            padding: 5rem 1.5rem;
+            background: #0f0a1a;
+        }
+        .features-grid {
+            max-width: 1000px; margin: 0 auto;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem;
+        }
+        .feature-card {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 20px; padding: 2rem 1.5rem; text-align: center;
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .feature-card::before {
+            content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 60px; height: 3px; border-radius: 0 0 4px 4px;
+            background: linear-gradient(90deg, #7c3aed, #a855f7); opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .feature-card:hover { transform: translateY(-4px); border-color: rgba(124,58,237,0.3); background: rgba(255,255,255,0.06); }
+        .feature-card:hover::before { opacity: 1; }
+        .feature-icon {
+            width: 56px; height: 56px; border-radius: 16px; margin: 0 auto 1rem;
+            display: flex; align-items: center; justify-content: center; font-size: 1.6rem;
+            background: rgba(124,58,237,0.15);
+        }
+        .feature-label { font-family: var(--font-main); font-weight: 700; font-size: 1rem; color: #fff; margin-bottom: 0.4rem; }
+        .feature-desc { font-size: 0.85rem; color: rgba(255,255,255,0.45); line-height: 1.5; }
+
+        /* ── Promos ── */
+        .landing-promos {
+            padding: 5rem 1.5rem;
+            background: linear-gradient(180deg, #0f0a1a 0%, #1a0f2e 100%);
+        }
+        .promos-grid {
+            max-width: 900px; margin: 0 auto;
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem;
+        }
+        .promo-card {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 20px; padding: 1.5rem; transition: all 0.3s;
+        }
+        .promo-card:hover { border-color: rgba(168,85,247,0.3); transform: translateY(-2px); }
+        .promo-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
+        .promo-badge {
+            display: inline-flex; align-items: center; gap: 0.3rem;
+            background: rgba(251,191,36,0.15); color: #fbbf24;
+            font-family: var(--font-main); font-weight: 700; font-size: 0.72rem;
+            padding: 0.3rem 0.75rem; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.04em;
+        }
+        .promo-desc { font-size: 0.95rem; color: rgba(255,255,255,0.8); font-weight: 500; line-height: 1.5; margin-bottom: 0.5rem; }
+        .promo-validity { font-size: 0.78rem; color: rgba(255,255,255,0.35); }
+
+        /* ── Contact ── */
+        .landing-contact {
+            padding: 5rem 1.5rem 6rem;
+            background: linear-gradient(180deg, #1a0f2e 0%, #0f0a1a 100%);
+        }
+        .contact-grid {
+            max-width: 800px; margin: 0 auto;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem;
+        }
+        .contact-card {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px; padding: 1.5rem; text-align: center; transition: all 0.3s;
+        }
+        .contact-card:hover { border-color: rgba(124,58,237,0.3); }
+        .contact-icon {
+            width: 48px; height: 48px; border-radius: 14px; margin: 0 auto 0.75rem;
+            display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+            background: rgba(124,58,237,0.15);
+        }
+        .contact-label { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .contact-value { font-family: var(--font-main); font-weight: 600; font-size: 0.9rem; color: #fff; }
+
+        /* ── Footer ── */
+        .landing-footer {
+            border-top: 1px solid rgba(255,255,255,0.06); padding: 1.5rem;
+            text-align: center; background: #0f0a1a;
+        }
+        .landing-footer p { font-size: 0.78rem; color: rgba(255,255,255,0.25); }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2rem; }
+            .hero-sub { font-size: 0.95rem; }
+            .hero-stats { gap: 1.5rem; }
+            .hs-num { font-size: 1.4rem; }
+            .features-grid, .promos-grid { grid-template-columns: 1fr; max-width: 400px; }
+            .contact-grid { grid-template-columns: 1fr; max-width: 320px; }
+            .lh-nav { display: none; }
+        }
+    </style>
 </head>
-<body>
- 
+<body class="landing">
+
     <!-- HEADER -->
-    <header class="header">
-        <div class="header-inner">
-            <div class="brand">
-                <div class="brand-icon">
-                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                        <circle cx="16" cy="16" r="16" fill="#fff"/>
-                        <path d="M8 20l4-8 4 4 4-6 4 10" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <header class="landing-header">
+        <div class="landing-header-inner">
+            <a href="/" class="lh-brand">
+                <div class="lh-logo">
+                    <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
+                        <path d="M8 20l4-8 4 4 4-6 4 10" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
-                <div class="brand-text">
-                    <span class="brand-name">Empresa de logística</span>
-                    <span class="brand-sub">Distribución última milla</span>
-                </div>
-            </div>
-            <a th:href="@{/login}" href="/login" class="btn-admin">
-                Inicio de sesión<br><strong>administrador</strong>
+                <span class="lh-brand-name">LogiRoute</span>
             </a>
+            <nav class="lh-nav">
+                <a href="#servicios">Servicios</a>
+                <a href="#promociones">Promociones</a>
+                <a href="#contacto">Contacto</a>
+                <a th:href="@{/login}" href="/login" class="lh-login">Iniciar sesión</a>
+            </nav>
         </div>
     </header>
- 
-    <!-- HERO / RASTREO -->
-    <section class="hero">
-        <div class="hero-inner">
-            <p class="hero-label">Rastrear paquete</p>
-            <form th:action="@{/cliente/seguimiento}" action="/cliente/seguimiento" method="get" class="search-bar">
-                <input type="text" name="codigo" placeholder="Ingresa tu código de rastreo" class="search-input" autocomplete="off">
-                <button type="submit" class="btn-rastrear">Rastrear</button>
+
+    <!-- HERO -->
+    <section class="landing-hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="hero-badge-dot"></span>
+                Plataforma de logística en tiempo real
+            </div>
+            <h1 class="hero-title">Rastrea tus envíos<br><span>en cualquier momento</span></h1>
+            <p class="hero-sub">Distribución de última milla con seguimiento en tiempo real. Ingresa tu código y conoce el estado de tu pedido al instante.</p>
+
+            <form id="searchForm" class="hero-search">
+                <input type="text" id="searchCodigo" name="codigo" placeholder="Ej: PED12345678" autocomplete="off" required>
+                <button type="submit" class="hero-search-btn">Rastrear</button>
             </form>
+
+            <div id="trackingResult" class="tracking-result">
+                <div class="tr-title">Estado del Pedido</div>
+                <div class="tr-row">
+                    <span class="tr-label">Código</span>
+                    <span class="tr-value" id="tCodigo"></span>
+                </div>
+                <div class="tr-row">
+                    <span class="tr-label">Estado</span>
+                    <span class="tr-estado" id="tEstado"></span>
+                </div>
+                <div class="tr-row">
+                    <span class="tr-label">Origen</span>
+                    <span class="tr-value" id="tOrigen"></span>
+                </div>
+                <div class="tr-row">
+                    <span class="tr-label">Destino</span>
+                    <span class="tr-value" id="tDestino"></span>
+                </div>
+                <div class="tr-row" id="tRepartidorRow" style="display:none">
+                    <span class="tr-label">Repartidor</span>
+                    <span class="tr-value" id="tRepartidor"></span>
+                </div>
+            </div>
+            <div id="trackingError" class="tracking-error">
+                <p>No se encontró un pedido con ese código. Verifica e intenta de nuevo.</p>
+            </div>
+
+            <div class="hero-stats">
+                <div class="hs-item">
+                    <div class="hs-num">500+</div>
+                    <div class="hs-label">Envíos diarios</div>
+                </div>
+                <div class="hs-item">
+                    <div class="hs-num">98%</div>
+                    <div class="hs-label">Entregas a tiempo</div>
+                </div>
+                <div class="hs-item">
+                    <div class="hs-num">24/7</div>
+                    <div class="hs-label">Seguimiento</div>
+                </div>
+            </div>
         </div>
     </section>
- 
+
     <!-- FEATURES -->
-    <section class="features">
-        <div class="container">
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🚚</div>
-                    <span class="feature-label">Envíos rápidos</span>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🕐</div>
-                    <span class="feature-label">Seguimiento 24/7</span>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🛡️</div>
-                    <span class="feature-label">Envíos seguros</span>
-                </div>
+    <section class="landing-features" id="servicios">
+        <div class="section-header">
+            <p class="section-eyebrow">Nuestros servicios</p>
+            <h2 class="section-title">¿Por qué elegirnos?</h2>
+            <p class="section-sub">Soluciones logísticas diseñadas para tu negocio</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🚚</div>
+                <div class="feature-label">Envíos rápidos</div>
+                <div class="feature-desc">Distribución de última milla con entregas el mismo día en zona urbana.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📡</div>
+                <div class="feature-label">Seguimiento 24/7</div>
+                <div class="feature-desc">Rastrea tus paquetes en tiempo real desde cualquier dispositivo.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <div class="feature-label">Envíos seguros</div>
+                <div class="feature-desc">Tus paquetes están protegidos durante todo el proceso de entrega.</div>
             </div>
         </div>
     </section>
- 
+
     <!-- PROMOCIONES -->
-    <section class="promos">
-        <div class="container">
-            <div class="promos-grid">
-                <div class="promo-card">
-                    <div class="promo-header">
-                        <span class="promo-badge">Promoción</span>
-                    </div>
-                    <p class="promo-desc">Descuento del 15% para envíos que superen los S/100</p>
-                    <p class="promo-validity">Válido hasta el 12/6/2026</p>
+    <section class="landing-promos" id="promociones">
+        <div class="section-header">
+            <p class="section-eyebrow">Ofertas especiales</p>
+            <h2 class="section-title">Promociones activas</h2>
+            <p class="section-sub">Aprovecha nuestros descuentos exclusivos</p>
+        </div>
+        <div class="promos-grid">
+            <div th:each="promo : ${promocionesActivas}" class="promo-card">
+                <div class="promo-header">
+                    <span class="promo-badge">⚡ Promo</span>
                 </div>
-                <div class="promo-card">
-                    <div class="promo-header">
-                        <span class="promo-badge">Promoción</span>
-                    </div>
-                    <p class="promo-desc">Por fiestas patrias<br>Descuento del 10%</p>
-                    <p class="promo-validity">Válido hasta el 12/7/2026</p>
+                <p class="promo-desc" th:text="${promo.descripcion}"></p>
+                <p class="promo-validity">Válido hasta el <span th:text="${T(com.logiroute.logiroute.utils.DateFormatter).format(promo.fechaFin, 'dd/MM/yyyy')}"></span></p>
+            </div>
+            <div th:if="${#lists.isEmpty(promocionesActivas)}" class="promo-card">
+                <div class="promo-header">
+                    <span class="promo-badge">⚡ Promo</span>
                 </div>
+                <p class="promo-desc">Descuento del 15% para envíos que superen los S/100</p>
+                <p class="promo-validity">Válido hasta el 31/12/2026</p>
+            </div>
+            <div th:if="${#lists.isEmpty(promocionesActivas)}" class="promo-card">
+                <div class="promo-header">
+                    <span class="promo-badge">⚡ Promo</span>
+                </div>
+                <p class="promo-desc">Por fiestas patrias — Descuento del 10%</p>
+                <p class="promo-validity">Válido hasta el 31/07/2026</p>
             </div>
         </div>
     </section>
- 
+
     <!-- CONTACTO -->
-    <section class="contacto">
-        <div class="container">
-            <div class="contacto-card">
-                <div class="contacto-title">
-                    <span class="contacto-icon">👥</span>
-                    <strong>Contactos</strong>
-                </div>
-                <div class="contacto-grid">
-                    <div class="contacto-item">
-                        <span class="c-icon email-icon">✉️</span>
-                        <div>
-                            <p class="c-label">Email</p>
-                            <p class="c-value">envios@gmail.com</p>
-                        </div>
-                    </div>
-                    <div class="contacto-item">
-                        <span class="c-icon loc-icon">📍</span>
-                        <div>
-                            <p class="c-label">Dirección</p>
-                            <p class="c-value">Av. los incas, calle 123</p>
-                        </div>
-                    </div>
-                    <div class="contacto-item">
-                        <span class="c-icon phone-icon">📞</span>
-                        <div>
-                            <p class="c-label">Teléfono</p>
-                            <p class="c-value">+51 958900263</p>
-                        </div>
-                    </div>
-                </div>
+    <section class="landing-contact" id="contacto">
+        <div class="section-header">
+            <p class="section-eyebrow">Contacto</p>
+            <h2 class="section-title">Estamos para ayudarte</h2>
+        </div>
+        <div class="contact-grid">
+            <div class="contact-card">
+                <div class="contact-icon">✉️</div>
+                <div class="contact-label">Email</div>
+                <div class="contact-value">envios@gmail.com</div>
+            </div>
+            <div class="contact-card">
+                <div class="contact-icon">📍</div>
+                <div class="contact-label">Dirección</div>
+                <div class="contact-value">Av. los incas, calle 123</div>
+            </div>
+            <div class="contact-card">
+                <div class="contact-icon">📞</div>
+                <div class="contact-label">Teléfono</div>
+                <div class="contact-value">+51 958900263</div>
             </div>
         </div>
     </section>
- 
+
+    <!-- FOOTER -->
+    <footer class="landing-footer">
+        <p>© 2026 LogiRoute — Todos los derechos reservados</p>
+    </footer>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const codigo = document.getElementById('searchCodigo').value.trim();
+            const resultDiv = document.getElementById('trackingResult');
+            const errorDiv = document.getElementById('trackingError');
+            resultDiv.classList.remove('show');
+            errorDiv.classList.remove('show');
+            if (!codigo) return;
+            try {
+                const res = await fetch('/api/publico/seguimiento/' + encodeURIComponent(codigo));
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('tCodigo').textContent = data.codigo;
+                    const estadoEl = document.getElementById('tEstado');
+                    const estado = data.estado.replace('_', ' ');
+                    estadoEl.textContent = estado;
+                    const colors = { 'ENTREGADO': '#16a34a', 'CANCELADO': '#dc2626' };
+                    const bg = colors[data.estado] || '#f59e0b';
+                    const fg = data.estado === 'CANCELADO' ? '#fff' : '#000';
+                    estadoEl.style.background = bg;
+                    estadoEl.style.color = fg;
+                    document.getElementById('tOrigen').textContent = data.direccionOrigen || '-';
+                    document.getElementById('tDestino').textContent = data.direccionDestino || '-';
+                    if (data.repartidorNombre) {
+                        document.getElementById('tRepartidor').textContent = data.repartidorNombre;
+                        document.getElementById('tRepartidorRow').style.display = 'flex';
+                    } else {
+                        document.getElementById('tRepartidorRow').style.display = 'none';
+                    }
+                    resultDiv.classList.add('show');
+                } else {
+                    errorDiv.classList.add('show');
+                }
+            } catch(err) {
+                errorDiv.classList.add('show');
+            }
+        });
+    </script>
 </body>
 </html>

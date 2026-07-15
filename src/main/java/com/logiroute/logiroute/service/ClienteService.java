@@ -1,7 +1,11 @@
 package com.logiroute.logiroute.service;
 
+import com.logiroute.logiroute.dto.ClienteDTO;
+import com.logiroute.logiroute.exception.RecursoNoEncontradoException;
 import com.logiroute.logiroute.model.Cliente;
+import com.logiroute.logiroute.model.Usuario;
 import com.logiroute.logiroute.repository.ClienteRepository;
+import com.logiroute.logiroute.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +22,7 @@ public class ClienteService implements IClienteService {
     private static final Logger log = LoggerFactory.getLogger(ClienteService.class);
 
     private final ClienteRepository clienteRepository;
+    private final UsuarioRepository usuarioRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -38,5 +43,39 @@ public class ClienteService implements IClienteService {
     public Optional<Cliente> obtenerPorUsuarioId(Long usuarioId) {
         log.debug("Buscando cliente con usuarioId: {}", usuarioId);
         return clienteRepository.findByUsuarioId(usuarioId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Cliente> obtenerPorEmail(String email) {
+        log.debug("Buscando cliente con email: {}", email);
+        return clienteRepository.findByUsuarioEmail(email);
+    }
+
+    @Override
+    @Transactional
+    public Cliente crear(ClienteDTO dto) {
+        log.info("Creando cliente para usuario id: {}", dto.getUsuarioId());
+        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
+                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario", dto.getUsuarioId()));
+
+        Cliente cliente = Cliente.builder()
+                .usuario(usuario)
+                .telefono(dto.getTelefono())
+                .direccion(dto.getDireccion())
+                .build();
+        return clienteRepository.save(cliente);
+    }
+
+    @Override
+    @Transactional
+    public Cliente actualizar(Long id, ClienteDTO dto) {
+        log.info("Actualizando cliente id: {}", id);
+        Cliente cliente = clienteRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Cliente", id));
+
+        cliente.setTelefono(dto.getTelefono());
+        cliente.setDireccion(dto.getDireccion());
+        return clienteRepository.save(cliente);
     }
 }

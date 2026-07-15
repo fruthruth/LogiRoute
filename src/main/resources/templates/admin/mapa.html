@@ -7,6 +7,25 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}" href="../css/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    <style>
+        #map { height: 100%; width: 100%; min-height: 500px; }
+        .mapa-placeholder { display: none !important; }
+        .custom-popup .leaflet-popup-content { font-family: 'DM Sans', sans-serif; margin: 8px 12px; }
+        .popup-nombre { font-weight: 600; color: #1e293b; font-size: 14px; }
+        .popup-licencia { color: #64748b; font-size: 12px; }
+        .popup-estado { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 500; margin-top: 4px; }
+        .popup-estado.DISPONIBLE { background: #dcfce7; color: #166534; }
+        .popup-estado.EN_RUTA { background: #fef3c7; color: #92400e; }
+        .popup-estado.INACTIVO { background: #f1f5f9; color: #64748b; }
+        .refresh-indicator { position: absolute; top: 10px; right: 10px; z-index: 1000; background: rgba(255,255,255,0.9); padding: 4px 10px; border-radius: 12px; font-size: 11px; color: #64748b; }
+        .refresh-indicator.active { color: #7c3aed; }
+    </style>
 </head>
 <body class="admin-page">
 
@@ -60,13 +79,8 @@
 
                 <!-- Mapa -->
                 <div class="mapa-container">
-                    <div id="map" class="mapa-placeholder">
-                        <div class="mapa-placeholder-inner">
-                            <span class="mapa-placeholder-icon">🗺️</span>
-                            <p>Mapa en tiempo real</p>
-                            <p class="mapa-placeholder-sub">Próximamente disponible</p>
-                        </div>
-                    </div>
+                    <div id="map"></div>
+                    <div id="refreshIndicator" class="refresh-indicator">Actualizando...</div>
                 </div>
 
                 <!-- Panel de repartidores activos -->
@@ -78,27 +92,34 @@
                         </div>
                         <div class="leyenda-item">
                             <span class="leyenda-dot dot-ocupado"></span>
-                            <span>Ocupado</span>
+                            <span>Ocupado / En ruta</span>
+                        </div>
+                        <div class="leyenda-item">
+                            <span class="leyenda-dot" style="background:#94a3b8;"></span>
+                            <span>Inactivo</span>
                         </div>
                     </div>
 
                     <p class="mapa-panel-title">Repartidores activos</p>
 
-                    <div class="mapa-repartidores-list">
-
-                        <!-- CORRECCIÓN: th:class en lugar de th:classappend -->
-                        <div th:each="r : ${repartidores}" class="mapa-repartidor-item">
+                    <div id="repartidoresList" class="mapa-repartidores-list">
+                        <div th:each="r : ${repartidores}" class="mapa-repartidor-item"
+                             th:data-id="${r.id}"
+                             th:data-lat="${r.latitude}"
+                             th:data-lng="${r.longitude}"
+                             th:data-nombre="${r.usuario.nombre}"
+                             th:data-licencia="${r.licencia}"
+                             th:data-estado="${r.estado.name()}">
                             <span th:class="${r.estado.name() == 'DISPONIBLE'} ? 'leyenda-dot dot-disponible' : 'leyenda-dot dot-ocupado'"></span>
                             <div class="mapa-repartidor-info">
-                                <p class="mapa-repartidor-nombre" th:text="${r.usuario.nombre}">Carlos Ramírez</p>
-                                <p class="mapa-repartidor-vehiculo" th:text="${r.licencia}">Moto</p>
+                                <p class="mapa-repartidor-nombre" th:text="${r.usuario.nombre}">Nombre</p>
+                                <p class="mapa-repartidor-vehiculo" th:text="${r.licencia}">Licencia</p>
                             </div>
                         </div>
 
                         <div th:if="${#lists.isEmpty(repartidores)}" class="empty-state">
-                            No hay repartidores activos.
+                            No hay repartidores registrados.
                         </div>
-
                     </div>
                 </div>
 
@@ -106,5 +127,6 @@
         </section>
     </main>
 
+    <script th:src="@{/js/mapa.js}" src="../js/mapa.js"></script>
 </body>
 </html>

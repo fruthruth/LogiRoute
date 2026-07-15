@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -85,6 +86,19 @@ public class RepartidorController {
         return ResponseEntity.ok(toResponseDTO(repartidor));
     }
 
+    @PutMapping("/{id}/ubicacion")
+    public ResponseEntity<RepartidorResponseDTO> actualizarUbicacion(
+            @PathVariable Long id,
+            @RequestBody Map<String, Double> request) {
+        log.info("API: Actualizando ubicación del repartidor id: {}", id);
+        Repartidor repartidor = repartidorService.actualizarUbicacion(
+                id,
+                BigDecimal.valueOf(request.get("latitude")),
+                BigDecimal.valueOf(request.get("longitude"))
+        );
+        return ResponseEntity.ok(toResponseDTO(repartidor));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         log.info("API: Eliminando repartidor id: {}", id);
@@ -100,6 +114,8 @@ public class RepartidorController {
                 .telefono(r.getTelefono())
                 .licencia(r.getLicencia())
                 .estado(r.getEstado().name())
+                .latitude(r.getLatitude())
+                .longitude(r.getLongitude())
                 .build();
     }
 }

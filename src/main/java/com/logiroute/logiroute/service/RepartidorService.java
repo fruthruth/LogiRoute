@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -47,6 +48,13 @@ public class RepartidorService implements IRepartidorService {
     public Optional<Repartidor> obtenerPorLicencia(String licencia) {
         log.debug("Buscando repartidor con licencia: {}", licencia);
         return repartidorRepository.findByLicencia(licencia);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Repartidor> obtenerPorEmail(String email) {
+        log.debug("Buscando repartidor con email: {}", email);
+        return repartidorRepository.findByUsuarioEmail(email);
     }
 
     @Override
@@ -147,6 +155,20 @@ public class RepartidorService implements IRepartidorService {
         repartidor.setEstado(nuevoEstado);
         Repartidor actualizado = repartidorRepository.save(repartidor);
         log.info("Estado del repartidor {} actualizado a {}", id, estado);
+        return actualizado;
+    }
+
+    @Override
+    @Transactional
+    public Repartidor actualizarUbicacion(Long id, BigDecimal latitude, BigDecimal longitude) {
+        log.info("Actualizando ubicación del repartidor id: {} a ({}, {})", id, latitude, longitude);
+        Repartidor repartidor = repartidorRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Repartidor", id));
+
+        repartidor.setLatitude(latitude);
+        repartidor.setLongitude(longitude);
+        Repartidor actualizado = repartidorRepository.save(repartidor);
+        log.info("Ubicación del repartidor {} actualizada", id);
         return actualizado;
     }
 

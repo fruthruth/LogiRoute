@@ -43,7 +43,7 @@ public class AdminRepartidorWebController {
     public String crear(
             @RequestParam String nombre,
             @RequestParam String email,
-            @RequestParam(defaultValue = "123456") String password,
+            @RequestParam String password,
             @RequestParam String telefono,
             @RequestParam String licencia,
             RedirectAttributes ra) {

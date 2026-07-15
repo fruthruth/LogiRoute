@@ -39,13 +39,16 @@ public class SecurityConfig {
             .securityContext(context -> context.securityContextRepository(contextRepository))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login", "/logout", "/auth/**", "/css/**", "/js/**").permitAll()
+                .requestMatchers("/", "/login", "/logout", "/auth/**", "/css/**", "/js/**",
+                                 "/api/publico/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMINISTRADOR")
+                .requestMatchers("/repartidor/**").hasRole("REPARTIDOR")
                 .requestMatchers("/cliente/**").hasRole("USUARIO")
                 .requestMatchers("/api/pedidos/**").hasRole("ADMINISTRADOR")
                 .requestMatchers("/api/repartidores/**").hasRole("ADMINISTRADOR")
                 .requestMatchers("/api/asignaciones/**").hasRole("ADMINISTRADOR")
                 .requestMatchers("/api/reportes/**").hasRole("ADMINISTRADOR")
+                .requestMatchers("/api/promociones/**").hasRole("ADMINISTRADOR")
                 .requestMatchers("/api/clientes/**").hasRole("USUARIO")
                 .anyRequest().authenticated()
             )

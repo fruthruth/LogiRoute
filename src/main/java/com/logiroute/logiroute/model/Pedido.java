@@ -3,13 +3,15 @@ package com.logiroute.logiroute.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -72,5 +74,35 @@ public class Pedido {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * Retorna la clase CSS según el estado del pedido.
+     * Para agregar un nuevo estado, solo agregar un case aquí.
+     */
+    public String getEstadoCssClass() {
+        if (estado == null) return "";
+        return switch (estado) {
+            case ENTREGADO -> "estado-entregado";
+            case PENDIENTE -> "estado-pendiente";
+            case CANCELADO -> "estado-cancelado";
+            default -> "estado-transito";
+        };
+    }
+
+    /**
+     * Retorna el texto visible según el estado del pedido.
+     * Para agregar un nuevo estado, solo agregar un case aquí.
+     */
+    public String getEstadoTexto() {
+        if (estado == null) return "";
+        return switch (estado) {
+            case PENDIENTE -> "Pendiente";
+            case ASIGNADO -> "Asignado";
+            case EN_RECOJO -> "En recojo";
+            case EN_TRANSITO -> "En camino";
+            case ENTREGADO -> "Entregado";
+            case CANCELADO -> "Cancelado";
+        };
     }
 }

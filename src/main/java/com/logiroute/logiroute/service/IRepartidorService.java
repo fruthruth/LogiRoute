@@ -2,6 +2,7 @@ package com.logiroute.logiroute.service;
 
 import com.logiroute.logiroute.model.Repartidor;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,6 +14,8 @@ public interface IRepartidorService {
 
     Optional<Repartidor> obtenerPorLicencia(String licencia);
 
+    Optional<Repartidor> obtenerPorEmail(String email);
+
     List<Repartidor> listarDisponibles();
 
     Repartidor crear(String nombre, String email, String password,
@@ -22,6 +25,8 @@ public interface IRepartidorService {
                           String telefono, String licencia);
 
     Repartidor actualizarEstado(Long id, String estado);
+
+    Repartidor actualizarUbicacion(Long id, BigDecimal latitude, BigDecimal longitude);
 
     boolean eliminar(Long id);
 }

@@ -1,7 +1,7 @@
 package com.logiroute.logiroute.service;
 
 import com.logiroute.logiroute.dto.PedidoDTO;
-import com.logiroute.logiroute.exception.DatoDuplicadoException;
+import com.logiroute.logiroute.exception.EstadoInvalidoException;
 import com.logiroute.logiroute.exception.RecursoNoEncontradoException;
 import com.logiroute.logiroute.model.*;
 import com.logiroute.logiroute.repository.*;
@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +32,20 @@ public class PedidoService implements IPedidoService {
     public List<Pedido> listarTodos() {
         log.debug("Listando todos los pedidos");
         return pedidoRepository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Pedido> listarPorClienteId(Long clienteId) {
+        log.debug("Listando pedidos del cliente id: {}", clienteId);
+        return pedidoRepository.findByClienteId(clienteId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Pedido> listarPorRepartidorId(Long repartidorId) {
+        log.debug("Listando pedidos del repartidor id: {}", repartidorId);
+        return pedidoRepository.findByRepartidorId(repartidorId);
     }
 
     @Override
@@ -92,8 +107,19 @@ public class PedidoService implements IPedidoService {
     @Transactional
     public Optional<Pedido> actualizarEstado(Long id, String estado) {
         log.info("Actualizando estado del pedido id: {} a {}", id, estado);
+        EstadoPedido nuevoEstado;
+        try {
+            nuevoEstado = EstadoPedido.valueOf(estado);
+        } catch (IllegalArgumentException e) {
+            throw new EstadoInvalidoException("Estado inválido: " + estado);
+        }
+
         return pedidoRepository.findById(id).map(pedido -> {
-            pedido.setEstado(EstadoPedido.valueOf(estado));
+            if (!pedido.getEstado().esTransicionValida(nuevoEstado)) {
+                throw new EstadoInvalidoException(
+                        "Transición inválida: " + pedido.getEstado() + " → " + nuevoEstado);
+            }
+            pedido.setEstado(nuevoEstado);
             return pedidoRepository.save(pedido);
         });
     }
@@ -113,5 +139,16 @@ public class PedidoService implements IPedidoService {
     @Transactional(readOnly = true)
     public long contar() {
         return pedidoRepository.count();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long contarEntregasHoyPorRepartidor(Long repartidorId) {
+        log.debug("Contando entregas de hoy del repartidor id: {}", repartidorId);
+        LocalDate hoy = LocalDate.now();
+        return pedidoRepository.findByRepartidorId(repartidorId).stream()
+                .filter(p -> p.getEstado() == EstadoPedido.ENTREGADO)
+                .filter(p -> p.getFechaEntrega() != null && p.getFechaEntrega().toLocalDate().equals(hoy))
+                .count();
     }
 }
