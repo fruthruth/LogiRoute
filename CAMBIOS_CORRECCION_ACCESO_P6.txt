@@ -19,7 +19,7 @@ Repartidor: juan.ramirez@logiroute.com / 123456
 
 EJECUCIÓN WINDOWS
 -----------------
-.\scripts\run-local.ps1
+Run LogirouteApplication
 
 Si tu contraseña MySQL no es 1234abc:
-.\scripts\run-local.ps1 -DbPassword "TU_PASSWORD"
+Cambiarlo en resources aplication.properties
