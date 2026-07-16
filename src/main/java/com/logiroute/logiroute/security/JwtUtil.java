@@ -1,6 +1,7 @@
 package com.logiroute.logiroute.security;
 
 import io.jsonwebtoken.*;
+import jakarta.annotation.PostConstruct;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,8 +19,27 @@ public class JwtUtil {
     @Value("${jwt.expiration:86400000}")
     private long expiration;
 
+    @PostConstruct
+    void validarConfiguracion() {
+        if (secret == null || secret.isBlank()) {
+            throw new IllegalStateException(
+                    "JWT_SECRET no está configurado. Define la variable de entorno antes de iniciar LogiRoute."
+            );
+        }
+
+        if (secret.getBytes(java.nio.charset.StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalStateException(
+                    "JWT_SECRET debe contener al menos 32 bytes para firmar tokens HS256 de forma segura."
+            );
+        }
+
+        if (expiration <= 0) {
+            throw new IllegalStateException("JWT_EXPIRATION debe ser mayor que cero.");
+        }
+    }
+
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes());
+        return Keys.hmacShaKeyFor(secret.getBytes(java.nio.charset.StandardCharsets.UTF_8));
     }
 
     public String generateToken(UserDetails userDetails) {

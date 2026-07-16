@@ -74,6 +74,8 @@ public class PedidoService implements IPedidoService {
                 .cliente(cliente)
                 .direccionOrigen(dto.getDireccionOrigen())
                 .direccionDestino(dto.getDireccionDestino())
+                .latitude(dto.getLatitude())
+                .longitude(dto.getLongitude())
                 .peso(dto.getPeso())
                 .tipoPaquete(dto.getTipoPaquete())
                 .estado(EstadoPedido.PENDIENTE)
@@ -96,6 +98,8 @@ public class PedidoService implements IPedidoService {
 
         pedido.setDireccionOrigen(dto.getDireccionOrigen());
         pedido.setDireccionDestino(dto.getDireccionDestino());
+        pedido.setLatitude(dto.getLatitude());
+        pedido.setLongitude(dto.getLongitude());
         pedido.setPeso(dto.getPeso());
         pedido.setTipoPaquete(dto.getTipoPaquete());
         pedido.setCliente(cliente);

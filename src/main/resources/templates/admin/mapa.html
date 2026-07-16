@@ -46,14 +46,16 @@
             </div>
             <div class="admin-user">
                 <span class="admin-username">Administrador</span>
-                <a th:href="@{/logout}" href="/logout" class="btn-salir">
+                <form th:action="@{/logout}" method="post" style="display:inline">
+                    <button type="submit" class="btn-salir" style="background:none;border:none;cursor:pointer;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                         <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M3 12V7a2 2 0 012-2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
                         <path d="M3 12v5a2 2 0 002 2h6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
                     </svg>
                     Salir
-                </a>
+                    </button>
+                </form>
             </div>
         </div>
     </header>
@@ -66,6 +68,7 @@
             <a th:href="@{/admin/repartidores}" href="#" class="nav-item">Repartidores</a>
             <a th:href="@{/admin/promociones}" href="#" class="nav-item">Promociones</a>
             <a th:href="@{/admin/mapa}" href="#" class="nav-item active">Mapa en vivo</a>
+            <a th:href="@{/admin/incidentes}" class="nav-item">Incidentes</a>
             <a th:href="@{/admin/reportes}" href="#" class="nav-item">Informes</a>
         </div>
     </nav>
@@ -109,8 +112,8 @@
                              th:data-lng="${r.longitude}"
                              th:data-nombre="${r.usuario.nombre}"
                              th:data-licencia="${r.licencia}"
-                             th:data-estado="${r.estado.name()}">
-                            <span th:class="${r.estado.name() == 'DISPONIBLE'} ? 'leyenda-dot dot-disponible' : 'leyenda-dot dot-ocupado'"></span>
+                             th:data-estado="${r.estadoNombre}">
+                            <span th:class="${r.disponible} ? 'leyenda-dot dot-disponible' : 'leyenda-dot dot-ocupado'"></span>
                             <div class="mapa-repartidor-info">
                                 <p class="mapa-repartidor-nombre" th:text="${r.usuario.nombre}">Nombre</p>
                                 <p class="mapa-repartidor-vehiculo" th:text="${r.licencia}">Licencia</p>

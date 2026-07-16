@@ -7,7 +7,7 @@
 ![Thymeleaf](https://img.shields.io/badge/Thymeleaf-%23005C00.svg?style=for-the-badge&logo=Thymeleaf&logoColor=white)
 ![Maven](https://img.shields.io/badge/Maven-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white)
 
-**LogiRoute** es una plataforma web de gestión logística integral que permite administrar pedidos, asignar repartidores, definir rutas y hacer seguimiento de entregas en tiempo real. Desarrollada con **Spring Boot 4**, utiliza **Spring Security + JWT** para autenticación por roles, **Spring Data JPA** para persistencia, **Thymeleaf** para las vistas y **Logback** para auditoría de trazas.
+**LogiRoute** es una plataforma web de gestión logística integral que permite administrar pedidos, asignar repartidores, definir rutas y hacer seguimiento operativo de entregas. Desarrollada con **Spring Boot 4**, utiliza **Spring Security + JWT** para autenticación por roles, **Spring Data JPA** para persistencia, **Thymeleaf** para las vistas y **Logback** para auditoría de trazas.
 
 ---
 
@@ -35,7 +35,6 @@
 - **Seguimiento de Entregas:** Los clientes pueden rastrear sus pedidos mediante un código único.
 - **Registro de Incidentes:** Categorización automática de contratiempos (RETRASO, DAÑO, ROBO, DIRECCIÓN_INCORRECTA, CLIENTE_AUSENTE).
 - **Auditoría con Logback:** Trazas operativas guardadas en archivos de log con rotación diaria por hasta 30 días.
-- **Caché con Guava:** Reducción de carga en consultas frecuentes usando Google Guava Cache.
 - **Rate Limiting:** Control de peticiones por segundo para proteger la API.
 
 ---
@@ -80,7 +79,7 @@ Base de Datos         →  MySQL 8 (logiroute_db)
 | Thymeleaf | (incluido) | Motor de plantillas HTML |
 | MySQL Connector | (incluido) | Driver de base de datos |
 | JJWT | 0.12.6 | Generación y validación de tokens JWT |
-| Google Guava | 33.3.1-jre | Caché en memoria y rate limiting |
+| Google Guava | 33.3.1-jre | Rate limiting de autenticación |
 | Lombok | (incluido) | Reducción de código boilerplate |
 | Logback | (incluido vía Spring) | Sistema de logging y auditoría |
 | Maven | 3.x | Gestión de dependencias y build |
@@ -122,15 +121,23 @@ mysql -u root -p logiroute_db < src/main/resources/schema.sql
 
 Esto creará todas las tablas e insertará los datos iniciales (usuarios de prueba con contraseña `123456`).
 
-**3. Verificar la conexión en `application.properties`:**
+**3. Configurar las credenciales mediante variables de entorno:**
 
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/logiroute_db?useSSL=false&serverTimezone=America/Lima
-spring.datasource.username=root
-spring.datasource.password=root
+`application.properties` no almacena contraseñas ni una clave JWT fija. En Windows puedes usar el iniciador incluido:
+
+```powershell
+.\scripts\run-local.ps1
 ```
 
-> Cambia `username` y `password` según tu configuración local de MySQL.
+El script solicita la contraseña de MySQL sin mostrarla y genera una clave JWT temporal segura. También puedes definir las variables manualmente:
+
+```powershell
+$env:DB_USERNAME="root"
+$env:DB_PASSWORD="TU_PASSWORD"
+$env:JWT_SECRET="CLAVE_ALEATORIA_DE_AL_MENOS_32_CARACTERES"
+```
+
+Consulta `CONFIGURACION_SEGURA.md` para Linux, macOS y configuración de producción.
 
 ---
 
@@ -143,15 +150,19 @@ git clone https://github.com/fruthruth/LogiRoute.git
 cd LogiRoute
 ```
 
-**2. Compilar y ejecutar con Maven Wrapper:**
+**2. Ejecutar mediante el iniciador seguro:**
+
+```powershell
+# Windows PowerShell
+.\scripts\run-local.ps1
+```
 
 ```bash
-# En Linux/Mac
-./mvnw spring-boot:run
-
-# En Windows
-mvnw.cmd spring-boot:run
+# Linux/macOS
+./scripts/run-local.sh
 ```
+
+Los iniciadores cargan las variables requeridas y ejecutan Maven Wrapper. Para una configuración manual, revisa `CONFIGURACION_SEGURA.md`.
 
 **3. Acceder a la aplicación:**
 
@@ -166,8 +177,8 @@ http://localhost:8080
 | Rol | Email | Contraseña |
 |---|---|---|
 | Administrador | admin@logiroute.com | 123456 |
-| Cliente | cliente@test.com | 123456 |
-| Repartidor | repartidor@test.com | 123456 |
+| Cliente | maria.gutierrez@gmail.com | 123456 |
+| Repartidor | juan.ramirez@logiroute.com | 123456 |
 
 ---
 
@@ -179,7 +190,8 @@ El sistema maneja tres roles con vistas y permisos diferenciados:
 - Dashboard general del sistema
 - Gestión completa de pedidos (`/admin/pedidos`)
 - Gestión de repartidores (`/admin/repartidores`)
-- Generación de reportes
+- Generación de reportes y exportación a Excel
+- Consulta centralizada de incidentes (`/admin/incidentes`)
 
 **REPARTIDOR**
 - Visualización de pedidos asignados
@@ -203,16 +215,37 @@ PENDIENTE → ASIGNADO → EN_RECOJO → EN_TRANSITO → ENTREGADO
 ```
 
 ### Asignación
-El `AsignacionService` se encarga de emparejar un pedido con el repartidor disponible más adecuado y asignarle un vehículo y ruta.
+El `AsignacionService` aplica reglas operativas antes de asignar un pedido:
+
+1. El pedido debe estar `PENDIENTE` o `ASIGNADO` para una asignación manual.
+2. El repartidor debe estar `DISPONIBLE` y su cuenta debe permanecer activa.
+3. Debe existir un vehículo operativo asociado al repartidor.
+4. La carga activa acumulada más el peso del nuevo pedido no puede superar la capacidad del vehículo.
+5. La autoasignación prioriza menor cantidad de pedidos activos, menor peso acumulado y menor distancia al destino cuando existen coordenadas.
+6. Una reasignación actualiza la entrega existente en lugar de crear un registro duplicado.
+
+La API también expone `POST /api/asignaciones/auto/{pedidoId}` para ejecutar la selección automática.
 
 ### Entregas
 Registra los detalles operativos de cada entrega: fecha de recojo, fecha de entrega, firma y foto como evidencia.
 
 ### Incidentes
-Ante cualquier contratiempo, el sistema registra el tipo de incidente vinculado al pedido afectado. Tipos soportados: `RETRASO`, `DANO`, `ROBO`, `DIRECCION_INCORRECTA`, `CLIENTE_AUSENTE`.
+Ante cualquier contratiempo, el repartidor puede registrar un incidente desde sus pedidos activos. El administrador consulta el historial consolidado en `/admin/incidentes`. Tipos soportados: `RETRASO`, `DANO`, `ROBO`, `DIRECCION_INCORRECTA`, `CLIENTE_AUSENTE`.
 
 ### Reportes
-El `ReporteController` y `ReporteService` exponen datos agregados para visualización en el dashboard administrativo.
+El `ReporteController` y `ReporteService` permiten filtrar pedidos y exportar el resultado operativo a Excel mediante Apache POI.
+
+---
+
+## Pruebas automatizadas
+
+El proyecto contiene **59 pruebas unitarias** distribuidas en **9 archivos**, con JUnit 5 y Mockito. Incluyen CRUD, transiciones de estado, asignación inteligente, promociones, reportes, clientes, generación de códigos e incidentes.
+
+```bash
+./mvnw test
+```
+
+La ejecución local debe finalizar sin fallos antes de generar el entregable.
 
 ---
 
@@ -271,7 +304,7 @@ LogiRoute/
 │   │       │   ├── admin/
 │   │       │   ├── auth/
 │   │       │   └── cliente/
-│   │       ├── application.properties      # Configuración de la app
+│   │       ├── application.properties      # Configuración externa por variables
 │   │       ├── logback-spring.xml          # Configuración de logging
 │   │       └── schema.sql                  # Script de base de datos
 │   └── test/                               # Tests unitarios

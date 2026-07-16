@@ -112,13 +112,16 @@
                              th:data-lng="${p.longitude}"
                              th:data-codigo="${p.codigo}"
                              th:data-destino="${p.direccionDestino}"
-                             th:data-estado="${p.estado.name()}"
+                             th:data-estado="${p.estadoNombre}"
                              th:data-origen="${p.direccionOrigen}">
                             <span class="leyenda-dot"
-                                  th:style="${p.estado.name() == 'ASIGNADO'} ? 'background:#f59e0b;' : (${p.estado.name() == 'EN_RECOJO'} ? 'background:#8b5cf6;' : 'background:#06b6d4;')"></span>
+                                  th:style="${p.asignado} ? 'background:#f59e0b;' : (${p.enRecojo} ? 'background:#8b5cf6;' : 'background:#06b6d4;')"></span>
                             <div class="mapa-repartidor-info">
                                 <p class="mapa-repartidor-nombre" th:text="${p.codigo}">Código</p>
                                 <p class="mapa-repartidor-vehiculo" th:text="${p.direccionDestino}">Destino</p>
+                                <p class="mapa-repartidor-vehiculo"
+                                   th:if="${p.latitude == null or p.longitude == null}"
+                                   style="color:#fbbf24;">Sin coordenadas registradas</p>
                             </div>
                         </div>
 

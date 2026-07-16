@@ -49,6 +49,7 @@
             <a href="#" th:href="@{/admin/repartidores}" class="nav-item">Repartidores</a>
             <a href="#" th:href="@{/admin/promociones}" class="nav-item">Promociones</a>
             <a href="#" th:href="@{/admin/mapa}" class="nav-item">Mapa en vivo</a>
+            <a href="#" th:href="@{/admin/incidentes}" class="nav-item">Incidentes</a>
             <a href="#" th:href="@{/admin/reportes}" class="nav-item">Informes</a>
         </div>
     </nav>
@@ -123,48 +124,48 @@
                         <form th:action="@{/admin/pedidos/{id}/estado(id=${pedido.id})}" method="post" style="display:inline;">
                             <input type="hidden" name="estado" value="PENDIENTE">
                             <button type="submit" class="btn-registrar"
-                                    th:disabled="${pedido.estado.name() == 'PENDIENTE'}"
-                                    th:style="${pedido.estado.name() == 'PENDIENTE'} ? 'opacity:0.5;cursor:default;' : ''">
+                                    th:disabled="${pedido.pendiente}"
+                                    th:style="${pedido.pendiente} ? 'opacity:0.5;cursor:default;' : ''">
                                 PENDIENTE
                             </button>
                         </form>
                         <form th:action="@{/admin/pedidos/{id}/estado(id=${pedido.id})}" method="post" style="display:inline;">
                             <input type="hidden" name="estado" value="ASIGNADO">
                             <button type="submit" class="btn-registrar"
-                                    th:disabled="${pedido.estado.name() == 'ASIGNADO'}"
-                                    th:style="${pedido.estado.name() == 'ASIGNADO'} ? 'opacity:0.5;cursor:default;' : ''">
+                                    th:disabled="${pedido.asignado}"
+                                    th:style="${pedido.asignado} ? 'opacity:0.5;cursor:default;' : ''">
                                 ASIGNADO
                             </button>
                         </form>
                         <form th:action="@{/admin/pedidos/{id}/estado(id=${pedido.id})}" method="post" style="display:inline;">
                             <input type="hidden" name="estado" value="EN_RECOJO">
                             <button type="submit" class="btn-registrar"
-                                    th:disabled="${pedido.estado.name() == 'EN_RECOJO'}"
-                                    th:style="${pedido.estado.name() == 'EN_RECOJO'} ? 'opacity:0.5;cursor:default;' : ''">
+                                    th:disabled="${pedido.enRecojo}"
+                                    th:style="${pedido.enRecojo} ? 'opacity:0.5;cursor:default;' : ''">
                                 EN RECOJO
                             </button>
                         </form>
                         <form th:action="@{/admin/pedidos/{id}/estado(id=${pedido.id})}" method="post" style="display:inline;">
                             <input type="hidden" name="estado" value="EN_TRANSITO">
                             <button type="submit" class="btn-registrar"
-                                    th:disabled="${pedido.estado.name() == 'EN_TRANSITO'}"
-                                    th:style="${pedido.estado.name() == 'EN_TRANSITO'} ? 'opacity:0.5;cursor:default;' : ''">
+                                    th:disabled="${pedido.enTransito}"
+                                    th:style="${pedido.enTransito} ? 'opacity:0.5;cursor:default;' : ''">
                                 EN TRÁNSITO
                             </button>
                         </form>
                         <form th:action="@{/admin/pedidos/{id}/estado(id=${pedido.id})}" method="post" style="display:inline;">
                             <input type="hidden" name="estado" value="ENTREGADO">
                             <button type="submit" class="btn-registrar"
-                                    th:disabled="${pedido.estado.name() == 'ENTREGADO'}"
-                                    th:style="${pedido.estado.name() == 'ENTREGADO'} ? 'opacity:0.5;cursor:default;' : ''">
+                                    th:disabled="${pedido.entregado}"
+                                    th:style="${pedido.entregado} ? 'opacity:0.5;cursor:default;' : ''">
                                 ENTREGADO
                             </button>
                         </form>
                         <form th:action="@{/admin/pedidos/{id}/estado(id=${pedido.id})}" method="post" style="display:inline;">
                             <input type="hidden" name="estado" value="CANCELADO">
                             <button type="submit" class="btn-registrar"
-                                    th:disabled="${pedido.estado.name() == 'CANCELADO'}"
-                                    th:style="${pedido.estado.name() == 'CANCELADO'} ? 'opacity:0.5;cursor:default;' : ''">
+                                    th:disabled="${pedido.cancelado}"
+                                    th:style="${pedido.cancelado} ? 'opacity:0.5;cursor:default;' : ''">
                                 CANCELADO
                             </button>
                         </form>

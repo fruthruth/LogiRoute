@@ -99,6 +99,8 @@ CREATE TABLE IF NOT EXISTS pedidos (
     ruta_id             BIGINT        NULL,
     direccion_origen    VARCHAR(255)  NOT NULL,
     direccion_destino   VARCHAR(255)  NOT NULL,
+    latitude            DECIMAL(10,7) NULL,
+    longitude           DECIMAL(10,7) NULL,
     peso                DECIMAL(10,2) NOT NULL,
     tipo_paquete        VARCHAR(50)   NOT NULL,
     estado              VARCHAR(20)   NOT NULL DEFAULT 'PENDIENTE',

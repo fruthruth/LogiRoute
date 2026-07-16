@@ -35,6 +35,19 @@ build/
 ### Logs ###
 /logs/
 
-### SSH Keys ###
+### Security / secrets ###
+# SSH and private keys
 sshkey
 sshkey.pub
+*.pem
+*.key
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+
+# Local environment and production secrets
+.env
+.env.*
+!.env.example
+application-production.properties

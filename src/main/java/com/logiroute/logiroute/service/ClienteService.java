@@ -49,7 +49,7 @@ public class ClienteService implements IClienteService {
     @Transactional(readOnly = true)
     public Optional<Cliente> obtenerPorEmail(String email) {
         log.debug("Buscando cliente con email: {}", email);
-        return clienteRepository.findByUsuarioEmail(email);
+        return clienteRepository.findByUsuarioEmailIgnoreCase(email.trim());
     }
 
     @Override

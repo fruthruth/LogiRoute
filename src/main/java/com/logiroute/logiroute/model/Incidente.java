@@ -37,7 +37,25 @@ public class Incidente {
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    public String getTipoTexto() {
+        return tipo == null ? "" : tipo.getTexto();
+    }
+
     public enum TipoIncidente {
-        RETRASO, DANO, ROBO, DIRECCION_INCORRECTA, CLIENTE_AUSENTE
+        RETRASO("Retraso"),
+        DANO("Daño"),
+        ROBO("Robo"),
+        DIRECCION_INCORRECTA("Dirección incorrecta"),
+        CLIENTE_AUSENTE("Cliente ausente");
+
+        private final String texto;
+
+        TipoIncidente(String texto) {
+            this.texto = texto;
+        }
+
+        public String getTexto() {
+            return texto;
+        }
     }
 }

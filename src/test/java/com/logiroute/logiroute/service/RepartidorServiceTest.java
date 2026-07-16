@@ -39,7 +39,7 @@ class RepartidorServiceTest {
     @Test
     void crearRepartidor_debeGuardarUsuarioYRepartidor() {
         when(passwordEncoder.encode("123456")).thenReturn("$2a$10$encoded");
-        when(usuarioRepository.existsByEmail("repartidor@test.com")).thenReturn(false);
+        when(usuarioRepository.existsByEmailIgnoreCase("repartidor@test.com")).thenReturn(false);
         when(repartidorRepository.findByLicencia("LIC-001")).thenReturn(Optional.empty());
         when(usuarioRepository.save(any(Usuario.class))).thenAnswer(invocation -> {
             Usuario u = invocation.getArgument(0);
@@ -68,7 +68,7 @@ class RepartidorServiceTest {
 
     @Test
     void crearRepartidor_emailDuplicado_debeLanzarExcepcion() {
-        when(usuarioRepository.existsByEmail("duplicado@test.com")).thenReturn(true);
+        when(usuarioRepository.existsByEmailIgnoreCase("duplicado@test.com")).thenReturn(true);
 
         DatoDuplicadoException exception = assertThrows(DatoDuplicadoException.class, () ->
                 repartidorService.crear(
@@ -83,7 +83,7 @@ class RepartidorServiceTest {
 
     @Test
     void crearRepartidor_licenciaDuplicada_debeLanzarExcepcion() {
-        when(usuarioRepository.existsByEmail("repartidor@test.com")).thenReturn(false);
+        when(usuarioRepository.existsByEmailIgnoreCase("repartidor@test.com")).thenReturn(false);
         when(repartidorRepository.findByLicencia("LIC-001")).thenReturn(Optional.of(
                 Repartidor.builder().id(1L).licencia("LIC-001").build()
         ));

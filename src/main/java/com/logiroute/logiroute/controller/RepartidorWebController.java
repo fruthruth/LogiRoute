@@ -1,10 +1,13 @@
 package com.logiroute.logiroute.controller;
 
 import com.logiroute.logiroute.exception.RecursoNoEncontradoException;
+import com.logiroute.logiroute.dto.IncidenteDTO;
 import com.logiroute.logiroute.model.EstadoPedido;
+import com.logiroute.logiroute.model.Incidente;
 import com.logiroute.logiroute.model.Pedido;
 import com.logiroute.logiroute.model.Repartidor;
 import com.logiroute.logiroute.service.IAsignacionService;
+import com.logiroute.logiroute.service.IIncidenteService;
 import com.logiroute.logiroute.service.IPedidoService;
 import com.logiroute.logiroute.service.IRepartidorService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +32,7 @@ public class RepartidorWebController {
     private final IRepartidorService repartidorService;
     private final IPedidoService pedidoService;
     private final IAsignacionService asignacionService;
+    private final IIncidenteService incidenteService;
 
     @GetMapping({"", "/"})
     public String dashboard(Model model, Authentication auth) {
@@ -86,10 +90,10 @@ public class RepartidorWebController {
                 return "redirect:/repartidor/pedidos";
             }
 
-            pedidoService.actualizarEstado(id, estado);
-
             if (estado.equals("ENTREGADO")) {
                 asignacionService.completarEntrega(id);
+            } else {
+                pedidoService.actualizarEstado(id, estado);
             }
 
             ra.addFlashAttribute("mensaje", "Estado actualizado correctamente");
@@ -150,6 +154,69 @@ public class RepartidorWebController {
         model.addAttribute("repartidor", repartidor);
         model.addAttribute("pedidos", pedidosActivos);
         return "repartidor/mapa";
+    }
+
+
+    @GetMapping("/pedidos/{id}/incidente")
+    public String formularioIncidente(@PathVariable Long id, Model model,
+                                      RedirectAttributes ra, Authentication auth) {
+        Repartidor repartidor = getRepartidorFromAuth(auth);
+        if (repartidor == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            Pedido pedido = pedidoService.obtenerPorId(id)
+                    .orElseThrow(() -> new RecursoNoEncontradoException("Pedido", id));
+            validarPedidoDelRepartidor(pedido, repartidor);
+
+            model.addAttribute("pedido", pedido);
+            model.addAttribute("repartidor", repartidor);
+            model.addAttribute("tiposIncidente", Incidente.TipoIncidente.values());
+            model.addAttribute("incidentes", incidenteService.listarPorPedido(id));
+            return "repartidor/incidente-form";
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", e.getMessage());
+            return "redirect:/repartidor/pedidos";
+        }
+    }
+
+    @PostMapping("/pedidos/{id}/incidente")
+    public String registrarIncidente(@PathVariable Long id,
+                                     @RequestParam Incidente.TipoIncidente tipo,
+                                     @RequestParam String descripcion,
+                                     RedirectAttributes ra, Authentication auth) {
+        Repartidor repartidor = getRepartidorFromAuth(auth);
+        if (repartidor == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            Pedido pedido = pedidoService.obtenerPorId(id)
+                    .orElseThrow(() -> new RecursoNoEncontradoException("Pedido", id));
+            validarPedidoDelRepartidor(pedido, repartidor);
+
+            incidenteService.registrar(IncidenteDTO.builder()
+                    .pedidoId(id)
+                    .tipo(tipo)
+                    .descripcion(descripcion)
+                    .build());
+            ra.addFlashAttribute("mensaje", "Incidente registrado correctamente");
+            return "redirect:/repartidor/pedidos/" + id + "/incidente";
+        } catch (Exception e) {
+            log.error("Error al registrar incidente para el pedido {}: {}", id, e.getMessage());
+            ra.addFlashAttribute("error", e.getMessage());
+            return "redirect:/repartidor/pedidos/" + id + "/incidente";
+        }
+    }
+
+    private void validarPedidoDelRepartidor(Pedido pedido, Repartidor repartidor) {
+        if (pedido.getRepartidor() == null || !pedido.getRepartidor().getId().equals(repartidor.getId())) {
+            throw new IllegalArgumentException("No tienes asignado este pedido");
+        }
+        if (pedido.getEstado() == EstadoPedido.ENTREGADO || pedido.getEstado() == EstadoPedido.CANCELADO) {
+            throw new IllegalArgumentException("No se pueden registrar incidentes en pedidos finalizados");
+        }
     }
 
     private Repartidor getRepartidorFromAuth(Authentication auth) {

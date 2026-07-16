@@ -49,6 +49,7 @@
             <a href="#" th:href="@{/admin/repartidores}" class="nav-item">Repartidores</a>
             <a href="#" th:href="@{/admin/promociones}" class="nav-item">Promociones</a>
             <a href="#" th:href="@{/admin/mapa}" class="nav-item">Mapa en vivo</a>
+            <a href="#" th:href="@{/admin/incidentes}" class="nav-item">Incidentes</a>
             <a href="#" th:href="@{/admin/reportes}" class="nav-item">Informes</a>
         </div>
     </nav>
@@ -78,6 +79,14 @@
                     </div>
                     <span class="stat-number" th:text="${totalRepartidores}">0</span>
                 </div>
+
+                <a th:href="@{/admin/incidentes}" class="stat-card stat-red">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Incidentes registrados</span>
+                    </div>
+                    <span class="stat-number" th:text="${totalIncidentes}">0</span>
+                </a>
             </div>
 
         </section>

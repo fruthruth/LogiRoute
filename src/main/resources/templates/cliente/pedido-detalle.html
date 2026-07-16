@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiRoute - Detalle del Pedido</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../css/style.css">
+    <style>
+        .detalle-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+        .detalle-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 1rem;
+        }
+        .detalle-card-full { grid-column: 1 / -1; }
+        .detalle-label {
+            margin: 0 0 0.35rem;
+            color: var(--text-secondary);
+            font-family: var(--font-main);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .detalle-value {
+            margin: 0;
+            color: var(--text-primary);
+            overflow-wrap: anywhere;
+        }
+        .detalle-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        .detalle-codigo {
+            margin: 0;
+            color: var(--white);
+            font-family: var(--font-main);
+            font-size: 1.1rem;
+        }
+        .detalle-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1.25rem;
+        }
+        @media (max-width: 700px) {
+            .detalle-grid { grid-template-columns: 1fr; }
+            .detalle-card-full { grid-column: auto; }
+            .detalle-header { align-items: flex-start; flex-direction: column; }
+        }
+    </style>
+</head>
+<body class="admin-page">
+
+<header class="admin-header">
+    <div class="admin-header-inner">
+        <div class="brand">
+            <div class="brand-icon">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                    <circle cx="16" cy="16" r="16" fill="#fff"/>
+                    <path d="M8 20l4-8 4 4 4-6 4 10" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="brand-text">
+                <span class="brand-name">LogiRoute</span>
+                <span class="brand-sub">Detalle del Pedido</span>
+            </div>
+        </div>
+        <div class="admin-user">
+            <span class="admin-username" th:text="${cliente.usuario.nombre}">Cliente</span>
+            <form th:action="@{/logout}" method="post" style="display:inline">
+                <button type="submit" class="btn-salir" style="background:none;border:none;cursor:pointer;">Salir</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<nav class="admin-nav">
+    <div class="admin-nav-inner">
+        <a th:href="@{/cliente}" class="nav-item">Inicio</a>
+        <a th:href="@{/cliente/pedidos}" class="nav-item active">Mis pedidos</a>
+        <a th:href="@{/cliente/pedidos/crear}" class="nav-item">Nuevo pedido</a>
+        <a th:href="@{/cliente/perfil}" class="nav-item">Mi perfil</a>
+    </div>
+</nav>
+
+<main class="admin-main">
+    <section class="dashboard-section">
+        <div class="detalle-header">
+            <div>
+                <p class="detalle-label">Código de seguimiento</p>
+                <h2 class="detalle-codigo" th:text="${pedido.codigo}">TRK-2026-001</h2>
+            </div>
+            <span class="estado-badge"
+                  th:classappend="${pedido.estadoCssClass}"
+                  th:text="${pedido.estadoTexto}">Pendiente</span>
+        </div>
+
+        <div class="detalle-grid">
+            <article class="detalle-card detalle-card-full">
+                <p class="detalle-label">Dirección de origen</p>
+                <p class="detalle-value" th:text="${pedido.direccionOrigen}">Dirección de origen</p>
+            </article>
+
+            <article class="detalle-card detalle-card-full">
+                <p class="detalle-label">Dirección de destino</p>
+                <p class="detalle-value" th:text="${pedido.direccionDestino}">Dirección de destino</p>
+            </article>
+
+            <article class="detalle-card">
+                <p class="detalle-label">Tipo de paquete</p>
+                <p class="detalle-value" th:text="${#strings.replace(pedido.tipoPaquete, '_', ' ')}">PAQUETE MEDIANO</p>
+            </article>
+
+            <article class="detalle-card">
+                <p class="detalle-label">Peso</p>
+                <p class="detalle-value"><span th:text="${pedido.peso}">0.00</span> kg</p>
+            </article>
+
+            <article class="detalle-card">
+                <p class="detalle-label">Costo</p>
+                <p class="detalle-value" th:text="${pedido.costo != null ? 'S/ ' + pedido.costo : 'Por calcular'}">Por calcular</p>
+            </article>
+
+            <article class="detalle-card">
+                <p class="detalle-label">Repartidor asignado</p>
+                <p class="detalle-value"
+                   th:text="${pedido.repartidor != null and pedido.repartidor.usuario != null ? pedido.repartidor.usuario.nombre : 'Aún no asignado'}">
+                    Aún no asignado
+                </p>
+            </article>
+
+            <article class="detalle-card">
+                <p class="detalle-label">Fecha de creación</p>
+                <p class="detalle-value"
+                   th:text="${T(com.logiroute.logiroute.utils.DateFormatter).format(pedido.createdAt, 'dd/MM/yyyy HH:mm')}">
+                    01/07/2026 10:00
+                </p>
+            </article>
+
+            <article class="detalle-card">
+                <p class="detalle-label">Fecha estimada</p>
+                <p class="detalle-value"
+                   th:text="${pedido.fechaEstimada != null ? T(com.logiroute.logiroute.utils.DateFormatter).format(pedido.fechaEstimada, 'dd/MM/yyyy HH:mm') : 'Sin fecha estimada'}">
+                    Sin fecha estimada
+                </p>
+            </article>
+        </div>
+
+        <div class="detalle-actions">
+            <a th:href="@{/cliente/pedidos}" class="btn-cancelar">Volver a mis pedidos</a>
+        </div>
+    </section>
+</main>
+
+</body>
+</html>

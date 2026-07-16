@@ -2,6 +2,7 @@ package com.logiroute.logiroute.controller;
 
 import com.logiroute.logiroute.model.Pedido;
 import com.logiroute.logiroute.service.IClienteService;
+import com.logiroute.logiroute.service.IIncidenteService;
 import com.logiroute.logiroute.service.IPedidoService;
 import com.logiroute.logiroute.service.IPromocionService;
 import com.logiroute.logiroute.service.IRepartidorService;
@@ -29,6 +30,7 @@ public class AdminWebController {
     private final IReporteService reporteService;
     private final IClienteService clienteService;
     private final IPromocionService promocionService;
+    private final IIncidenteService incidenteService;
 
     @GetMapping({ "", "/" })
     public String dashboard(Model model) {
@@ -36,6 +38,7 @@ public class AdminWebController {
         model.addAttribute("totalPedidos", pedidoService.contar());
         model.addAttribute("totalRepartidores", repartidorService.listarTodos().size());
         model.addAttribute("promocionesActivas", promocionService.listarActivasVigentes());
+        model.addAttribute("totalIncidentes", incidenteService.contar());
         return "admin/dashboard";
     }
 
@@ -43,7 +46,7 @@ public class AdminWebController {
     public String pedidos(Model model) {
         log.debug("Renderizando gestión de pedidos");
         model.addAttribute("pedidos", pedidoService.listarTodos());
-        model.addAttribute("repartidores", repartidorService.listarTodos());
+        model.addAttribute("repartidores", repartidorService.listarDisponibles());
         model.addAttribute("clientes", clienteService.listarTodos());
         model.addAttribute("promocionesActivas", promocionService.listarActivasVigentes());
         return "admin/pedidos";
@@ -53,6 +56,14 @@ public class AdminWebController {
     public String mapa(Model model) {
         model.addAttribute("repartidores", repartidorService.listarTodos());
         return "admin/mapa";
+    }
+
+
+    @GetMapping("/incidentes")
+    public String incidentes(Model model) {
+        log.debug("Renderizando registro de incidentes");
+        model.addAttribute("incidentes", incidenteService.listarTodos());
+        return "admin/incidentes";
     }
 
     @GetMapping("/reportes")

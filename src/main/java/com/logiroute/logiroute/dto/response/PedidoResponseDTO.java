@@ -20,6 +20,8 @@ public class PedidoResponseDTO {
     private String repartidorNombre;
     private String direccionOrigen;
     private String direccionDestino;
+    private BigDecimal latitude;
+    private BigDecimal longitude;
     private BigDecimal peso;
     private String tipoPaquete;
     private String estado;

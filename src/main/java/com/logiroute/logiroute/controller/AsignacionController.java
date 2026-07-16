@@ -1,6 +1,7 @@
 package com.logiroute.logiroute.controller;
 
 import com.logiroute.logiroute.dto.AsignacionDTO;
+import com.logiroute.logiroute.model.Repartidor;
 import com.logiroute.logiroute.service.IAsignacionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,18 @@ public class AsignacionController {
         log.info("API: Asignando repartidor {} al pedido {}", dto.getRepartidorId(), dto.getPedidoId());
         asignacionService.asignar(dto);
         return ResponseEntity.ok(Map.of("mensaje", "Repartidor asignado correctamente"));
+    }
+
+
+    @PostMapping("/auto/{pedidoId}")
+    public ResponseEntity<Map<String, Object>> autoAsignar(@PathVariable Long pedidoId) {
+        log.info("API: Auto-asignando el pedido {}", pedidoId);
+        Repartidor repartidor = asignacionService.autoAsignar(pedidoId);
+        return ResponseEntity.ok(Map.of(
+                "mensaje", "Repartidor asignado automáticamente",
+                "repartidorId", repartidor.getId(),
+                "repartidor", repartidor.getUsuario().getNombre()
+        ));
     }
 
     @PostMapping("/completar/{pedidoId}")

@@ -27,6 +27,14 @@ public class PedidoDTO {
     @NotBlank(message = "El tipo de paquete es obligatorio")
     private String tipoPaquete;
 
+    @DecimalMin(value = "-90.0", message = "La latitud mínima es -90")
+    @DecimalMax(value = "90.0", message = "La latitud máxima es 90")
+    private BigDecimal latitude;
+
+    @DecimalMin(value = "-180.0", message = "La longitud mínima es -180")
+    @DecimalMax(value = "180.0", message = "La longitud máxima es 180")
+    private BigDecimal longitude;
+
     @NotNull(message = "El cliente es obligatorio")
     private Long clienteId;
 }

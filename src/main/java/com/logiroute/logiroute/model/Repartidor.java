@@ -48,6 +48,14 @@ public class Repartidor {
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    public String getEstadoNombre() {
+        return estado == null ? "" : estado.name();
+    }
+
+    public boolean isDisponible() { return estado == EstadoRepartidor.DISPONIBLE; }
+    public boolean isEnRuta() { return estado == EstadoRepartidor.EN_RUTA; }
+    public boolean isInactivo() { return estado == EstadoRepartidor.INACTIVO; }
+
     public enum EstadoRepartidor {
         DISPONIBLE, EN_RUTA, INACTIVO
     }

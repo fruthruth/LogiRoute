@@ -1,0 +1,18 @@
+PARTE 3 - CONFIGURACION Y CREDENCIALES SEGURAS
+
+Cambios realizados:
+1. application.properties ya no contiene la contraseña MySQL ni una clave JWT fija.
+2. DB_PASSWORD y JWT_SECRET son variables obligatorias de entorno.
+3. DB_URL, DB_USERNAME, puerto, CORS, logging y opciones de desarrollo son configurables.
+4. Se agregó validación temprana para exigir un JWT_SECRET de al menos 32 caracteres.
+5. Se agregó scripts/run-local.ps1 para Windows.
+6. Se agregó scripts/run-local.sh para Linux/macOS.
+7. Se agregó .env.example como referencia, sin credenciales reales.
+8. Se agregó CONFIGURACION_SEGURA.md con instrucciones completas.
+9. Se eliminaron los archivos de logs históricos del ZIP.
+10. README.md fue actualizado con el nuevo procedimiento de ejecución.
+
+Inicio rápido en Windows:
+  .\scripts\run-local.ps1
+
+El script solicita la contraseña MySQL y genera una clave JWT temporal segura.

@@ -16,6 +16,8 @@ public final class PedidoMapper {
                 .repartidorNombre(p.getRepartidor() != null ? p.getRepartidor().getUsuario().getNombre() : null)
                 .direccionOrigen(p.getDireccionOrigen())
                 .direccionDestino(p.getDireccionDestino())
+                .latitude(p.getLatitude())
+                .longitude(p.getLongitude())
                 .peso(p.getPeso())
                 .tipoPaquete(p.getTipoPaquete())
                 .estado(p.getEstado().name())

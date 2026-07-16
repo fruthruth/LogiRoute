@@ -54,7 +54,7 @@ public class RepartidorService implements IRepartidorService {
     @Transactional(readOnly = true)
     public Optional<Repartidor> obtenerPorEmail(String email) {
         log.debug("Buscando repartidor con email: {}", email);
-        return repartidorRepository.findByUsuarioEmail(email);
+        return repartidorRepository.findByUsuarioEmailIgnoreCase(email.trim());
     }
 
     @Override
@@ -70,7 +70,7 @@ public class RepartidorService implements IRepartidorService {
                             String telefono, String licencia) {
         log.info("Creando repartidor con email: {}", email);
 
-        if (usuarioRepository.existsByEmail(email)) {
+        if (usuarioRepository.existsByEmailIgnoreCase(email.trim())) {
             throw new DatoDuplicadoException("El email ya está registrado: " + email);
         }
 
@@ -111,7 +111,7 @@ public class RepartidorService implements IRepartidorService {
         usuario.setNombre(nombre);
 
         if (!usuario.getEmail().equals(email)) {
-            if (usuarioRepository.existsByEmail(email)) {
+            if (usuarioRepository.existsByEmailIgnoreCase(email.trim())) {
                 throw new DatoDuplicadoException("El email ya está registrado: " + email);
             }
             usuario.setEmail(email);

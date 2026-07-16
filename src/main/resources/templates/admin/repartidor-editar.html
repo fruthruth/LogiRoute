@@ -49,6 +49,7 @@
             <a href="#" th:href="@{/admin/repartidores}" class="nav-item active">Repartidores</a>
             <a href="#" th:href="@{/admin/promociones}" class="nav-item">Promociones</a>
             <a href="#" th:href="@{/admin/mapa}" class="nav-item">Mapa en vivo</a>
+            <a href="#" th:href="@{/admin/incidentes}" class="nav-item">Incidentes</a>
             <a href="#" th:href="@{/admin/reportes}" class="nav-item">Informes</a>
         </div>
     </nav>
@@ -102,24 +103,24 @@
                         <form th:action="@{/admin/repartidores/{id}/estado(id=${repartidor.id})}" method="post" style="display:inline;">
                             <input type="hidden" name="estado" value="DISPONIBLE">
                             <button type="submit" class="btn-registrar"
-                                    th:disabled="${repartidor.estado.name() == 'DISPONIBLE'}"
-                                    th:style="${repartidor.estado.name() == 'DISPONIBLE'} ? 'opacity:0.5;cursor:default;' : ''">
+                                    th:disabled="${repartidor.disponible}"
+                                    th:style="${repartidor.disponible} ? 'opacity:0.5;cursor:default;' : ''">
                                 DISPONIBLE
                             </button>
                         </form>
                         <form th:action="@{/admin/repartidores/{id}/estado(id=${repartidor.id})}" method="post" style="display:inline;">
                             <input type="hidden" name="estado" value="EN_RUTA">
                             <button type="submit" class="btn-registrar"
-                                    th:disabled="${repartidor.estado.name() == 'EN_RUTA'}"
-                                    th:style="${repartidor.estado.name() == 'EN_RUTA'} ? 'opacity:0.5;cursor:default;' : ''">
+                                    th:disabled="${repartidor.enRuta}"
+                                    th:style="${repartidor.enRuta} ? 'opacity:0.5;cursor:default;' : ''">
                                 EN RUTA
                             </button>
                         </form>
                         <form th:action="@{/admin/repartidores/{id}/estado(id=${repartidor.id})}" method="post" style="display:inline;">
                             <input type="hidden" name="estado" value="INACTIVO">
                             <button type="submit" class="btn-registrar"
-                                    th:disabled="${repartidor.estado.name() == 'INACTIVO'}"
-                                    th:style="${repartidor.estado.name() == 'INACTIVO'} ? 'opacity:0.5;cursor:default;' : ''">
+                                    th:disabled="${repartidor.inactivo}"
+                                    th:style="${repartidor.inactivo} ? 'opacity:0.5;cursor:default;' : ''">
                                 INACTIVO
                             </button>
                         </form>

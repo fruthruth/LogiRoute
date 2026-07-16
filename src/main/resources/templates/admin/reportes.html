@@ -49,6 +49,7 @@
             <a th:href="@{/admin/repartidores}" href="#" class="nav-item">Repartidores</a>
             <a th:href="@{/admin/promociones}" href="#" class="nav-item">Promociones</a>
             <a th:href="@{/admin/mapa}" href="#" class="nav-item">Mapa en vivo</a>
+            <a th:href="@{/admin/incidentes}" class="nav-item">Incidentes</a>
             <a th:href="@{/admin/reportes}" href="#" class="nav-item active">Informes</a>
         </div>
     </nav>
@@ -123,9 +124,9 @@
                     <tbody>
                         <tr th:each="p : ${pedidos}">
                             <td th:text="${p.codigo}">XER-XLAJ1568</td>
-                            <td th:text="${p.createdAt.dayOfMonth}">15</td>
-                            <td th:text="${p.createdAt.month.getDisplayName(T(java.time.format.TextStyle).FULL, T(java.util.Locale).forLanguageTag('es'))}">Febrero</td>
-                            <td th:text="${p.createdAt.year}">2026</td>
+                            <td th:text="${p.createdAt != null ? p.createdAt.dayOfMonth : '-'}">15</td>
+                            <td th:text="${p.createdAt != null ? p.createdAt.monthValue : '-'}">Febrero</td>
+                            <td th:text="${p.createdAt != null ? p.createdAt.year : '-'}">2026</td>
                             <td th:text="${p.repartidor != null ? p.repartidor.usuario.nombre : '—'}">Juan Pérez</td>
                             <td th:text="${p.costo != null ? 'S/' + p.costo : '—'}">S/70</td>
                         </tr>

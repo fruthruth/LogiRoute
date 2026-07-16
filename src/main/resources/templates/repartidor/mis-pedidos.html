@@ -72,15 +72,17 @@
                                 </span>
                             </td>
                             <td class="acciones-cell">
-                                <a th:if="${pedido.estado.name() == 'ASIGNADO'}"
+                                <a th:if="${pedido.asignado}"
                                    th:href="@{/repartidor/pedidos/{id}/estado(estado='EN_RECOJO', id=${pedido.id})}"
                                    class="btn-accion">Iniciar recojo</a>
-                                <a th:if="${pedido.estado.name() == 'EN_RECOJO'}"
+                                <a th:if="${pedido.enRecojo}"
                                    th:href="@{/repartidor/pedidos/{id}/estado(estado='EN_TRANSITO', id=${pedido.id})}"
                                    class="btn-accion">En camino</a>
-                                <a th:if="${pedido.estado.name() == 'EN_TRANSITO'}"
+                                <a th:if="${pedido.enTransito}"
                                    th:href="@{/repartidor/pedidos/{id}/estado(estado='ENTREGADO', id=${pedido.id})}"
                                    class="btn-accion btn-registrar">Entregado</a>
+                                <a th:href="@{/repartidor/pedidos/{id}/incidente(id=${pedido.id})}"
+                                   class="btn-accion" style="background:rgba(239,68,68,.15);color:#f87171;">Reportar incidente</a>
                             </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(pedidos)}">

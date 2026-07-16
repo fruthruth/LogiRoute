@@ -1,0 +1,73 @@
+LOGIROUTE - PARTE 4
+MEJORA DE ASIGNACIÓN AUTOMÁTICA Y VALIDACIONES DE NEGOCIO
+==========================================================
+
+CAMBIOS PRINCIPALES
+-------------------
+1. Se creó AsignacionInvalidaException para responder con mensajes claros cuando una
+   asignación viola reglas operativas.
+
+2. La asignación manual ahora valida:
+   - Pedido en estado PENDIENTE o ASIGNADO.
+   - Repartidor en estado DISPONIBLE.
+   - Cuenta de usuario activa.
+   - Vehículo asociado y operativo.
+   - Capacidad suficiente considerando la carga activa acumulada.
+   - Pertenencia del vehículo cuando se envía vehiculoId.
+
+3. La reasignación ya no crea entregas duplicadas. Si el pedido ya tiene una entrega,
+   se actualiza el repartidor de ese registro.
+
+4. La autoasignación ya no usa disponibles.get(0). Ahora:
+   - Descarta repartidores inactivos o sin vehículo capaz.
+   - Calcula cantidad de pedidos activos.
+   - Calcula peso activo acumulado.
+   - Calcula distancia Haversine cuando existen coordenadas.
+   - Prioriza: menor número de pedidos, menor peso activo, menor distancia y mayor
+     capacidad restante.
+
+5. Se agregó el endpoint REST:
+   POST /api/asignaciones/auto/{pedidoId}
+
+6. completarEntrega ahora valida la transición de estado y registra fecha de entrega.
+
+7. Se amplió AsignacionServiceTest de 3 a 10 pruebas. El proyecto contiene ahora
+   53 métodos anotados con @Test.
+
+ARCHIVOS MODIFICADOS
+--------------------
+- src/main/java/com/logiroute/logiroute/service/AsignacionService.java
+- src/main/java/com/logiroute/logiroute/service/IAsignacionService.java
+- src/main/java/com/logiroute/logiroute/controller/AdminPedidoWebController.java
+- src/main/java/com/logiroute/logiroute/controller/AdminWebController.java
+- src/main/java/com/logiroute/logiroute/controller/AsignacionController.java
+- src/main/java/com/logiroute/logiroute/controller/RepartidorWebController.java
+- src/main/java/com/logiroute/logiroute/repository/PedidoRepository.java
+- src/main/java/com/logiroute/logiroute/exception/GlobalExceptionHandler.java
+- src/test/java/com/logiroute/logiroute/service/AsignacionServiceTest.java
+- README.md
+
+ARCHIVO NUEVO
+-------------
+- src/main/java/com/logiroute/logiroute/exception/AsignacionInvalidaException.java
+
+PRUEBAS RECOMENDADAS
+--------------------
+1. Ejecutar:
+   Windows: mvnw.cmd test
+   Linux/macOS: ./mvnw test
+
+2. Probar asignación manual con:
+   - Repartidor disponible y vehículo suficiente.
+   - Repartidor inactivo.
+   - Vehículo en mantenimiento.
+   - Paquete que excede la capacidad.
+
+3. Probar autoasignación desde el panel administrativo con un pedido pendiente.
+
+4. Verificar que al reasignar un pedido ASIGNADO no se cree una segunda entrega.
+
+NOTA SOBRE COORDENADAS
+----------------------
+La cercanía se usa cuando tanto el pedido como el repartidor tienen latitude y longitude.
+Si faltan coordenadas, el sistema continúa usando carga activa y capacidad como criterios.

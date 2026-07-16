@@ -1,0 +1,25 @@
+CORRECCIÓN P6 - ACCESO A PEDIDOS, MAPA, INFORMES Y REPARTIDORES
+================================================================
+
+Se corrigieron las causas que provocaban errores 500 después de abrir las vistas:
+1. Carga explícita de relaciones JPA (usuario, cliente y repartidor) mediante EntityGraph.
+2. Open Session in View habilitado para renderizado Thymeleaf.
+3. Expresiones Thymeleaf incompatibles eliminadas: T(java...), navegación ?. y llamadas enum.name().
+4. Informe usa el número de mes sin acceso estático restringido.
+5. Inicio de sesión guarda el SecurityContext en una sesión HTTP creada explícitamente.
+6. Búsqueda de email ignora mayúsculas/minúsculas y espacios.
+7. Hibernate actualiza tablas/columnas faltantes en la BD local (ddl-auto=update).
+8. GlobalExceptionHandler ya no convierte errores de vistas MVC en JSON.
+9. Se incluye scripts/REPARAR_ACCESO_Y_ROLES.sql para bases existentes con roles o hashes desactualizados.
+
+CREDENCIALES DE DEMOSTRACIÓN
+----------------------------
+Administrador: admin@logiroute.com / 123456
+Repartidor: juan.ramirez@logiroute.com / 123456
+
+EJECUCIÓN WINDOWS
+-----------------
+.\scripts\run-local.ps1
+
+Si tu contraseña MySQL no es 1234abc:
+.\scripts\run-local.ps1 -DbPassword "TU_PASSWORD"

@@ -49,6 +49,7 @@
             <a href="#" th:href="@{/admin/repartidores}" class="nav-item">Repartidores</a>
             <a href="#" th:href="@{/admin/promociones}" class="nav-item">Promociones</a>
             <a href="#" th:href="@{/admin/mapa}" class="nav-item">Mapa en vivo</a>
+            <a href="#" th:href="@{/admin/incidentes}" class="nav-item">Incidentes</a>
             <a href="#" th:href="@{/admin/reportes}" class="nav-item">Informes</a>
         </div>
     </nav>
@@ -101,7 +102,7 @@
                                     Pendiente
                                 </span>
                             </td>
-                            <td th:text="${pedido.repartidor?.usuario?.nombre ?: '-'}">-</td>
+                            <td th:text="${pedido.repartidor != null and pedido.repartidor.usuario != null ? pedido.repartidor.usuario.nombre : '-'}">-</td>
                             <td th:text="${pedido.costo != null ? 'S/' + pedido.costo : '—'}">—</td>
                             <td class="acciones-cell">
                                 <a th:href="@{/admin/pedidos/{id}/editar(id=${pedido.id})}" href="#" class="btn-accion btn-editar" title="Editar">✏️</a>

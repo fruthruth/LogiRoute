@@ -44,6 +44,12 @@ public class Pedido {
     @Column(nullable = false)
     private String direccionDestino;
 
+    @Column(precision = 10, scale = 7)
+    private BigDecimal latitude;
+
+    @Column(precision = 10, scale = 7)
+    private BigDecimal longitude;
+
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal peso;
 
@@ -75,6 +81,17 @@ public class Pedido {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
+    public String getEstadoNombre() {
+        return estado == null ? "" : estado.name();
+    }
+
+    public boolean isPendiente() { return estado == EstadoPedido.PENDIENTE; }
+    public boolean isAsignado() { return estado == EstadoPedido.ASIGNADO; }
+    public boolean isEnRecojo() { return estado == EstadoPedido.EN_RECOJO; }
+    public boolean isEnTransito() { return estado == EstadoPedido.EN_TRANSITO; }
+    public boolean isEntregado() { return estado == EstadoPedido.ENTREGADO; }
+    public boolean isCancelado() { return estado == EstadoPedido.CANCELADO; }
 
     /**
      * Retorna la clase CSS según el estado del pedido.
